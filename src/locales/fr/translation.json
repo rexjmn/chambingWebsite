@@ -1,0 +1,478 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "search": "Rechercher",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "close": "Fermer",
+    "language": "Langue",
+    "or": "ou",
+    "debugInfo": "Info de Débogage",
+    "mode": "Mode",
+    "currentLanguage": "Langue actuelle",
+    "admin": "Administrateur",
+    "viewDetails": "Voir les Détails",
+    "viewAll": "Voir Tout",
+    "actions": "Actions"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Tableau de Bord Admin",
+      "welcome": "Bienvenue dans le Panneau d'Administration",
+      "stats": "Statistiques Générales",
+      "filters": {
+        "week": "Semaine",
+        "month": "Mois",
+        "year": "Année"
+      }
+    },
+    "stats": {
+      "totalUsers": "Utilisateurs Totaux",
+      "activeContracts": "Contrats Actifs",
+      "pendingDocuments": "Documents en Attente",
+      "monthlyRevenue": "Revenus Mensuels",
+      "vsPreviousMonth": "vs mois précédent",
+      "inProgress": "en cours",
+      "requireAttention": "nécessitent attention",
+      "userGrowth": "Croissance des Utilisateurs",
+      "recentActivity": "Activité Récente",
+      "requiresAttention": "⚠️ Nécessite Attention",
+      "documentsToVerify": "Documents à vérifier",
+      "pendingContracts": "Contrats en attente",
+      "unresolvedReports": "Rapports non résolus",
+      "activity": {
+        "newUserRegistered": "Nouvel utilisateur inscrit : {{name}}",
+        "contractCompleted": "Contrat {{code}} terminé",
+        "documentVerified": "Document vérifié pour {{name}}",
+        "paymentProcessed": "Paiement traité : {{amount}}",
+        "timeAgo": {
+          "minutes": "Il y a {{count}} min",
+          "hour": "Il y a 1 heure",
+          "hours": "Il y a {{count}} heures"
+        }
+      }
+    },
+    "users": {
+      "title": "Gestion des Utilisateurs",
+      "subtitle": "Gérez tous les utilisateurs de la plateforme",
+      "searchPlaceholder": "Rechercher par nom ou email...",
+      "filters": {
+        "all": "Tous",
+        "employers": "💼 Employeurs",
+        "workers": "👷 Travailleurs",
+        "admins": "👨‍💼 Admins"
+      },
+      "table": {
+        "user": "Utilisateur",
+        "email": "Email",
+        "type": "Type",
+        "location": "Localisation",
+        "registrationDate": "Inscription",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view": "Voir les détails",
+        "suspend": "Suspendre",
+        "delete": "Supprimer"
+      },
+      "types": {
+        "employer": "Employeur",
+        "worker": "Travailleur",
+        "admin": "Admin",
+        "superAdmin": "Super Admin"
+      },
+      "details": {
+        "title": "Détails de l'Utilisateur",
+        "phone": "Téléphone",
+        "dui": "Pièce d'identité",
+        "location": "Localisation",
+        "address": "Adresse",
+        "registrationDate": "Date d'inscription",
+        "notRegistered": "Non enregistré",
+        "notRegisteredAddress": "Non enregistrée"
+      },
+      "confirmations": {
+        "delete": "⚠️ Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.",
+        "suspendReason": "Motif de la suspension :"
+      },
+      "messages": {
+        "deleteSuccess": "Utilisateur supprimé avec succès",
+        "deleteError": "Erreur lors de la suppression de l'utilisateur",
+        "suspendSuccess": "Utilisateur suspendu avec succès",
+        "suspendError": "Erreur lors de la suspension de l'utilisateur",
+        "loadError": "Erreur lors du chargement des utilisateurs"
+      },
+      "empty": {
+        "title": "Aucun utilisateur trouvé",
+        "subtitle": "Essayez avec d'autres filtres de recherche"
+      },
+      "stats": {
+        "total": "Total d'utilisateurs",
+        "workers": "Travailleurs",
+        "employers": "Employeurs",
+        "admins": "Admins"
+      }
+    },
+    "contracts": {
+      "title": "Gestion des Contrats",
+      "subtitle": "Surveillez et gérez tous les contrats de la plateforme",
+      "filters": {
+        "all": "Tous",
+        "pending": "⏳ En Attente",
+        "inProgress": "🔄 En Cours",
+        "completed": "✅ Terminés",
+        "cancelled": "❌ Annulés"
+      },
+      "stats": {
+        "total": "Total de contrats",
+        "inProgress": "En cours",
+        "pending": "En attente",
+        "completed": "Terminés"
+      },
+      "card": {
+        "employer": "Employeur :",
+        "worker": "Travailleur :",
+        "category": "Catégorie :",
+        "amount": "Montant :",
+        "startDate": "Début :",
+        "endDate": "Fin :",
+        "code": "Contrat #{{code}}",
+        "date": "Date : {{date}}"
+      },
+      "status": {
+        "pending": "En Attente",
+        "inProgress": "En Cours",
+        "completed": "Terminé",
+        "cancelled": "Annulé",
+        "closed": "Fermé",
+        "disputed": "En Litige"
+      },
+      "details": {
+        "title": "Détails du Contrat {{code}}",
+        "generalInfo": "Informations Générales",
+        "code": "Code :",
+        "status": "Statut :",
+        "amount": "Montant :",
+        "category": "Catégorie :",
+        "parties": "Parties du Contrat",
+        "employer": "💼 Employeur",
+        "worker": "👷 Travailleur",
+        "history": "Historique des Statuts",
+        "changeStatus": "Changer le Statut",
+        "markAs": "Marquer comme {{status}}",
+        "createdWith": "Contrat créé avec le statut \"{{status}}\"",
+        "changedFrom": "Changement de \"{{from}}\" à \"{{to}}\"",
+        "by": "Par : {{user}}",
+        "notes": "💬 {{notes}}"
+      },
+      "confirmations": {
+        "changeStatus": "Changer le statut du contrat en \"{{status}}\" ?"
+      },
+      "messages": {
+        "statusUpdateSuccess": "Statut mis à jour avec succès",
+        "statusUpdateError": "Erreur lors de la mise à jour du statut du contrat",
+        "loadError": "Erreur lors du chargement des contrats",
+        "historyLoadError": "Erreur de chargement de l'historique"
+      },
+      "empty": {
+        "title": "Aucun contrat {{status}}",
+        "subtitle": "Les contrats apparaîtront ici lorsqu'ils seront créés"
+      }
+    },
+    "roles": {
+      "title": "Gestion des Rôles Administratifs",
+      "subtitle": "Attribuez et gérez les rôles spéciaux pour les utilisateurs",
+      "assignRole": "Attribuer un Rôle",
+      "stats": {
+        "superAdmins": "Super Admins",
+        "admins": "Admins",
+        "verifiers": "Vérificateurs"
+      },
+      "card": {
+        "level": "Niveau {{level}}",
+        "usersWithRole": "Utilisateurs avec ce rôle :",
+        "noUsers": "Aucun utilisateur n'a ce rôle attribué",
+        "assigned": "Attribué : {{date}}"
+      },
+      "types": {
+        "superAdmin": "Super Admin",
+        "admin": "Admin",
+        "verifier": "Vérificateur"
+      },
+      "modal": {
+        "title": "Attribuer un Rôle Administratif",
+        "selectUser": "Sélectionner l'Utilisateur *",
+        "selectUserPlaceholder": "-- Sélectionnez un utilisateur --",
+        "selectRole": "Sélectionner le Rôle *",
+        "selectRolePlaceholder": "-- Sélectionnez un rôle --",
+        "warning": "⚠️ Important :",
+        "warningText": "Les rôles administratifs accordent des permissions spéciales. Assurez-vous de ne les attribuer qu'à des utilisateurs de confiance.",
+        "assignButton": "Attribuer le Rôle"
+      },
+      "permissions": {
+        "title": "📋 Information sur les Rôles",
+        "superAdmin": {
+          "title": "👑 Super Admin",
+          "perm1": "Accès total à toutes les fonctionnalités",
+          "perm2": "Peut attribuer et retirer n'importe quel rôle",
+          "perm3": "Peut supprimer des administrateurs",
+          "perm4": "Gestion complète de la plateforme"
+        },
+        "admin": {
+          "title": "👨‍💼 Admin",
+          "perm1": "Gérer les catégories et services",
+          "perm2": "Vérifier les documents",
+          "perm3": "Gérer les contrats",
+          "perm4": "Administrer les utilisateurs réguliers"
+        },
+        "verifier": {
+          "title": "✓ Vérificateur",
+          "perm1": "Vérifier les documents des travailleurs",
+          "perm2": "Réviser les informations des utilisateurs",
+          "perm3": "Approuver ou rejeter la documentation"
+        }
+      },
+      "confirmations": {
+        "removeRole": "Êtes-vous sûr de vouloir retirer ce rôle de l'utilisateur ?"
+      },
+      "messages": {
+        "assignSuccess": "Rôle attribué avec succès",
+        "assignError": "Erreur lors de l'attribution du rôle",
+        "removeSuccess": "Rôle retiré avec succès",
+        "removeError": "Erreur lors du retrait du rôle",
+        "loadError": "Erreur lors du chargement des données",
+        "selectBoth": "Veuillez sélectionner un utilisateur et un rôle"
+      }
+    },
+    "loading": {
+      "users": "Chargement des utilisateurs...",
+      "contracts": "Chargement des contrats...",
+      "roles": "Chargement des rôles...",
+      "stats": "Chargement des statistiques..."
+    }
+  },
+  "nav": {
+    "home": "Accueil",
+    "services": "Services",
+    "dashboard": "Tableau de Bord",
+    "profile": "Mon Profil",
+    "login": "Se Connecter",
+    "register": "S'inscrire",
+    "logout": "Se Déconnecter"
+  },
+  "auth": {
+    "login": {
+      "title": "Se Connecter",
+      "subtitle": "Accédez à votre compte ChambingApp",
+      "email": "Email",
+      "password": "Mot de passe",
+      "loginButton": "Se Connecter",
+      "loginButtonLoading": "Connexion en cours...",
+      "noAccount": "Vous n'avez pas de compte ?",
+      "registerHere": "Inscrivez-vous ici",
+      "testData": "Données de test pour les tests :",
+      "clientUser": "Utilisateur Client",
+      "workerUser": "Utilisateur Travailleur",
+      "autoFillInfo": "Cliquez pour remplir automatiquement les champs"
+    },
+    "register": {
+      "title": "Créer un Compte",
+      "subtitle": "Rejoignez la communauté ChambingApp",
+      "name": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "department": "Département",
+      "municipality": "Municipalité",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "userType": "Type d'Utilisateur",
+      "client": "Client - Je cherche des services",
+      "worker": "Travailleur - J'offre des services",
+      "clientHelp": "Vous pourrez engager des services",
+      "workerHelp": "Vous pourrez offrir vos services",
+      "registerButton": "Créer un Compte",
+      "registerButtonLoading": "Création du compte...",
+      "haveAccount": "Vous avez déjà un compte ?",
+      "loginHere": "Connectez-vous ici"
+    },
+    "validation": {
+      "required": "Ce champ est requis",
+      "emailInvalid": "Email invalide",
+      "passwordMin": "Le mot de passe doit contenir au moins 6 caractères",
+      "passwordMatch": "Les mots de passe doivent correspondre"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Nous connectons les talents aux opportunités",
+      "subtitle": "Trouvez des professionnels qualifiés pour votre maison ou rejoignez-nous en tant que travailleur indépendant",
+      "startNow": "Commencer Maintenant",
+      "login": "Se Connecter",
+      "dashboard": "Aller au Tableau de Bord"
+    },
+    "services": {
+      "title": "Nos Services",
+      "subtitle": "Trouvez le professionnel parfait pour chaque tâche",
+      "viewProfessionals": "Voir les Professionnels"
+    },
+    "features": {
+      "title": "Pourquoi nous choisir ?",
+      "verifiedWorkers": {
+        "title": "Travailleurs Vérifiés",
+        "description": "Tous nos professionnels passent par un processus de vérification rigoureux"
+      },
+      "availability": {
+        "title": "Disponibilité 24/7",
+        "description": "Trouvez de l'aide quand vous en avez besoin, tous les jours de la semaine"
+      },
+      "securePayments": {
+        "title": "Paiements Sécurisés",
+        "description": "Système de paiement protégé avec plusieurs options de paiement"
+      }
+    },
+    "testimonials": {
+      "title": "Ce que disent nos utilisateurs"
+    },
+    "cta": {
+      "title": "Prêt à commencer ?",
+      "subtitle": "Rejoignez des milliers d'utilisateurs satisfaits au Salvador",
+      "createAccount": "Créer un Compte Gratuit"
+    }
+  },
+  "dashboard": {
+    "welcome": "Bienvenue, {{name}} !",
+    "editProfile": "Modifier le Profil",
+    "changePhoto": "Changer la Photo de Profil",
+    "userType": "Type : {{type}}",
+    "location": "{{department}}, {{municipality}}",
+    "stats": {
+      "availableServices": "Services Disponibles",
+      "myContracts": "Mes Contrats",
+      "availableBalance": "Solde Disponible",
+      "notifications": "Notifications"
+    },
+    "availableServices": "Services Disponibles",
+    "recentContracts": "Contrats Récents",
+    "viewAll": "Voir Tout",
+    "noContracts": {
+      "title": "Vous n'avez pas encore de contrats",
+      "subtitle": "Commencez par explorer nos services disponibles",
+      "exploreServices": "Explorer les Services"
+    },
+    "contract": {
+      "number": "Contrat #{{id}}",
+      "status": "Statut : {{status}}",
+      "date": "Date : {{date}}",
+      "viewDetails": "Voir les Détails"
+    }
+  },
+  "services": {
+    "categories": {
+      "domesticCleaning": "Nettoyage Domestique",
+      "plumbing": "Plomberie",
+      "electricity": "Électricité",
+      "gardening": "Jardinage",
+      "carpentry": "Menuiserie",
+      "construction": "Construction"
+    },
+    "descriptions": {
+      "domesticCleaning": "Service de nettoyage professionnel pour votre maison",
+      "plumbing": "Réparations et installations de plomberie",
+      "electricity": "Installations et réparations électriques",
+      "gardening": "Entretien de jardins et espaces verts",
+      "carpentry": "Travaux en bois et meubles",
+      "construction": "Travaux de construction et rénovation"
+    }
+  },
+  "footer": {
+    "description": "Nous connectons les talents aux opportunités au Salvador.",
+    "services": "Services",
+    "company": "Entreprise",
+    "about": "À propos",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de Confidentialité",
+    "help": "Aide",
+    "contact": "Contact",
+    "email": "info@chambingapp.com",
+    "phone": "+503 2234-5678",
+    "address": "San Salvador, Salvador",
+    "rights": "© 2024 ChambingApp. Tous droits réservés."
+  },
+  "profile": {
+    "photoModal": {
+      "title": "Changer la Photo de Profil",
+      "instructions": "Cliquez sur l'icône de l'appareil photo pour sélectionner une nouvelle photo.",
+      "formats": "Formats autorisés : JPG, PNG, WebP (maximum 5Mo)",
+      "selectedFile": "Fichier sélectionné : {{filename}}",
+      "fileSize": "Taille : {{size}} Mo",
+      "uploading": "Téléchargement en cours...",
+      "savePhoto": "Enregistrer la Photo",
+      "errors": {
+        "invalidFormat": "Seuls les fichiers JPG, PNG ou WebP sont autorisés",
+        "tooLarge": "Le fichier ne peut pas dépasser 5Mo",
+        "uploadError": "Erreur lors du téléchargement de la photo"
+      }
+    }
+  },
+  "errors": {
+    "networkError": "Erreur de connexion",
+    "serverError": "Erreur du serveur",
+    "authError": "Erreur d'authentification",
+    "validationError": "Erreur de validation",
+    "notFound": "Non trouvé",
+    "permissionDenied": "Permission refusée",
+    "unknown": "Erreur inconnue"
+  },
+  "success": {
+    "login": "Connexion réussie",
+    "register": "Inscription réussie",
+    "profileUpdated": "Profil mis à jour",
+    "contractCreated": "Contrat créé",
+    "paymentCompleted": "Paiement effectué",
+    "generic": "Opération réussie"
+  },
+  "departments": {
+    "ahuachapan": "Ahuachapán",
+    "cabanas": "Cabañas",
+    "chalatenango": "Chalatenango",
+    "cuscatlan": "Cuscatlán",
+    "laLibertad": "La Libertad",
+    "laPaz": "La Paz",
+    "laUnion": "La Unión",
+    "morazan": "Morazán",
+    "sanMiguel": "San Miguel",
+    "sanSalvador": "San Salvador",
+    "sanVicente": "San Vicente",
+    "santaAna": "Santa Ana",
+    "sonsonate": "Sonsonate",
+    "usulutan": "Usulután"
+  },
+  "testimonials": {
+    "maria": "Excellent service, très professionnels et ponctuel.",
+    "carlos": "Ils ont résolu mon problème de plomberie rapidement.",
+    "ana": "Très contents du travail de jardinage effectué."
+  },
+  "publicProfile": {
+  "loading": "Chargement du profil...",
+  "notFound": "Profil introuvable",
+  "reviews": "avis",
+  "jobsCompleted": "travaux réalisés",
+  "contact": "Contacter",
+  "aboutMe": "À propos de moi",
+  "noBio": "Aucune biographie",
+  "memberSince": "Membre depuis",
+  "mySkills": "Mes Compétences",
+  "clientReviews": "Avis des Clients",
+  "contactInfo": "Informations de Contact",
+  "phone": "Téléphone"
+}
+}

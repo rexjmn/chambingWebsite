@@ -1,0 +1,478 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "language": "Language",
+    "or": "or",
+    "debugInfo": "Debug Info",
+    "mode": "Mode",
+    "currentLanguage": "Current Language",
+    "admin": "Administrator",
+    "viewDetails": "View Details",
+    "viewAll": "View All",
+    "actions": "Actions"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "welcome": "Welcome to the Administration Panel",
+      "stats": "General Statistics",
+      "filters": {
+        "week": "Week",
+        "month": "Month",
+        "year": "Year"
+      }
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "activeContracts": "Active Contracts",
+      "pendingDocuments": "Pending Documents",
+      "monthlyRevenue": "Monthly Revenue",
+      "vsPreviousMonth": "vs previous month",
+      "inProgress": "in progress",
+      "requireAttention": "require attention",
+      "userGrowth": "User Growth",
+      "recentActivity": "Recent Activity",
+      "requiresAttention": "⚠️ Requires Attention",
+      "documentsToVerify": "Documents to verify",
+      "pendingContracts": "Pending contracts",
+      "unresolvedReports": "Unresolved reports",
+      "activity": {
+        "newUserRegistered": "New user registered: {{name}}",
+        "contractCompleted": "Contract {{code}} completed",
+        "documentVerified": "Document verified for {{name}}",
+        "paymentProcessed": "Payment processed: {{amount}}",
+        "timeAgo": {
+          "minutes": "{{count}} min ago",
+          "hour": "1 hour ago",
+          "hours": "{{count}} hours ago"
+        }
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "subtitle": "Manage all platform users",
+      "searchPlaceholder": "Search by name or email...",
+      "filters": {
+        "all": "All",
+        "employers": "💼 Employers",
+        "workers": "👷 Workers",
+        "admins": "👨‍💼 Admins"
+      },
+      "table": {
+        "user": "User",
+        "email": "Email",
+        "type": "Type",
+        "location": "Location",
+        "registrationDate": "Registration",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view": "View details",
+        "suspend": "Suspend",
+        "delete": "Delete"
+      },
+      "types": {
+        "employer": "Employer",
+        "worker": "Worker",
+        "admin": "Admin",
+        "superAdmin": "Super Admin"
+      },
+      "details": {
+        "title": "User Details",
+        "phone": "Phone",
+        "dui": "ID",
+        "location": "Location",
+        "address": "Address",
+        "registrationDate": "Registration date",
+        "notRegistered": "Not registered",
+        "notRegisteredAddress": "Not registered"
+      },
+      "confirmations": {
+        "delete": "⚠️ Are you sure you want to delete this user? This action cannot be undone.",
+        "suspendReason": "Reason for suspension:"
+      },
+      "messages": {
+        "deleteSuccess": "User deleted successfully",
+        "deleteError": "Error deleting user",
+        "suspendSuccess": "User suspended successfully",
+        "suspendError": "Error suspending user",
+        "loadError": "Error loading users"
+      },
+      "empty": {
+        "title": "No users found",
+        "subtitle": "Try different search filters"
+      },
+      "stats": {
+        "total": "Total users",
+        "workers": "Workers",
+        "employers": "Employers",
+        "admins": "Admins"
+      }
+    },
+    "contracts": {
+      "title": "Contract Management",
+      "subtitle": "Monitor and manage all platform contracts",
+      "filters": {
+        "all": "All",
+        "pending": "⏳ Pending",
+        "inProgress": "🔄 In Progress",
+        "completed": "✅ Completed",
+        "cancelled": "❌ Cancelled"
+      },
+      "stats": {
+        "total": "Total contracts",
+        "inProgress": "In progress",
+        "pending": "Pending",
+        "completed": "Completed"
+      },
+      "card": {
+        "employer": "Employer:",
+        "worker": "Worker:",
+        "category": "Category:",
+        "amount": "Amount:",
+        "startDate": "Start:",
+        "endDate": "End:",
+        "code": "Contract #{{code}}",
+        "date": "Date: {{date}}"
+      },
+      "status": {
+        "pending": "Pending",
+        "inProgress": "In Progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "closed": "Closed",
+        "disputed": "Disputed"
+      },
+      "details": {
+        "title": "Contract Details {{code}}",
+        "generalInfo": "General Information",
+        "code": "Code:",
+        "status": "Status:",
+        "amount": "Amount:",
+        "category": "Category:",
+        "parties": "Contract Parties",
+        "employer": "💼 Employer",
+        "worker": "👷 Worker",
+        "history": "Status History",
+        "changeStatus": "Change Status",
+        "markAs": "Mark as {{status}}",
+        "createdWith": "Contract created with status \"{{status}}\"",
+        "changedFrom": "Changed from \"{{from}}\" to \"{{to}}\"",
+        "by": "By: {{user}}",
+        "notes": "💬 {{notes}}"
+      },
+      "confirmations": {
+        "changeStatus": "Change contract status to \"{{status}}\"?"
+      },
+      "messages": {
+        "statusUpdateSuccess": "Status updated successfully",
+        "statusUpdateError": "Error updating contract status",
+        "loadError": "Error loading contracts",
+        "historyLoadError": "Error loading history"
+      },
+      "empty": {
+        "title": "No {{status}} contracts",
+        "subtitle": "Contracts will appear here when created"
+      }
+    },
+    "roles": {
+      "title": "Administrative Roles Management",
+      "subtitle": "Assign and manage special roles for users",
+      "assignRole": "Assign Role",
+      "stats": {
+        "superAdmins": "Super Admins",
+        "admins": "Admins",
+        "verifiers": "Verifiers"
+      },
+      "card": {
+        "level": "Level {{level}}",
+        "usersWithRole": "Users with this role:",
+        "noUsers": "No users assigned to this role",
+        "assigned": "Assigned: {{date}}"
+      },
+      "types": {
+        "superAdmin": "Super Admin",
+        "admin": "Admin",
+        "verifier": "Verifier"
+      },
+      "modal": {
+        "title": "Assign Administrative Role",
+        "selectUser": "Select User *",
+        "selectUserPlaceholder": "-- Select a user --",
+        "selectRole": "Select Role *",
+        "selectRolePlaceholder": "-- Select a role --",
+        "warning": "⚠️ Important:",
+        "warningText": "Administrative roles grant special permissions. Make sure to assign them only to trusted users.",
+        "assignButton": "Assign Role"
+      },
+      "permissions": {
+        "title": "📋 Role Information",
+        "superAdmin": {
+          "title": "👑 Super Admin",
+          "perm1": "Full access to all features",
+          "perm2": "Can assign and remove any role",
+          "perm3": "Can delete administrators",
+          "perm4": "Complete platform management"
+        },
+        "admin": {
+          "title": "👨‍💼 Admin",
+          "perm1": "Manage categories and services",
+          "perm2": "Verify documents",
+          "perm3": "Manage contracts",
+          "perm4": "Manage regular users"
+        },
+        "verifier": {
+          "title": "✓ Verifier",
+          "perm1": "Verify worker documents",
+          "perm2": "Review user information",
+          "perm3": "Approve or reject documentation"
+        }
+      },
+      "confirmations": {
+        "removeRole": "Are you sure you want to remove this role from the user?"
+      },
+      "messages": {
+        "assignSuccess": "Role assigned successfully",
+        "assignError": "Error assigning role",
+        "removeSuccess": "Role removed successfully",
+        "removeError": "Error removing role",
+        "loadError": "Error loading data",
+        "selectBoth": "Please select a user and a role"
+      }
+    },
+    "loading": {
+      "users": "Loading users...",
+      "contracts": "Loading contracts...",
+      "roles": "Loading roles...",
+      "stats": "Loading statistics..."
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "dashboard": "Dashboard",
+    "profile": "My Profile",
+    "login": "Sign In",
+    "register": "Sign Up",
+    "logout": "Sign Out"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Access your ChambingApp account",
+      "email": "Email",
+      "password": "Password",
+      "loginButton": "Sign In",
+      "loginButtonLoading": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "registerHere": "Register here",
+      "testData": "Test data for testing:",
+      "clientUser": "Client User",
+      "workerUser": "Worker User",
+      "autoFillInfo": "Click to autofill fields"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join the ChambingApp community",
+      "name": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "department": "Department",
+      "municipality": "Municipality",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "userType": "User Type",
+      "client": "Client - Looking for services",
+      "worker": "Worker - Offering services",
+      "clientHelp": "You will be able to hire services",
+      "workerHelp": "You will be able to offer your services",
+      "registerButton": "Create Account",
+      "registerButtonLoading": "Creating account...",
+      "haveAccount": "Already have an account?",
+      "loginHere": "Sign in here"
+    },
+    "validation": {
+      "required": "This field is required",
+      "emailInvalid": "Invalid email",
+      "passwordMin": "Password must be at least 6 characters",
+      "passwordMatch": "Passwords must match"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Connecting talent with opportunities",
+      "subtitle": "Find qualified professionals for your home or join as an independent worker",
+      "startNow": "Get Started",
+      "login": "Sign In",
+      "dashboard": "Go to Dashboard"
+    },
+    "services": {
+      "title": "Our Services",
+      "subtitle": "Find the perfect professional for every task",
+      "viewProfessionals": "View Professionals"
+    },
+    "features": {
+      "title": "Why choose us?",
+      "verifiedWorkers": {
+        "title": "Verified Workers",
+        "description": "All our professionals go through a rigorous verification process"
+      },
+      "availability": {
+        "title": "24/7 Availability",
+        "description": "Find help when you need it, any day of the week"
+      },
+      "securePayments": {
+        "title": "Secure Payments",
+        "description": "Protected payment system with multiple payment options"
+      }
+    },
+    "testimonials": {
+      "title": "What our users say"
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "subtitle": "Join thousands of satisfied users in El Salvador",
+      "createAccount": "Create Free Account"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome, {{name}}!",
+    "editProfile": "Edit Profile",
+    "changePhoto": "Change Profile Photo",
+    "userType": "Type: {{type}}",
+    "location": "{{department}}, {{municipality}}",
+    "stats": {
+      "availableServices": "Available Services",
+      "myContracts": "My Contracts",
+      "availableBalance": "Available Balance",
+      "notifications": "Notifications"
+    },
+    "availableServices": "Available Services",
+    "recentContracts": "Recent Contracts",
+    "viewAll": "View All",
+    "noContracts": {
+      "title": "You don't have any contracts yet",
+      "subtitle": "Start exploring our available services",
+      "exploreServices": "Explore Services"
+    },
+    "contract": {
+      "number": "Contract #{{id}}",
+      "status": "Status: {{status}}",
+      "date": "Date: {{date}}",
+      "viewDetails": "View Details"
+    }
+  },
+  "services": {
+    "categories": {
+      "domesticCleaning": "Domestic Cleaning",
+      "plumbing": "Plumbing",
+      "electricity": "Electrical",
+      "gardening": "Gardening",
+      "carpentry": "Carpentry",
+      "construction": "Construction"
+    },
+    "descriptions": {
+      "domesticCleaning": "Professional cleaning service for your home",
+      "plumbing": "Plumbing repairs and installations",
+      "electricity": "Electrical installations and repairs",
+      "gardening": "Garden and green area maintenance",
+      "carpentry": "Woodwork and furniture",
+      "construction": "Construction and remodeling work"
+    }
+  },
+  "footer": {
+    "description": "Connecting talent with opportunities in El Salvador.",
+    "services": "Services",
+    "company": "Company",
+    "about": "About",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "help": "Help",
+    "contact": "Contact",
+    "email": "info@chambingapp.com",
+    "phone": "+503 2234-5678",
+    "address": "San Salvador, El Salvador",
+    "rights": "© 2024 ChambingApp. All rights reserved."
+  },
+  "profile": {
+    "photoModal": {
+      "title": "Change Profile Photo",
+      "instructions": "Click the camera icon to select a new photo.",
+      "formats": "Allowed formats: JPG, PNG, WebP (max 5MB)",
+      "selectedFile": "Selected file: {{filename}}",
+      "fileSize": "Size: {{size}} MB",
+      "uploading": "Uploading...",
+      "savePhoto": "Save Photo",
+      "errors": {
+        "invalidFormat": "Only JPG, PNG or WebP files are allowed",
+        "tooLarge": "File cannot be larger than 5MB",
+        "uploadError": "Error uploading photo"
+      }
+    }
+  },
+  "errors": {
+    "networkError": "Connection error",
+    "serverError": "Server error",
+    "authError": "Authentication error",
+    "validationError": "Validation error",
+    "notFound": "Not found",
+    "permissionDenied": "Permission denied",
+    "unknown": "Unknown error"
+  },
+  "success": {
+    "login": "Login successful",
+    "register": "Registration successful",
+    "profileUpdated": "Profile updated",
+    "contractCreated": "Contract created",
+    "paymentCompleted": "Payment completed",
+    "generic": "Operation successful"
+  },
+  "departments": {
+    "ahuachapan": "Ahuachapán",
+    "cabanas": "Cabañas",
+    "chalatenango": "Chalatenango",
+    "cuscatlan": "Cuscatlán",
+    "laLibertad": "La Libertad",
+    "laPaz": "La Paz",
+    "laUnion": "La Unión",
+    "morazan": "Morazán",
+    "sanMiguel": "San Miguel",
+    "sanSalvador": "San Salvador",
+    "sanVicente": "San Vicente",
+    "santaAna": "Santa Ana",
+    "sonsonate": "Sonsonate",
+    "usulutan": "Usulután"
+  },
+  "testimonials": {
+    "maria": "Excellent service, very professional and punctual.",
+    "carlos": "They solved my plumbing problem quickly.",
+    "ana": "Very happy with the gardening work done."
+  },
+  "publicProfile": {
+  "loading": "Loading profile...",
+  "notFound": "Profile not found",
+  "reviews": "reviews",
+  "jobsCompleted": "jobs completed",
+  "contact": "Contact",
+  "aboutMe": "About Me",
+  "noBio": "No biography",
+  "memberSince": "Member since",
+  "mySkills": "My Skills",
+  "clientReviews": "Client Reviews",
+  "contactInfo": "Contact Information",
+  "phone": "Phone"
+}
+}

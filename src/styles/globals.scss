@@ -1,0 +1,49 @@
+@use 'variables' as *;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', $font-family-base;
+  font-size: $font-size-base;
+  line-height: 1.6;
+  color: $dark-color;
+  background-color: $light-color;
+}
+
+// Estilos personalizados para complementar MUI
+.custom-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
+  
+  @media (min-width: $tablet) {
+    padding: 0 $spacing-lg;
+  }
+}
+
+// Utilidades adicionales que complementan MUI
+.full-height {
+  height: 100vh;
+}
+
+.center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+// Estilos para formularios personalizados
+.form-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: $spacing-xl;
+  
+  @media (max-width: $mobile) {
+    padding: $spacing-md;
+  }
+}

@@ -1,0 +1,349 @@
+// Variables
+$primary-color: #2540FF;
+$primary-dark: #1a2ecc;
+$text-dark: #0f1729;
+$text-secondary: #475569;
+$text-muted: #64748b;
+$text-light: #94a3b8;
+$border-color: #e2e8f0;
+$bg-light: #f8fafc;
+$white: #ffffff;
+$success-color: #059669;
+$success-bg: #ecfdf5;
+
+$radius-sm: 12px;
+$radius-md: 16px;
+$radius-lg: 20px;
+$radius-xl: 24px;
+$radius-full: 9999px;
+
+$transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+$shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+$shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+// Main Container
+.edit-profile {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 2rem 1rem;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem 0.75rem;
+  }
+
+  &__header {
+    max-width: 900px;
+    margin: 0 auto 2rem;
+
+    @media (max-width: 768px) {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  &__back-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: $primary-color;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    transition: $transition;
+    padding: 0.5rem;
+    border-radius: $radius-sm;
+
+    &:hover {
+      background: rgba($primary-color, 0.05);
+      transform: translateX(-4px);
+    }
+  }
+
+  &__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0;
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1.75rem;
+    }
+  }
+
+  &__container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: $white;
+    border-radius: $radius-xl;
+    padding: 2rem;
+    box-shadow: $shadow-soft;
+
+    @media (max-width: 768px) {
+      padding: 1.5rem;
+      border-radius: $radius-lg;
+    }
+
+    @media (max-width: 480px) {
+      padding: 1rem;
+    }
+  }
+
+  // Sections
+  &__section {
+    margin-bottom: 3rem;
+
+    @media (max-width: 768px) {
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: $text-dark;
+
+      @media (max-width: 768px) {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+      }
+    }
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  // Grid Layout
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+
+  // Form Fields
+  &__field {
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: $text-secondary;
+      font-size: 0.9375rem;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.875rem;
+      border: 1px solid $border-color;
+      border-radius: $radius-sm;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: $transition;
+      color: $text-dark;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      }
+
+      &::placeholder {
+        color: $text-light;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    &--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  &__char-count {
+    float: right;
+    font-size: 0.875rem;
+    color: $text-light;
+    font-weight: 400;
+  }
+
+  &__hint {
+    color: $text-muted;
+    margin-bottom: 1.5rem;
+    font-size: 0.9375rem;
+  }
+
+  // Skills Section
+  &__search {
+    margin-bottom: 1.5rem;
+
+    input {
+      width: 100%;
+      padding: 0.875rem;
+      border: 1px solid $border-color;
+      border-radius: $radius-sm;
+      font-size: 1rem;
+      transition: $transition;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      }
+    }
+  }
+
+  &__selected-skills {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: $bg-light;
+    border-radius: $radius-sm;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: $text-dark;
+    }
+  }
+
+  &__skills-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  &__skill-category {
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: $text-secondary;
+    }
+  }
+
+  &__skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  &__skill-tag {
+    padding: 0.625rem 1rem;
+    background: $white;
+    color: $text-secondary;
+    border: 2px solid $border-color;
+    border-radius: $radius-full;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    &--selected {
+      background: $primary-color;
+      color: $white;
+      border-color: $primary-color;
+
+      &:hover {
+        background: $primary-dark;
+      }
+    }
+  }
+
+  // Action Buttons
+  &__actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+    }
+  }
+
+  &__btn {
+    padding: 0.875rem 2rem;
+    border-radius: $radius-sm;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: $transition;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    @media (max-width: 480px) {
+      width: 100%;
+      justify-content: center;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &--primary {
+      background: $primary-color;
+      color: $white;
+
+      &:hover:not(:disabled) {
+        background: $primary-dark;
+        transform: translateY(-2px);
+        box-shadow: $shadow-medium;
+      }
+    }
+
+    &--secondary {
+      background: $white;
+      color: $text-secondary;
+      border: 2px solid $border-color;
+
+      &:hover:not(:disabled) {
+        border-color: $primary-color;
+        color: $primary-color;
+      }
+    }
+  }
+
+  &__success {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: $success-bg;
+    color: $success-color;
+    border-radius: $radius-sm;
+    font-weight: 600;
+    text-align: center;
+    animation: slideIn 0.3s ease;
+  }
+}
+
+// Animations
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
