@@ -368,14 +368,14 @@ const Dashboard = () => {
                 )}
                 {/* Botones de Perfil */}
                 <div className="dashboard__profile-actions">
-                  <button
+                  {/* <button
                     className="dashboard__btn dashboard__btn--outlined dashboard__btn--sm"
                     onClick={() => window.location.href = '/edit-profile'}
                     type="button"
                   >
                     <EditIcon />
                     Editar Perfil
-                  </button>
+                  </button> */}
                   <button
                     className="dashboard__btn dashboard__btn--primary dashboard__btn--sm"
                     onClick={() => window.location.href = `/profile/${user?.id}`}

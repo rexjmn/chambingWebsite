@@ -1,4 +1,4 @@
-// Variables para el Admin Dashboard
+@use "sass:color";
 $admin-primary: #2540FF;
 $admin-primary-dark: #1a2ecc;
 $admin-success: #10b981;
@@ -455,7 +455,7 @@ $admin-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     color: $admin-white;
 
     &:hover:not(:disabled) {
-      background: darken($admin-success, 10%);
+      background: #0e9f6e;
     }
   }
 
@@ -464,7 +464,7 @@ $admin-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     color: $admin-white;
 
     &:hover:not(:disabled) {
-      background: darken($admin-danger, 10%);
+     background: color.adjust($admin-success, $lightness: -10%);
     }
   }
 }
@@ -1046,19 +1046,19 @@ $admin-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   &--warning {
     background: rgba($admin-warning, 0.1);
     border-color: rgba($admin-warning, 0.3);
-    color: darken($admin-warning, 20%);
+    color: #ff9900;
   }
 
   &--info {
     background: rgba($admin-info, 0.1);
     border-color: rgba($admin-info, 0.3);
-    color: darken($admin-info, 20%);
+    color: #3b82f6;
   }
 
   &--danger {
     background: rgba($admin-danger, 0.1);
     border-color: rgba($admin-danger, 0.3);
-    color: darken($admin-danger, 20%);
+    color: #ff0000;
   }
 }
 

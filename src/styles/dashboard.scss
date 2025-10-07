@@ -783,6 +783,7 @@ body {
       background: transparent;
       color: $brand-primary;
       border: 1.5px solid $brand-primary;
+      height: auto;
 
       &:hover:not(:disabled) {
         background: $brand-primary;
