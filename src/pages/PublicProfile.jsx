@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { publicProfileService } from '../services/publicProfileService';
-import '../styles/public-profile.scss';
+import '../styles/Public-profile.scss';
 
 const PublicProfile = () => {
   const { t, i18n } = useTranslation();
