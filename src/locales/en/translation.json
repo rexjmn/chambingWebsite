@@ -466,13 +466,22 @@
   "notFound": "Profile not found",
   "reviews": "reviews",
   "jobsCompleted": "jobs completed",
-  "contact": "Contact",
-  "aboutMe": "About Me",
+  "aboutMe": "About me",
   "noBio": "No biography",
   "memberSince": "Member since",
-  "mySkills": "My Skills",
-  "clientReviews": "Client Reviews",
-  "contactInfo": "Contact Information",
-  "phone": "Phone"
+  "mySkills": "My skills",
+  "clientReviews": "Client reviews",
+  "contact": "Contact",
+  "contactInfo": "Contact information",
+  "phone": "Phone",
+  "rates": "Rates",
+  "back": "Back",
+  "professionalTitle": "Professional Title",
+  "location": "Location",
+  "rating": "Rating",
+  "noReviews": "No reviews yet",
+  "sendMessage": "Send message",
+  "workExperience": "Work experience",
+  "education": "Education"
 }
 }

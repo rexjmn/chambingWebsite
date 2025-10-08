@@ -43,7 +43,7 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
-    
+
     if (!file) return;
 
     // Validar tipo de archivo
@@ -131,7 +131,7 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
     try {
       // Crear imagen recortada
       const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
-      
+
       // Crear FormData con la imagen recortada
       const formData = new FormData();
       formData.append('file', croppedBlob, selectedFile.name);
@@ -154,7 +154,7 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
       }
 
       const result = await response.json();
-      
+
       // Actualizar el usuario en el contexto
       if (updateUser) {
         updateUser({
@@ -170,7 +170,7 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
 
       // Cerrar modal
       handleClose();
-      
+
     } catch (error) {
       console.error('Error uploading cover photo:', error);
       setError(error.message || 'Error al subir la foto');
@@ -215,7 +215,7 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
 
       // Cerrar modal
       handleClose();
-      
+
     } catch (error) {
       console.error('Error deleting cover photo:', error);
       setError(error.message || 'Error al eliminar la foto');
@@ -241,8 +241,8 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
   };
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={handleClose}
       maxWidth="lg"
       fullWidth
@@ -275,7 +275,9 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  cursor: 'pointer',
                 }}
+                onClick={() => fileInputRef.current?.click()}
               >
                 {user?.foto_portada ? (
                   <Box
@@ -293,9 +295,12 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
                     No hay foto de portada
                   </Typography>
                 )}
-                
+
                 <IconButton
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Evitar doble click
+                    fileInputRef.current?.click();
+                  }}
                   disabled={uploading}
                   sx={{
                     position: 'absolute',
@@ -303,7 +308,8 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
                     right: 16,
                     bgcolor: 'primary.main',
                     color: 'white',
-                    '&:hover': { bgcolor: 'primary.dark' }
+                    '&:hover': { bgcolor: 'primary.dark' },
+                    zIndex: 2, // ✅ Asegurar que esté por encima
                   }}
                 >
                   <PhotoCamera />
@@ -362,7 +368,7 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
                   />
                 )}
               </Box>
-              
+
               <Alert severity="warning">
                 ¿Estás seguro de que deseas eliminar tu foto de portada?
               </Alert>
@@ -476,13 +482,13 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
             Eliminar
           </Button>
         )}
-        
+
         <Box sx={{ flexGrow: 1 }} />
-        
+
         <Button onClick={handleClose} disabled={uploading}>
           Cancelar
         </Button>
-        
+
         {deleteMode ? (
           <Button
             onClick={handleDelete}

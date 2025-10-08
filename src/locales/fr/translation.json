@@ -461,18 +461,29 @@
     "carlos": "Ils ont résolu mon problème de plomberie rapidement.",
     "ana": "Très contents du travail de jardinage effectué."
   },
-  "publicProfile": {
+
+"publicProfile": {
   "loading": "Chargement du profil...",
-  "notFound": "Profil introuvable",
+  "notFound": "Profil non trouvé",
   "reviews": "avis",
-  "jobsCompleted": "travaux réalisés",
-  "contact": "Contacter",
+  "jobsCompleted": "travaux terminés",
   "aboutMe": "À propos de moi",
   "noBio": "Aucune biographie",
   "memberSince": "Membre depuis",
-  "mySkills": "Mes Compétences",
-  "clientReviews": "Avis des Clients",
-  "contactInfo": "Informations de Contact",
-  "phone": "Téléphone"
+  "mySkills": "Mes compétences",
+  "clientReviews": "Avis des clients",
+  "contact": "Contacter",
+  "contactInfo": "Informations de contact",
+  "phone": "Téléphone",
+  "rates": "Tarifs",
+  "back": "Retour",
+  "professionalTitle": "Titre professionnel",
+  "location": "Localisation",
+  "rating": "Note",
+  "noReviews": "Aucun avis pour l'instant",
+  "sendMessage": "Envoyer un message",
+  "workExperience": "Expérience professionnelle",
+  "education": "Formation"
 }
+
 }

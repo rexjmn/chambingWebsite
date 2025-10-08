@@ -1,4 +1,8 @@
-// PublicProfile.scss
+// src/styles/Public-profile.scss
+
+// Fuentes
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
 // Colores principales
 $primary-color: #2540FF;
 $primary-dark: #1a2ecc;
@@ -24,11 +28,24 @@ $shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.3);
 $shadow-primary: 0 8px 24px rgba(37, 64, 255, 0.3);
 $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
 
-// Contenedor principal
+// Estilos base
 .public-profile {
   min-height: 100vh;
   background: linear-gradient(135deg, $background-light 0%, $background-gray 100%);
   padding-bottom: 4rem;
+  font-family: 'Inter', sans-serif;
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'League Spartan', sans-serif;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  p {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    line-height: 1.6;
+  }
 }
 
 // Loading state
@@ -41,6 +58,7 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
   .loading-text {
     font-size: 1.5rem;
     color: $text-muted;
+    font-family: 'League Spartan', sans-serif;
   }
 }
 
@@ -51,32 +69,43 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
 
   h1 {
     color: $text-primary;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: $text-muted;
+    font-size: 1.125rem;
   }
 }
 
 // Foto de portada
 .cover-photo {
-  height: 300px;
+  height: 350px;
   background-size: cover;
   background-position: center;
   position: relative;
-  box-shadow: $shadow-sm;
+  overflow: hidden;
 
   &.default-cover {
     background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
   }
 
-  .overlay {
+  &::after {
+    content: '';
     position: absolute;
-    inset: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
     background: linear-gradient(to top, $overlay-dark 0%, transparent 100%);
   }
 }
 
 // Contenedor de contenido
 .profile-content {
-  max-width: 1000px;
-  margin: -80px auto 0;
+  max-width: 1200px;
+  margin: -100px auto 0;
   padding: 0 1rem;
   position: relative;
   z-index: 2;
@@ -86,9 +115,11 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
 .main-card {
   background: $white;
   border-radius: 24px;
-  padding: 2rem;
+  padding: 2.5rem;
   box-shadow: $shadow-lg;
   margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
 
   .card-inner {
     display: flex;
@@ -100,30 +131,123 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
 
 // Foto de perfil
 .profile-photo {
-  width: 150px;
-  height: 150px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   overflow: hidden;
-  border: 6px solid $white;
-  box-shadow: $shadow-md;
+  border: 8px solid $white;
+  box-shadow: $shadow-lg;
   margin-top: -100px;
+  position: relative;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
+
+  .verified-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: $white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+    svg {
+      color: #10b981;
+      width: 24px;
+      height: 24px;
+    }
+  }
 }
 
 // Información básica
 .basic-info {
-  text-align: center;
+  .name-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
 
   .name {
     font-size: 2.5rem;
-    font-weight: 700;
     color: $text-primary;
-    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .professional-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    color: $text-secondary;
+    margin-bottom: 0.5rem;
+
+    svg {
+      color: $primary-color;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .user-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    &.worker {
+      background: rgba(37, 64, 255, 0.1);
+      color: $primary-color;
+    }
+
+    &.client {
+      background: rgba(71, 85, 105, 0.1);
+      color: $text-secondary;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .verification-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+
+    &.verified {
+      background: rgba(5, 150, 105, 0.1);
+      color: $success-color;
+    }
+
+    &.pending {
+      background: rgba(251, 191, 36, 0.1);
+      color: #d97706;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
   }
 }
 
@@ -132,23 +256,27 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
   flex-wrap: wrap;
 
   .rating-container {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    background: rgba(37, 64, 255, 0.05);
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
 
     .stars {
       display: flex;
       align-items: center;
+      gap: 0.25rem;
     }
 
     .rating-number {
       font-weight: 700;
-      font-size: 1.25rem;
+      font-size: 1.5rem;
       color: $text-primary;
     }
 
@@ -160,15 +288,21 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
 
   .separator {
     color: $text-muted;
+    font-size: 1.25rem;
   }
 
   .jobs-completed {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    background: rgba(5, 150, 105, 0.05);
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
 
-    .checkmark {
-      font-size: 1.5rem;
+    svg {
+      color: $success-color;
+      width: 20px;
+      height: 20px;
     }
 
     .count {
@@ -178,10 +312,305 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
   }
 }
 
+// Ubicación
+.location {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  color: $text-secondary;
+
+  svg {
+    color: $primary-color;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Botón de contacto
+.contact-button {
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+  color: $white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+  transition: all 0.3s ease;
+  box-shadow: $shadow-primary-sm;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-primary;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Mensaje de información
+.info-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #d97706;
+  background: rgba(251, 191, 36, 0.1);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Grid de información
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+// Tarjetas de sección
+.section-card {
+  background: $white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: $shadow-sm;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid $border-color;
+
+    .section-icon {
+      color: $primary-color;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    color: $text-primary;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+// Sección "Sobre mí"
+.about-section {
+  .bio {
+    font-size: 1.0625rem;
+    line-height: 1.8;
+    color: $text-secondary;
+    position: relative;
+    padding: 1.5rem;
+    background: rgba(37, 64, 255, 0.03);
+    border-radius: 12px;
+    border-left: 4px solid $primary-color;
+    margin-bottom: 1.5rem;
+
+    &::before {
+      content: '"';
+      font-size: 3rem;
+      color: rgba(37, 64, 255, 0.1);
+      position: absolute;
+      top: -0.5rem;
+      left: 1rem;
+      font-family: 'League Spartan', sans-serif;
+      line-height: 1;
+    }
+
+    &::after {
+      content: '"';
+      font-size: 3rem;
+      color: rgba(37, 64, 255, 0.1);
+      position: absolute;
+      bottom: -1rem;
+      right: 1rem;
+      font-family: 'League Spartan', sans-serif;
+      line-height: 1;
+    }
+  }
+}
+
+// Info item
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+
+  svg {
+    color: $primary-color;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .info-label {
+    color: $text-muted;
+    font-weight: 500;
+  }
+
+  .info-value {
+    color: $text-secondary;
+    font-weight: 600;
+  }
+}
+
+// Sección de tarifas
+.rates-section {
+  .rates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .rate-item {
+    padding: 2rem 1rem;
+    background: $white;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: $primary-color;
+      box-shadow: 0 8px 24px rgba(37, 64, 255, 0.15);
+      transform: translateY(-4px);
+    }
+
+    .rate-icon {
+      color: $primary-color;
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 1rem;
+    }
+
+    .rate-label {
+      font-weight: 600;
+      color: $text-secondary;
+      margin-bottom: 0.5rem;
+    }
+
+    .rate-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: $text-primary;
+    }
+  }
+}
+
+// Sección de habilidades
+.skills-section {
+  .skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .skill-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-light 100%);
+    color: $white;
+    border-radius: 24px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(37, 64, 255, 0.2);
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+// Sección de reseñas
+.reviews-section {
+  .reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .review-card {
+    padding: 1.5rem;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    border-left: 4px solid $primary-color;
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: $shadow-sm;
+      transform: translateY(-2px);
+    }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+
+      .reviewer-info {
+        .reviewer-name {
+          font-weight: 600;
+          color: $text-primary;
+          margin-bottom: 0.25rem;
+        }
+
+        .stars {
+          display: flex;
+          gap: 0.25rem;
+        }
+      }
+
+      .review-date {
+        color: $text-muted;
+        font-size: 0.875rem;
+      }
+    }
+
+    .review-comment {
+      color: $text-secondary;
+      line-height: 1.6;
+    }
+  }
+}
+
 // Estrellas
 .star {
-  font-size: 1.25rem;
-  
+  font-size: 1.125rem;
+
   &.filled {
     color: $gold-star;
   }
@@ -191,189 +620,15 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
   }
 }
 
-// Ubicación
-.location {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  color: $text-muted;
-  margin-bottom: 1.5rem;
-
-  .icon {
-    font-size: 1.25rem;
-  }
-}
-
-// Botón de contacto
-.contact-button {
-  padding: 1rem 3rem;
-  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
-  color: $white;
-  border: none;
-  border-radius: 16px;
-  font-size: 1.125rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: $shadow-primary;
-  transition: all 0.3s;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-// Grid de información
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-}
-
-// Tarjetas de sección
-.section-card {
-  background: $white;
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: $shadow-sm;
-
-  .section-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: $text-primary;
-  }
-}
-
-// Sobre mí
-.about-section {
-  .bio {
-    color: $text-secondary;
-    line-height: 1.7;
-    font-size: 1rem;
-  }
-
-  .member-since {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid $border-color;
-
-    .info {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: $text-muted;
-      font-size: 0.875rem;
-
-      .icon {
-        font-size: 1rem;
-      }
-    }
-  }
-}
-
-// Habilidades
-.skills-section {
-  .section-title {
-    margin-bottom: 1.5rem;
-  }
-
-  .skills-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-
-    .skill-badge {
-      padding: 0.75rem 1.25rem;
-      background: linear-gradient(135deg, $primary-color 0%, $primary-light 100%);
-      color: $white;
-      border-radius: 9999px;
-      font-size: 0.9375rem;
-      font-weight: 600;
-      box-shadow: $shadow-primary-sm;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-
-      .checkmark {
-        font-size: 1rem;
-      }
-    }
-  }
-}
-
-// Reviews
-.reviews-section {
-  background: $white;
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: $shadow-sm;
-  margin-top: 2rem;
-
-  .section-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: $text-primary;
-  }
-
-  .reviews-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-
-    .review-card {
-      padding: 1.5rem;
-      background: $background-light;
-      border-radius: 16px;
-      border-left: 4px solid $primary-color;
-
-      .review-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: start;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-
-        .reviewer-info {
-          .reviewer-name {
-            font-weight: 600;
-            color: $text-primary;
-            margin-bottom: 0.25rem;
-          }
-
-          .stars {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-          }
-        }
-
-        .review-date {
-          font-size: 0.875rem;
-          color: $text-light;
-        }
-      }
-
-      .review-comment {
-        color: $text-secondary;
-        line-height: 1.6;
-      }
-    }
-  }
-}
-
 // Modal
 .modal-overlay {
   position: fixed;
-  inset: 0;
-  background: $black;
-  z-index: 999;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
   backdrop-filter: blur(4px);
 }
 
@@ -383,151 +638,81 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
   left: 50%;
   transform: translate(-50%, -50%);
   background: $white;
-  border-radius: 24px;
+  border-radius: 16px;
   padding: 2rem;
-  max-width: 400px;
-  width: calc(100% - 2rem);
-  z-index: 1000;
+  width: 90%;
+  max-width: 500px;
+  z-index: 1001;
   box-shadow: $shadow-xl;
 
   .modal-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
     color: $text-primary;
+
+    svg {
+      color: $primary-color;
+      width: 24px;
+      height: 24px;
+    }
   }
 
   .modal-content {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
 
     .contact-info {
-      padding: 1rem;
-      background: $background-light;
-      border-radius: 12px;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 1rem;
 
-      .icon {
-        font-size: 1.5rem;
+      svg {
+        color: $primary-color;
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
       }
 
       .label {
-        font-size: 0.875rem;
         color: $text-muted;
+        font-size: 0.875rem;
       }
 
       .value {
+        color: $text-secondary;
         font-weight: 600;
-        color: $text-primary;
-      }
-    }
-
-    .close-button {
-      padding: 0.875rem;
-      background: $primary-color;
-      color: $white;
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s;
-
-      &:hover {
-        background: $primary-dark;
       }
     }
   }
-}
-.rates-section {
-  .rates-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1rem;
-    margin-top: 1.5rem;
 
-    @media (max-width: 768px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .close-button {
+    background: $primary-color;
+    color: $white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
 
-    @media (max-width: 480px) {
-      grid-template-columns: 1fr;
-    }
-
-    .rate-item {
-      position: relative;
-      padding: 1.5rem 1rem;
-      background: linear-gradient(135deg, 
-        rgba(37, 64, 255, 0.05) 0%, 
-        rgba(37, 64, 255, 0.02) 100%
-      );
-      border-radius: 16px;
-      text-align: center;
-      transition: all 0.3s ease;
-      border: 2px solid rgba(37, 64, 255, 0.1);
-      overflow: hidden;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, 
-          $primary-color 0%, 
-          $primary-light 100%
-        );
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-      }
-
-      &:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 24px rgba(37, 64, 255, 0.2);
-        border-color: $primary-color;
-
-        &::before {
-          transform: scaleX(1);
-        }
-
-        .rate-value {
-          transform: scale(1.1);
-          color: $primary-dark;
-        }
-      }
-
-      .rate-label {
-        font-size: 0.8125rem;
-        color: $text-muted;
-        margin-bottom: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 700;
-      }
-
-      .rate-value {
-        font-size: 1.875rem;
-        font-weight: 800;
-        color: $primary-color;
-        transition: all 0.3s ease;
-        background: linear-gradient(135deg, 
-          $primary-color 0%, 
-          $primary-dark 100%
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
+    &:hover {
+      background: $primary-dark;
     }
   }
 }
+
 // Responsive
 @media (max-width: 768px) {
-  .cover-photo {
-    height: 200px;
+  .profile-content {
+    margin-top: -80px;
+  }
+
+  .main-card {
+    padding: 1.5rem;
   }
 
   .profile-photo {
@@ -536,265 +721,36 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
     margin-top: -60px;
   }
 
-  .profile-content {
-    margin-top: -60px;
-  }
-
   .basic-info .name {
     font-size: 2rem;
-  }
-
-  .rating-stats {
-    font-size: 0.9rem;
-  }
-
-  .contact-button {
-    padding: 0.875rem 2rem;
-    font-size: 1rem;
   }
 
   .info-grid {
     grid-template-columns: 1fr;
   }
-}
-.name-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
 
-  .user-type-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    
-    &.worker {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: $white;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    }
-    
-    &.client {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      color: $white;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
-  }
-
-  .verification-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1.25rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    
-    &.verified {
-      background: rgba(16, 185, 129, 0.1);
-      color: #059669;
-      border: 2px solid rgba(16, 185, 129, 0.3);
-    }
-    
-    &.pending {
-      background: rgba(245, 158, 11, 0.1);
-      color: #d97706;
-      border: 2px solid rgba(245, 158, 11, 0.3);
-    }
-  }
-}
-
-// Mensaje informativo
-.info-message {
-  padding: 1rem 1.5rem;
-  background: rgba(59, 130, 246, 0.1);
-  border-left: 4px solid #3b82f6;
-  border-radius: 8px;
-  color: #1e40af;
-  font-size: 0.9375rem;
-  margin-top: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-// Badge de verificación en foto de perfil
-.profile-photo {
-  position: relative;
-
-  .verified-badge {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    width: 36px;
-    height: 36px;
-    background: $white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: $shadow-md;
-    z-index: 10;
-    animation: badge-pop 0.5s ease;
-    
-    svg {
-      width: 24px;
-      height: 24px;
-    }
-  }
-}
-
-@keyframes badge-pop {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-.professional-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, 
-    rgba(37, 64, 255, 0.08) 0%, 
-    rgba(37, 64, 255, 0.03) 100%
-  );
-  border: 2px solid rgba(37, 64, 255, 0.15);
-  border-radius: 12px;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: $primary-color;
-  margin: 0.75rem 0;
-  box-shadow: 0 2px 8px rgba(37, 64, 255, 0.1);
-  transition: all 0.3s ease;
-
-  .title-icon {
-    font-size: 1.25rem;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(37, 64, 255, 0.2);
-    border-color: rgba(37, 64, 255, 0.3);
-  }
-}
-
-// Mejorar el grid de tarifas con íconos
-.rates-section {
   .rates-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: 1fr;
+  }
+
+  .rating-stats {
+    flex-direction: column;
     gap: 1rem;
-    margin-top: 1.5rem;
-
-    @media (max-width: 768px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (max-width: 480px) {
-      grid-template-columns: 1fr;
-    }
-
-    .rate-item {
-      position: relative;
-      padding: 1.5rem 1rem;
-      background: linear-gradient(135deg, 
-        rgba(37, 64, 255, 0.05) 0%, 
-        rgba(37, 64, 255, 0.02) 100%
-      );
-      border-radius: 16px;
-      text-align: center;
-      transition: all 0.3s ease;
-      border: 2px solid rgba(37, 64, 255, 0.1);
-      overflow: hidden;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, 
-          $primary-color 0%, 
-          $primary-light 100%
-        );
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-      }
-
-      &:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 24px rgba(37, 64, 255, 0.2);
-        border-color: $primary-color;
-
-        &::before {
-          transform: scaleX(1);
-        }
-
-        .rate-value {
-          transform: scale(1.1);
-          color: $primary-dark;
-        }
-
-        .rate-icon {
-          transform: scale(1.2);
-        }
-      }
-
-      .rate-icon {
-        font-size: 1.75rem;
-        margin-bottom: 0.5rem;
-        display: block;
-        transition: transform 0.3s ease;
-      }
-
-      .rate-label {
-        font-size: 0.8125rem;
-        color: $text-muted;
-        margin-bottom: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 700;
-      }
-
-      .rate-value {
-        font-size: 1.875rem;
-        font-weight: 800;
-        color: $primary-color;
-        transition: all 0.3s ease;
-        background: linear-gradient(135deg, 
-          $primary-color 0%, 
-          $primary-dark 100%
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-    }
   }
 }
 
-// Responsive para el título profesional
-@media (max-width: 768px) {
-  .professional-title {
-    font-size: 1rem;
-    padding: 0.65rem 1.25rem;
+@media (max-width: 480px) {
+  .profile-photo {
+    width: 100px;
+    height: 100px;
+  }
 
-    .title-icon {
-      font-size: 1.125rem;
-    }
+  .basic-info .name {
+    font-size: 1.75rem;
+  }
+
+  .contact-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
   }
 }

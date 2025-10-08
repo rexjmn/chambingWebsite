@@ -1,12 +1,78 @@
-import React from 'react';
-import { workerService } from '../services/workerService';
+// src/components/WorkerCard.jsx
+
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom'; // ← ¡AGREGAR ESTA LÍNEA!
+import PropTypes from 'prop-types';
+import { serviceService } from '../services/serviceService';
 import '../styles/components/WorkerCard.scss';
 
-const WorkerCard = ({ worker, onCardClick }) => {
-  // Calcular rating promedio y número de reviews
-  const rating = worker.stats?.rating || worker.rating || 0;
-  const reviewCount = worker.stats?.total_reviews || worker.reviewCount || 0;
-  const jobsCompleted = worker.stats?.trabajos_completados || worker.jobsCompleted || 0;
+const WorkerCard = ({ worker }) => { // ← Quitar onCardClick de los props
+  const [tarifas, setTarifas] = useState(null);
+  const [loadingTarifas, setLoadingTarifas] = useState(true);
+
+  // 💰 Cargar tarifas al montar
+  useEffect(() => {
+    const fetchTarifas = async () => {
+      if (!worker?.id) {
+        setLoadingTarifas(false);
+        return;
+      }
+
+      try {
+        const tarifasData = await serviceService.getTarifasByWorker(worker.id);
+        setTarifas(tarifasData);
+      } catch (error) {
+        console.error('Error cargando tarifas:', error);
+        setTarifas(null);
+      } finally {
+        setLoadingTarifas(false);
+      }
+    };
+
+    fetchTarifas();
+  }, [worker?.id]);
+
+  // Stats
+  const rating = worker?.stats?.rating || worker?.rating || 0;
+  const reviewCount = worker?.stats?.total_reviews || worker?.reviewCount || 0;
+  const jobsCompleted = worker?.stats?.trabajos_completados || worker?.jobsCompleted || 0;
+
+  // 🎯 FUNCIÓN SEGURA para obtener el título
+  const getWorkerTitle = () => {
+    if (worker?.titulo_profesional && typeof worker.titulo_profesional === 'string') {
+      return worker.titulo_profesional;
+    }
+
+    if (worker?.titulo && typeof worker.titulo === 'string') {
+      return worker.titulo;
+    }
+
+    if (Array.isArray(worker?.categorias) && worker.categorias.length > 0) {
+      const firstCategory = worker.categorias[0];
+
+      if (typeof firstCategory === 'object' && firstCategory !== null) {
+        return firstCategory.nombre || firstCategory.categoria || 'Profesional';
+      }
+
+      if (typeof firstCategory === 'string') {
+        return firstCategory;
+      }
+    }
+
+    if (Array.isArray(worker?.habilidades) && worker.habilidades.length > 0) {
+      const firstSkill = worker.habilidades[0];
+
+      if (typeof firstSkill === 'string') {
+        return firstSkill;
+      }
+
+      if (typeof firstSkill === 'object' && firstSkill !== null) {
+        return firstSkill.nombre || 'Profesional';
+      }
+    }
+
+    return 'Profesional de servicios';
+  };
 
   // Renderizar estrellas
   const renderStars = (rating) => {
@@ -20,175 +86,184 @@ const WorkerCard = ({ worker, onCardClick }) => {
     ));
   };
 
-  // Función para formatear tarifas
+  // 💰 Formatear precio
   const formatPrice = (amount) => {
-    if (!amount) return null;
-    return new Intl.NumberFormat('es-SV', {
-      style: 'currency',
-      currency: worker.tarifas?.moneda || 'USD',
-      minimumFractionDigits: 2
-    }).format(amount);
+    if (!amount && amount !== 0) return null;
+
+    const currency = tarifas?.moneda || 'USD';
+
+    try {
+      return new Intl.NumberFormat('es-SV', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(amount);
+    } catch (error) {
+      return `$${Number(amount).toFixed(2)}`;
+    }
   };
 
+  // 🎯 Obtener tarifa más relevante
   const getMostRelevantRate = () => {
-    if (!worker.tarifas) return null;
-    
-    const { tarifa_hora, tarifa_dia, tarifa_semana, tarifa_mes } = worker.tarifas;
-    
-    if (tarifa_hora) return { amount: tarifa_hora, period: '/hora' };
-    if (tarifa_dia) return { amount: tarifa_dia, period: '/día' };
-    if (tarifa_semana) return { amount: tarifa_semana, period: '/semana' };
-    if (tarifa_mes) return { amount: tarifa_mes, period: '/mes' };
-    
-    return null;
+    if (!tarifas || !tarifas.activo) return null;
+
+    const rates = [
+      { amount: tarifas.tarifa_hora, period: '/hora', priority: 1 },
+      { amount: tarifas.tarifa_dia, period: '/día', priority: 2 },
+      { amount: tarifas.tarifa_semana, period: '/semana', priority: 3 },
+      { amount: tarifas.tarifa_mes, period: '/mes', priority: 4 }
+    ];
+
+    const validRate = rates.find(r => r.amount && Number(r.amount) > 0);
+
+    return validRate ? { 
+      amount: Number(validRate.amount), 
+      period: validRate.period 
+    } : null;
   };
 
   const mainRate = getMostRelevantRate();
 
   // Truncar texto largo
   const truncateText = (text, maxLength = 80) => {
-    if (!text) return 'Sin descripción disponible';
+    if (!text || typeof text !== 'string') return 'Sin descripción disponible';
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   };
 
-  // Obtener título/categoría principal
-  const getWorkerTitle = () => {
-    // Prioridad: titulo_profesional > categoría > habilidad > default
-    if (worker.titulo_profesional) return worker.titulo_profesional;
-    if (worker.titulo) return worker.titulo;
-    if (worker.categorias && worker.categorias.length > 0) {
-      return worker.categorias[0].nombre;
-    }
-    if (worker.habilidades && worker.habilidades.length > 0) {
-      return worker.habilidades[0].nombre;
-    }
-    return 'Trabajador Profesional';
-  };
+  // 🛡️ Guard clause - Validar que worker existe y tiene ID
+  if (!worker || !worker.id) {
+    console.error('❌ Worker sin ID:', worker);
+    return <div className="worker-card-error">Trabajador no disponible</div>;
+  }
 
-  // ⬅️ AGREGAR ESTA FUNCIÓN
-  const handleCardClick = () => {
-    if (onCardClick) {
-      onCardClick(worker.id);
-    }
-  };
+  // 🔍 DEBUG: Ver el ID antes de renderizar
+  console.log('🔍 Rendering WorkerCard for ID:', worker.id);
 
   return (
-    <div className="worker-card" onClick={handleCardClick}>
-      {/* Foto de portada como fondo */}
-      <div 
-        className="card-cover"
-        style={{
-          backgroundImage: worker.foto_portada 
-            ? `url(${worker.foto_portada})` 
-            : 'linear-gradient(135deg, #2540FF 0%, #1a2ecc 100%)'
-        }}
-      >
-        {/* Overlay oscuro para mejorar legibilidad */}
-        <div className="cover-overlay" />
-        
-        {/* Badge de verificación */}
-        {worker.verificado && (
-          <div className="verified-badge" title="Trabajador Verificado">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" fill="#4CAF50"/>
-              <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </div>
-        )}
-      </div>
-
-      {/* Contenido de la tarjeta */}
-      <div className="card-content">
-        {/* Foto de perfil centrada */}
-        <div className="profile-photo-container">
-          <img 
-            src={worker.foto_perfil || 'https://via.placeholder.com/100'} 
-            alt={`${worker.nombre} ${worker.apellido}`}
-            className="profile-photo"
+    <Link 
+      to={`/profile/${worker.id}`}  // ✅ Solo el ID (string UUID)
+      className="worker-card-link"
+      style={{ textDecoration: 'none', color: 'inherit' }}
+    >
+      <div className="worker-card">
+        {/* Imagen de portada */}
+        <div className="worker-card-cover">
+          <img
+            src={worker.foto_portada || '/default-cover.jpg'}
+            alt={`Portada de ${worker.nombre || 'trabajador'}`}
+            onError={(e) => { e.target.src = '/default-cover.jpg'; }}
           />
+          {worker.verificado && (
+            <div className="verified-badge" title="Perfil Verificado">
+              <span>✓</span>
+            </div>
+          )}
         </div>
 
-        {/* Información del trabajador */}
-        <div className="worker-info">
-          {/* Nombre completo */}
-          <h3 className="worker-name">
-            {worker.nombre} {worker.apellido}
-          </h3>
+        {/* Contenido principal */}
+        <div className="worker-card-content">
+          {/* Avatar */}
+          <div className="worker-avatar-wrapper">
+            <img
+              className="worker-avatar"
+              src={worker.foto_perfil || '/default-avatar.jpg'}
+              alt={`${worker.nombre || ''} ${worker.apellido || ''}`}
+              loading="lazy"
+              onError={(e) => { e.target.src = '/default-avatar.jpg'; }}
+            />
+          </div>
 
-          {/* Título/Profesión */}
-          <p className="worker-title">
-            {getWorkerTitle()}
-          </p>
+          {/* Info básica */}
+          <div className="worker-info">
+            <h3 className="worker-name">
+              {worker.nombre || 'Nombre'} {worker.apellido || 'Apellido'}
+            </h3>
 
-          {/* 🆕 MOSTRAR TARIFA PRINCIPAL */}
-          {mainRate && (
-            <div className="price-tag">
-              <span className="price-amount">{formatPrice(mainRate.amount)}</span>
-              <span className="price-period">{mainRate.period}</span>
-            </div>
-          )}
+            <p className="worker-title">
+              {getWorkerTitle()}
+            </p>
 
-          {/* Ubicación */}
-          {(worker.departamento || worker.municipio) && (
-            <div className="worker-location">
-              <span className="location-icon">📍</span>
-              <span className="location-text">
-                {worker.municipio || worker.departamento}
-                {worker.municipio && worker.departamento && `, ${worker.departamento}`}
-              </span>
-            </div>
-          )}
+            {/* 💰 TARIFA PRINCIPAL */}
+            {!loadingTarifas && mainRate && (
+              <div className="price-tag">
+                <span className="price-amount">{formatPrice(mainRate.amount)}</span>
+                <span className="price-period">{mainRate.period}</span>
+                {tarifas?.negociable && (
+                  <span className="price-negotiable" title="Precio negociable">
+                    💬
+                  </span>
+                )}
+              </div>
+            )}
 
-          {/* Descripción breve */}
-          <p className="worker-description">
-            {truncateText(worker.biografia)}
-          </p>
+            {loadingTarifas && (
+              <div className="price-tag skeleton">
+                <span className="skeleton-text"></span>
+              </div>
+            )}
 
-          {/* Skills/Habilidades */}
-          {worker.habilidades && worker.habilidades.length > 0 && (
-            <div className="skills-container">
-              {worker.habilidades.slice(0, 3).map((skill, index) => (
-                <span key={skill.id || index} className="skill-badge">
-                  {skill.nombre}
-                </span>
-              ))}
-              {worker.habilidades.length > 3 && (
-                <span className="skill-badge more">
-                  +{worker.habilidades.length - 3}
-                </span>
+            {/* Ubicación */}
+            <p className="worker-location">
+              📍 {worker.municipio || 'Ubicación'}, {worker.departamento || 'Departamento'}
+            </p>
+
+            {/* Descripción */}
+            <p className="worker-description">
+              {truncateText(worker.biografia)}
+            </p>
+
+            {/* Rating y stats */}
+            <div className="worker-stats">
+              <div className="rating-section">
+                <div className="stars">{renderStars(rating)}</div>
+                <span className="rating-value">{rating.toFixed(1)}</span>
+                <span className="review-count">({reviewCount})</span>
+              </div>
+
+              {jobsCompleted > 0 && (
+                <>
+                  <span className="separator">•</span>
+                  <div className="jobs-info">
+                    <span className="jobs-count">{jobsCompleted} trabajos</span>
+                  </div>
+                </>
               )}
             </div>
-          )}
-
-          {/* Rating y estadísticas */}
-          <div className="card-footer">
-            <div className="rating-section">
-              <div className="stars">{renderStars(rating)}</div>
-              <span className="rating-number">{rating.toFixed(1)}</span>
-              <span className="review-count">({reviewCount})</span>
-            </div>
-
-            {jobsCompleted > 0 && (
-              <>
-                <span className="separator">•</span>
-                <div className="jobs-info">
-                  <span className="jobs-count">{jobsCompleted} trabajos</span>
-                </div>
-              </>
-            )}
           </div>
         </div>
-      </div>
 
-      {/* Botón hover para ver perfil */}
-      <div className="card-hover-overlay">
-        <button className="view-profile-btn">
-          Ver Perfil Completo
-        </button>
+        {/* Hover overlay */}
+        <div className="card-hover-overlay">
+          <button className="view-profile-btn" type="button">
+            Ver Perfil Completo
+          </button>
+        </div>
       </div>
-    </div>
+    </Link>
   );
+};
+
+WorkerCard.propTypes = {
+  worker: PropTypes.shape({
+    id: PropTypes.string.isRequired, // ✅ REQUERIDO
+    nombre: PropTypes.string,
+    apellido: PropTypes.string,
+    foto_perfil: PropTypes.string,
+    foto_portada: PropTypes.string,
+    verificado: PropTypes.bool,
+    biografia: PropTypes.string,
+    titulo_profesional: PropTypes.string,
+    titulo: PropTypes.string,
+    departamento: PropTypes.string,
+    municipio: PropTypes.string,
+    tarifas: PropTypes.object,
+    stats: PropTypes.object,
+    habilidades: PropTypes.array,
+    categorias: PropTypes.array
+  }).isRequired
+  // ❌ Ya no necesitas onCardClick en PropTypes
 };
 
 export default WorkerCard;

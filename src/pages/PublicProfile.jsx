@@ -1,9 +1,30 @@
-// src/pages/PublicProfile.jsx
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { publicProfileService } from '../services/publicProfileService';
 import '../styles/Public-profile.scss';
+// Iconos de Material UI
+import {
+  VerifiedUser as VerifiedUserIcon,
+  Work as WorkIcon,
+  Person as PersonIcon,
+  CheckCircle as CheckCircleIcon,
+  HourglassEmpty as HourglassEmptyIcon,
+  Info as InfoIcon,
+  LocationOn as LocationOnIcon,
+  Phone as PhoneIcon,
+  Star as StarIcon,
+  StarHalf as StarHalfIcon,
+  StarOutline as StarOutlineIcon,
+  WorkOutline as WorkOutlineIcon,
+  CalendarToday as CalendarTodayIcon,
+  DateRange as DateRangeIcon,
+  AccessTime as AccessTimeIcon,
+  AccountCircle as AccountCircleIcon,
+  Email as EmailIcon,
+  Close as CloseIcon,
+  FormatQuote as FormatQuoteIcon,
+} from '@mui/icons-material';
 
 const PublicProfile = () => {
   const { t, i18n } = useTranslation();
@@ -76,11 +97,21 @@ const PublicProfile = () => {
   }, [userId]);
 
   const renderStars = (rating) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <span key={i} className={`star ${i < Math.floor(rating) ? 'filled' : 'empty'}`}>
-        ★
-      </span>
-    ));
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+    return (
+      <>
+        {Array.from({ length: fullStars }).map((_, i) => (
+          <StarIcon key={`full-${i}`} className="star filled" />
+        ))}
+        {hasHalfStar && <StarHalfIcon key="half" className="star filled" />}
+        {Array.from({ length: emptyStars }).map((_, i) => (
+          <StarOutlineIcon key={`empty-${i}`} className="star empty" />
+        ))}
+      </>
+    );
   };
 
   const formatDate = (dateString) => {
@@ -106,7 +137,10 @@ const PublicProfile = () => {
   if (loading) {
     return (
       <div className="loading-container">
-        <div className="loading-text">{t('publicProfile.loading') || 'Cargando...'}</div>
+        <div className="loading-text">
+          <HourglassEmptyIcon sx={{ fontSize: 40, marginRight: 1 }} />
+          {t('publicProfile.loading') || 'Cargando...'}
+        </div>
       </div>
     );
   }
@@ -114,9 +148,11 @@ const PublicProfile = () => {
   if (error) {
     return (
       <div className="not-found">
+        <InfoIcon sx={{ fontSize: 60, color: 'primary.main', marginBottom: 2 }} />
         <h1>{t('publicProfile.notFound') || 'Perfil no encontrado'}</h1>
         <p>{error}</p>
         <button onClick={() => navigate('/')} className="contact-button">
+          <CloseIcon sx={{ marginRight: 1 }} />
           {t('common.back') || 'Volver'}
         </button>
       </div>
@@ -126,8 +162,10 @@ const PublicProfile = () => {
   if (!user) {
     return (
       <div className="not-found">
+        <InfoIcon sx={{ fontSize: 60, color: 'primary.main', marginBottom: 2 }} />
         <h1>{t('publicProfile.notFound') || 'Perfil no encontrado'}</h1>
         <button onClick={() => navigate('/')} className="contact-button">
+          <CloseIcon sx={{ marginRight: 1 }} />
           {t('common.back') || 'Volver'}
         </button>
       </div>
@@ -143,7 +181,6 @@ const PublicProfile = () => {
 
   return (
     <div className="public-profile">
-
       {/* Foto de Portada */}
       <div
         className={`cover-photo ${!user.foto_portada ? 'default-cover' : ''}`}
@@ -154,11 +191,9 @@ const PublicProfile = () => {
 
       {/* Contenido Principal */}
       <div className="profile-content">
-
         {/* Tarjeta de Información Principal */}
         <div className="main-card">
           <div className="card-inner">
-
             {/* Foto de Perfil */}
             <div className="profile-photo">
               <img
@@ -167,11 +202,8 @@ const PublicProfile = () => {
               />
               {/* Badge de Verificación para Trabajadores */}
               {isTrabajador && isVerified && (
-                <div className="verified-badge" title="Trabajador Verificado">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" fill="#4CAF50" />
-                    <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
+                <div className="verified-badge" title={t('publicProfile.verifiedWorker') || 'Trabajador Verificado'}>
+                  <VerifiedUserIcon />
                 </div>
               )}
             </div>
@@ -183,23 +215,34 @@ const PublicProfile = () => {
                   {user.nombre} {user.apellido}
                 </h1>
 
-                {/* 🆕 NUEVO - Título Profesional */}
+                {/* Título Profesional */}
                 {isTrabajador && user.titulo_profesional && (
                   <div className="professional-title">
-                    <span className="title-icon">💼</span>
+                    <WorkOutlineIcon className="title-icon" />
                     {user.titulo_profesional}
                   </div>
                 )}
 
                 {/* Badge de Tipo de Usuario */}
                 <span className={`user-type-badge ${isTrabajador ? 'worker' : 'client'}`}>
-                  {isTrabajador ? '🔧 Trabajador' : '👤 Cliente'}
+                  {isTrabajador ? <WorkIcon fontSize="small" /> : <PersonIcon fontSize="small" />}
+                  {isTrabajador ? t('publicProfile.worker') || 'Trabajador' : t('publicProfile.client') || 'Cliente'}
                 </span>
-                
+
                 {/* Estado de Verificación */}
                 {isTrabajador && (
                   <span className={`verification-status ${isVerified ? 'verified' : 'pending'}`}>
-                    {isVerified ? '✓ Verificado' : '⏳ Pendiente de Verificación'}
+                    {isVerified ? (
+                      <>
+                        <VerifiedUserIcon fontSize="small" />
+                        {t('publicProfile.verified') || 'Verificado'}
+                      </>
+                    ) : (
+                      <>
+                        <HourglassEmptyIcon fontSize="small" />
+                        {t('publicProfile.verificationPending') || 'Pendiente de Verificación'}
+                      </>
+                    )}
                   </span>
                 )}
               </div>
@@ -220,7 +263,7 @@ const PublicProfile = () => {
                   </div>
                   <span className="separator">•</span>
                   <div className="jobs-completed">
-                    <span className="checkmark">✓</span>
+                    <CheckCircleIcon className="checkmark" />
                     <span className="count">
                       {displayJobsCompleted} {t('publicProfile.jobsCompleted') || 'trabajos completados'}
                     </span>
@@ -231,7 +274,7 @@ const PublicProfile = () => {
               {/* Ubicación */}
               {(user.departamento || user.municipio) && (
                 <div className="location">
-                  <span className="icon">📍</span>
+                  <LocationOnIcon className="icon" />
                   <span>
                     {user.municipio && `${user.municipio}, `}
                     {user.departamento}
@@ -245,14 +288,16 @@ const PublicProfile = () => {
                   onClick={() => setShowContactModal(true)}
                   className="contact-button"
                 >
-                  📞 {t('publicProfile.contact') || 'Contactar'}
+                  <PhoneIcon />
+                  {t('publicProfile.contact') || 'Contactar'}
                 </button>
               )}
 
               {/* Mensaje si no está verificado */}
               {isTrabajador && !isVerified && (
                 <div className="info-message">
-                  ℹ️ Este trabajador está pendiente de verificación
+                  <InfoIcon />
+                  {t('publicProfile.verificationPending') || 'Este trabajador está pendiente de verificación'}
                 </div>
               )}
             </div>
@@ -261,38 +306,42 @@ const PublicProfile = () => {
 
         {/* Grid de Información */}
         <div className="info-grid">
-
           {/* Sobre Mí */}
           <div className="section-card about-section">
-            <h2 className="section-title">
-              {t('publicProfile.aboutMe') || 'Sobre mí'}
-            </h2>
+            <div className="section-header">
+              <FormatQuoteIcon className="section-icon" />
+              <h2 className="section-title">
+                {t('publicProfile.aboutMe') || 'Sobre mí'}
+              </h2>
+            </div>
             <p className="bio">
               {user.biografia || (t('publicProfile.noBio') || 'Sin biografía')}
             </p>
             {user.fecha_registro && (
-              <div className="member-since">
-                <div className="info">
-                  <span className="icon">📅</span>
-                  <span>
-                    {t('publicProfile.memberSince') || 'Miembro desde'} {formatMemberSince(user.fecha_registro)}
-                  </span>
+              <div className="info-item">
+                <CalendarTodayIcon />
+                <div>
+                  <span className="info-label">{t('publicProfile.memberSince') || 'Miembro desde'}</span>
+                  <span className="info-value">{formatMemberSince(user.fecha_registro)}</span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* 🆕 Tarifas - Solo para trabajadores verificados con tarifas */}
+          {/* Tarifas - Solo para trabajadores verificados con tarifas */}
           {isTrabajador && isVerified && user.tarifas && (
             <div className="section-card rates-section">
-              <h2 className="section-title">
-                {t('publicProfile.rates') || 'Tarifas'}
-              </h2>
+              <div className="section-header">
+                <AccountCircleIcon className="section-icon" />
+                <h2 className="section-title">
+                  {t('publicProfile.rates') || 'Tarifas'}
+                </h2>
+              </div>
               <div className="rates-grid">
                 {user.tarifas.tarifa_hora && (
                   <div className="rate-item">
-                    <div className="rate-icon">⏱️</div>
-                    <div className="rate-label">Por Hora</div>
+                    <AccessTimeIcon className="rate-icon" />
+                    <div className="rate-label">{t('publicProfile.hourlyRate') || 'Por Hora'}</div>
                     <div className="rate-value">
                       ${parseFloat(user.tarifas.tarifa_hora).toFixed(2)}
                     </div>
@@ -300,8 +349,8 @@ const PublicProfile = () => {
                 )}
                 {user.tarifas.tarifa_dia && (
                   <div className="rate-item">
-                    <div className="rate-icon">📅</div>
-                    <div className="rate-label">Por Día</div>
+                    <CalendarTodayIcon className="rate-icon" />
+                    <div className="rate-label">{t('publicProfile.dailyRate') || 'Por Día'}</div>
                     <div className="rate-value">
                       ${parseFloat(user.tarifas.tarifa_dia).toFixed(2)}
                     </div>
@@ -309,8 +358,8 @@ const PublicProfile = () => {
                 )}
                 {user.tarifas.tarifa_semana && (
                   <div className="rate-item">
-                    <div className="rate-icon">📆</div>
-                    <div className="rate-label">Por Semana</div>
+                    <DateRangeIcon className="rate-icon" />
+                    <div className="rate-label">{t('publicProfile.weeklyRate') || 'Por Semana'}</div>
                     <div className="rate-value">
                       ${parseFloat(user.tarifas.tarifa_semana).toFixed(2)}
                     </div>
@@ -318,8 +367,8 @@ const PublicProfile = () => {
                 )}
                 {user.tarifas.tarifa_mes && (
                   <div className="rate-item">
-                    <div className="rate-icon">🗓️</div>
-                    <div className="rate-label">Por Mes</div>
+                    <CalendarTodayIcon className="rate-icon" />
+                    <div className="rate-label">{t('publicProfile.monthlyRate') || 'Por Mes'}</div>
                     <div className="rate-value">
                       ${parseFloat(user.tarifas.tarifa_mes).toFixed(2)}
                     </div>
@@ -332,13 +381,16 @@ const PublicProfile = () => {
           {/* Habilidades - Solo si es trabajador y tiene habilidades */}
           {isTrabajador && skills.length > 0 && (
             <div className="section-card skills-section">
-              <h2 className="section-title">
-                {t('publicProfile.mySkills') || 'Mis Habilidades'}
-              </h2>
+              <div className="section-header">
+                <WorkIcon className="section-icon" />
+                <h2 className="section-title">
+                  {t('publicProfile.mySkills') || 'Mis Habilidades'}
+                </h2>
+              </div>
               <div className="skills-container">
                 {skills.map((skill, index) => (
                   <div key={skill.id || index} className="skill-badge">
-                    <span className="checkmark">✓</span>
+                    <CheckCircleIcon className="checkmark" />
                     {skill.nombre || skill.name}
                   </div>
                 ))}
@@ -349,10 +401,13 @@ const PublicProfile = () => {
 
         {/* Reviews - Solo si es trabajador verificado y tiene reviews */}
         {isTrabajador && isVerified && reviews.length > 0 && (
-          <div className="reviews-section">
-            <h2 className="section-title">
-              {t('publicProfile.clientReviews') || 'Reseñas de Clientes'} ({displayReviewCount})
-            </h2>
+          <div className="reviews-section section-card">
+            <div className="section-header">
+              <StarIcon className="section-icon" />
+              <h2 className="section-title">
+                {t('publicProfile.clientReviews') || 'Reseñas de Clientes'} ({displayReviewCount})
+              </h2>
+            </div>
 
             <div className="reviews-list">
               {reviews.map(review => (
@@ -360,6 +415,7 @@ const PublicProfile = () => {
                   <div className="review-header">
                     <div className="reviewer-info">
                       <div className="reviewer-name">
+                        <AccountCircleIcon sx={{ marginRight: 1, verticalAlign: 'middle' }} />
                         {review.cliente_nombre || review.cliente}
                       </div>
                       <div className="stars">
@@ -367,6 +423,7 @@ const PublicProfile = () => {
                       </div>
                     </div>
                     <div className="review-date">
+                      <CalendarTodayIcon sx={{ fontSize: 16, marginRight: 0.5, verticalAlign: 'middle' }} />
                       {formatDate(review.fecha || review.created_at)}
                     </div>
                   </div>
@@ -388,13 +445,16 @@ const PublicProfile = () => {
             className="modal-overlay"
           />
           <div className="modal">
-            <h3 className="modal-title">
-              {t('publicProfile.contactInfo') || 'Información de Contacto'}
-            </h3>
+            <div className="section-header">
+              <PhoneIcon className="section-icon" />
+              <h3 className="modal-title">
+                {t('publicProfile.contactInfo') || 'Información de Contacto'}
+              </h3>
+            </div>
             <div className="modal-content">
               {user.telefono && (
                 <div className="contact-info">
-                  <span className="icon">📞</span>
+                  <PhoneIcon sx={{ color: 'primary.main', fontSize: 24 }} />
                   <div>
                     <div className="label">{t('publicProfile.phone') || 'Teléfono'}</div>
                     <div className="value">
@@ -403,10 +463,22 @@ const PublicProfile = () => {
                   </div>
                 </div>
               )}
+              {user.email && (
+                <div className="contact-info">
+                  <EmailIcon sx={{ color: 'primary.main', fontSize: 24 }} />
+                  <div>
+                    <div className="label">Email</div>
+                    <div className="value">
+                      <a href={`mailto:${user.email}`}>{user.email}</a>
+                    </div>
+                  </div>
+                </div>
+              )}
               <button
                 onClick={() => setShowContactModal(false)}
                 className="close-button"
               >
+                <CloseIcon sx={{ marginRight: 1 }} />
                 {t('common.close') || 'Cerrar'}
               </button>
             </div>

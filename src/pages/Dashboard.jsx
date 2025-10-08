@@ -1,4 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { 
+  Button, 
+  Stack 
+} from '@mui/material';
+import MuiEditIcon from '@mui/icons-material/Edit'; // ✅ Renombrar para evitar conflicto
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import { useTranslations } from '../hooks/useTranslations';
 import { useAuth } from '../context/AuthContext';
@@ -10,7 +16,7 @@ import { DashboardSkeleton } from '../components/SkeletonLoader';
 import '../styles/dashboard.scss';
 import '../styles/components/SkeletonLoader.scss';
 
-// Iconos SVG
+// Iconos SVG (mantener los que uses en otras partes)
 const RefreshIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -53,12 +59,6 @@ const PaymentIcon = () => (
   </svg>
 );
 
-const EditIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-  </svg>
-);
-
 const CameraIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -87,13 +87,10 @@ const Dashboard = () => {
     const loadDashboardData = async () => {
       try {
         setLoading(true);
-
-        // Tiempo mínimo de loading para evitar flashes
         const minLoadingTime = new Promise(resolve => setTimeout(resolve, 500));
 
-        // Cargar datos en paralelo
         const dataPromises = Promise.all([
-          serviceService.getCategories().catch(error => {
+          serviceService.getCategorias().catch(error => {
             console.error('Error cargando categorías:', error);
             return [
               { id: 1, nombre: 'domesticCleaning', descripcion: 'Servicio de limpieza' },
@@ -110,15 +107,11 @@ const Dashboard = () => {
           })
         ]);
 
-        // Esperar tanto el tiempo mínimo como la carga de datos
         const [results] = await Promise.all([dataPromises, minLoadingTime]);
         const [categoriesData, contractsResponse] = results;
 
-        // Establecer categorías
         setCategories(categoriesData);
 
-        // Establecer contratos
-        console.log('Respuesta de contratos:', contractsResponse);
         if (contractsResponse.status === 'success') {
           setContracts(contractsResponse.data || []);
         } else if (Array.isArray(contractsResponse)) {
@@ -133,8 +126,8 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
+    
     window.scrollTo(0, 0);
-
     loadDashboardData();
   }, []);
 
@@ -207,7 +200,6 @@ const Dashboard = () => {
     );
   };
 
-  // MOSTRAR SKELETON LOADER MIENTRAS CARGA
   if (loading) {
     return <DashboardSkeleton />;
   }
@@ -222,11 +214,10 @@ const Dashboard = () => {
           </h1>
 
           <nav className="dashboard__header-actions" role="navigation" aria-label="Navegación principal">
-            {/* Botón Admin Panel - Solo visible para admins */}
             {(user?.tipo_usuario === 'admin' || user?.tipo_usuario === 'super_admin') && (
               <button
                 className="dashboard__icon-btn dashboard__icon-btn--admin"
-                onClick={() => window.location.href = '/admin'}
+                onClick={() => navigate('/admin')}
                 aria-label="Panel de Administración"
                 type="button"
                 title="Ir al Panel de Administración"
@@ -323,7 +314,6 @@ const Dashboard = () => {
       <main className="dashboard__container">
         {/* Sección de Perfil con Foto de Portada */}
         <article className="dashboard__profile-card" aria-labelledby="profile-heading">
-          {/* Foto de Portada */}
           <div
             className="dashboard__cover-photo"
             style={{
@@ -343,7 +333,6 @@ const Dashboard = () => {
             <div className="dashboard__cover-photo-overlay" aria-hidden="true"></div>
           </div>
 
-          {/* Información del Perfil */}
           <div className="dashboard__profile-info">
             <div className="dashboard__profile-grid">
               <div className="dashboard__avatar-container">
@@ -358,6 +347,7 @@ const Dashboard = () => {
                 </button>
               </div>
 
+              {/* ✅ SECCIÓN CORREGIDA CON BOTONES MUI */}
               <div className="dashboard__user-details">
                 <h2 id="profile-heading">
                   {t('dashboard.welcome', { name: user?.nombre || 'Usuario' })}
@@ -366,24 +356,49 @@ const Dashboard = () => {
                 {user?.biografia && (
                   <p className="dashboard__user-bio">{user.biografia}</p>
                 )}
-                {/* Botones de Perfil */}
-                <div className="dashboard__profile-actions">
-                  {/* <button
-                    className="dashboard__btn dashboard__btn--outlined dashboard__btn--sm"
-                    onClick={() => window.location.href = '/edit-profile'}
-                    type="button"
+
+                <Stack 
+                  direction={{ xs: 'column', sm: 'row' }} 
+                  spacing={2} 
+                  sx={{ mt: 3 }}
+                >
+                  <Button
+                    variant="outlined"
+                    startIcon={<MuiEditIcon />}
+                    onClick={() => navigate('/edit-profile')}
+                    sx={{
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      fontWeight: 500,
+                      px: 3,
+                      py: 1,
+                    }}
                   >
-                    <EditIcon />
                     Editar Perfil
-                  </button> */}
-                  <button
-                    className="dashboard__btn dashboard__btn--primary dashboard__btn--sm"
-                    onClick={() => window.location.href = `/profile/${user?.id}`}
-                    type="button"
+                  </Button>
+
+                  <Button
+                    variant="contained"
+                    startIcon={<VisibilityIcon />}
+                    onClick={() => navigate(`/profile/${user?.id}`)}
+                    sx={{
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      fontWeight: 500,
+                      px: 3,
+                      py: 1,
+                      boxShadow: 2,
+                      '&:hover': {
+                        boxShadow: 4,
+                      },
+                    }}
                   >
                     Ver Perfil Público
-                  </button>
-                </div>
+                  </Button>
+                </Stack>
+              </div>
+
+              <div className="dashboard__user-chips"> 
                 <div className="dashboard__chips" role="list">
                   <span className="dashboard__chip dashboard__chip--primary" role="listitem">
                     {t('dashboard.userType', { type: translateUserType(user?.tipo_usuario || 'usuario') })}
@@ -404,18 +419,13 @@ const Dashboard = () => {
           </div>
         </article>
 
-        {/* Mensajes de alerta */}
+        {/* Resto del código permanece igual... */}
         {error && (
           <div className="dashboard__alert dashboard__alert--error" role="alert">
             {error}
           </div>
         )}
 
-        <div className="dashboard__alert dashboard__alert--success" role="status">
-          {t('success.login')}
-        </div>
-
-        {/* Estadísticas rápidas */}
         <section className="dashboard__stats" aria-labelledby="stats-heading">
           <h2 id="stats-heading" className="visually-hidden">Estadísticas del Dashboard</h2>
 
@@ -460,7 +470,6 @@ const Dashboard = () => {
           </article>
         </section>
 
-        {/* Servicios disponibles */}
         <section className="dashboard__section" aria-labelledby="services-heading">
           <div className="dashboard__section-header">
             <h2 id="services-heading">{t('dashboard.availableServices')}</h2>
@@ -482,7 +491,6 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* Contratos recientes */}
         <section className="dashboard__section" aria-labelledby="contracts-heading">
           <div className="dashboard__section-header">
             <h2 id="contracts-heading">{t('dashboard.recentContracts')}</h2>
@@ -519,7 +527,7 @@ const Dashboard = () => {
                   <div className="dashboard__contract-actions">
                     <button
                       className="dashboard__btn dashboard__btn--text"
-                      onClick={() => window.location.href = `/contracts/${contract.id}`}
+                      onClick={() => navigate(`/contracts/${contract.id}`)}
                       type="button"
                     >
                       Ver Detalles
@@ -552,25 +560,8 @@ const Dashboard = () => {
           )}
         </section>
 
-        {/* Debug info */}
-        <section className="dashboard__debug" aria-labelledby="debug-heading">
-          <h3 id="debug-heading">{t('common.debugInfo')}</h3>
-          <pre>
-            Usuario autenticado: {user?.email ? 'Sí' : 'No'}{'\n'}
-            Foto de perfil: {user?.foto_perfil ? 'Sí' : 'No'}{'\n'}
-            URL foto perfil: {user?.foto_perfil || 'No disponible'}{'\n'}
-            Foto de portada: {user?.foto_portada ? 'Sí' : 'No'}{'\n'}
-            URL foto portada: {user?.foto_portada || 'No disponible'}{'\n'}
-            Categorías cargadas: {categories.length}{'\n'}
-            Contratos cargados: {contracts.length}{'\n'}
-            Estado de carga: {loading ? common.loading : 'Completo'}{'\n'}
-            API URL: {import.meta.env.VITE_API_URL || 'http://localhost:3000'}{'\n'}
-            Token guardado: {localStorage.getItem('token') ? 'Sí' : 'No'}
-          </pre>
-        </section>
       </main>
 
-      {/* Modales */}
       <ProfilePhotoModal
         open={photoModalOpen}
         onClose={() => setPhotoModalOpen(false)}

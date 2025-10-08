@@ -76,7 +76,7 @@ const EditProfile = () => {
             try {
               const tarifasResponse = await serviceService.getTarifasByWorker(user.id);
               console.log('Tarifas response:', tarifasResponse);
-              
+
               if (tarifasResponse && tarifasResponse.tarifa_hora !== undefined) {
                 setTarifas({
                   tarifa_hora: tarifasResponse.tarifa_hora || '',
@@ -144,12 +144,18 @@ const EditProfile = () => {
         await profileService.updateSkills(skillIds);
 
         // 🆕 NUEVO - 3. Actualizar o crear tarifas
+        const validateTarifa = (value) => {
+          if (!value) return null;
+          const num = parseFloat(value);
+          return isNaN(num) || num <= 0 ? null : num;
+        };
+
         const tarifasToSave = {
-          tarifa_hora: tarifas.tarifa_hora ? parseFloat(tarifas.tarifa_hora) : null,
-          tarifa_dia: tarifas.tarifa_dia ? parseFloat(tarifas.tarifa_dia) : null,
-          tarifa_semana: tarifas.tarifa_semana ? parseFloat(tarifas.tarifa_semana) : null,
-          tarifa_mes: tarifas.tarifa_mes ? parseFloat(tarifas.tarifa_mes) : null,
-          moneda: tarifas.moneda
+          tarifa_hora: validateTarifa(tarifas.tarifa_hora),
+          tarifa_dia: validateTarifa(tarifas.tarifa_dia),
+          tarifa_semana: validateTarifa(tarifas.tarifa_semana),
+          tarifa_mes: validateTarifa(tarifas.tarifa_mes),
+          moneda: tarifas.moneda || 'USD'
         };
 
         // Solo guardar si hay al menos una tarifa
@@ -161,14 +167,14 @@ const EditProfile = () => {
           try {
             if (hasTarifas) {
               // Actualizar tarifas existentes
-              await serviceService.updateWorkerTarifas(user.id, tarifasToSave);
+              await serviceService.updateTarifas(user.id, tarifasToSave);
             } else {
               // Crear nuevas tarifas
-              await serviceService.createWorkerTarifas(user.id, tarifasToSave);
+              await serviceService.createTarifas(user.id, tarifasToSave);
             }
           } catch (tarifaError) {
             console.warn('Error guardando tarifas:', tarifaError);
-            // No fallar si las tarifas no se guardan, solo mostrar advertencia
+              setError(prev => `${prev || ''} Advertencia: No se pudieron guardar las tarifas.`);
           }
         }
       }
@@ -514,9 +520,8 @@ const EditProfile = () => {
                         <button
                           key={skill.id}
                           type="button"
-                          className={`edit-profile__skill-tag ${
-                            isSelected ? 'edit-profile__skill-tag--selected' : ''
-                          }`}
+                          className={`edit-profile__skill-tag ${isSelected ? 'edit-profile__skill-tag--selected' : ''
+                            }`}
                           onClick={() => toggleSkill(skill)}
                         >
                           {skill.nombre} {isSelected && '✓'}

@@ -1,0 +1,284 @@
+// src/styles/components/Carrousel.scss
+
+.carrousel-section {
+  width: 100%;
+  padding: 80px 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  position: relative;
+  overflow: hidden;
+
+  // Patrón de fondo sutil
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+  }
+}
+
+.carrousel-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+// 📌 HEADER
+.carrousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 48px;
+  gap: 24px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 32px;
+  }
+}
+
+.header-content {
+  flex: 1;
+}
+
+.carrousel-title {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+.carrousel-subtitle {
+  font-size: 16px;
+  color: #64748b;
+  margin: 0;
+  font-weight: 400;
+}
+
+// 🎮 CONTROLES
+.carrousel-controls {
+  display: flex;
+  gap: 12px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+.control-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  background: white;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  &:hover:not(.disabled) {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
+  }
+
+  &:active:not(.disabled) {
+    transform: scale(0.95);
+  }
+
+  &.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+// 🎠 CARROUSEL WRAPPER
+.carrousel-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 8px 0 24px;
+  margin: 0 -8px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.carrousel-track {
+  display: flex;
+  gap: 24px;
+  padding: 0 8px;
+  width: fit-content;
+}
+
+.carrousel-item {
+  flex: 0 0 auto;
+  width: 340px;
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+
+  @media (max-width: 768px) {
+    width: 300px;
+  }
+
+  @media (max-width: 480px) {
+    width: 280px;
+  }
+
+  // Efecto hover en el contenedor
+  &:hover {
+    .worker-card {
+      transform: translateY(-8px);
+    }
+  }
+}
+
+// 📊 INDICADOR DE SCROLL
+.scroll-indicator {
+  width: 100%;
+  height: 3px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  margin-top: 32px;
+  overflow: hidden;
+  position: relative;
+}
+
+.scroll-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4));
+    animation: shimmer 2s infinite;
+  }
+}
+
+// 🔍 EMPTY STATE
+.empty-state {
+  text-align: center;
+  padding: 80px 24px;
+  color: #64748b;
+
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  p {
+    font-size: 18px;
+    margin: 0;
+  }
+}
+
+// 🎬 ANIMACIONES
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+// 🎨 MEJORAS PARA WORKERCARD DENTRO DEL CARROUSEL
+.carrousel-item {
+  .worker-card {
+    height: 100%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    &:hover {
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .worker-card-link {
+    display: block;
+    height: 100%;
+  }
+}
+
+// 📱 RESPONSIVE
+@media (max-width: 768px) {
+  .carrousel-section {
+    padding: 60px 0;
+  }
+
+  .carrousel-track {
+    gap: 16px;
+  }
+
+  .scroll-indicator {
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .carrousel-section {
+    padding: 40px 0;
+  }
+
+  .carrousel-container {
+    padding: 0 16px;
+  }
+
+  .carrousel-header {
+    margin-bottom: 24px;
+  }
+}

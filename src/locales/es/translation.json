@@ -460,5 +460,20 @@
     "maria": "Excelente servicio, muy profesionales y puntuales.",
     "carlos": "Resolvieron mi problema de plomería rápidamente.",
     "ana": "Muy contentos con el trabajo de jardinería realizado."
+  },
+   "publicProfile": {
+    "loading": "Cargando perfil...",
+    "notFound": "Perfil no encontrado",
+    "reviews": "reseñas",
+    "jobsCompleted": "trabajos completados",
+    "aboutMe": "Sobre mí",
+    "noBio": "Sin biografía",
+    "memberSince": "Miembro desde",
+    "mySkills": "Mis habilidades",
+    "clientReviews": "Reseñas de clientes",
+    "contact": "Contactar",
+    "contactInfo": "Información de contacto",
+    "phone": "Teléfono",
+    "rates": "Tarifas"
   }
 }
