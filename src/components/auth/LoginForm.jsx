@@ -57,17 +57,7 @@ const LoginForm = () => {
     resolver: yupResolver(schema),
   });
 
-  // Función para llenar datos de prueba
-  const fillTestData = (userType) => {
-    if (userType === 'cliente') {
-      setValue('email', 'cliente@test.com');
-      setValue('password', 'password123');
-    } else if (userType === 'trabajador') {
-      setValue('email', 'trabajador@test.com');
-      setValue('password', 'password123');
-    }
-  };
-
+  
   const onSubmit = async (data) => {
     try {
       console.log('🚀 Intentando login con:', { email: data.email });
@@ -115,28 +105,6 @@ const LoginForm = () => {
               borderRadius: 2 
             }}
           >
-            <Typography variant="subtitle2" gutterBottom color="text.secondary">
-              🧪 {t('auth.login.testData')}
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              <Button
-                size="small"
-                variant="outlined"
-                onClick={() => fillTestData('cliente')}
-              >
-                {t('auth.login.clientUser')}
-              </Button>
-              <Button
-                size="small"
-                variant="outlined"
-                onClick={() => fillTestData('trabajador')}
-              >
-                {t('auth.login.workerUser')}
-              </Button>
-            </Box>
-            <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-              {t('auth.login.autoFillInfo')}
-            </Typography>
           </Paper>
 
           <form onSubmit={handleSubmit(onSubmit)}>
