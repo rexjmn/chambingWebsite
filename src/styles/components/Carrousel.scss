@@ -1,13 +1,21 @@
 // src/styles/components/Carrousel.scss
 
+// Importar variables del archivo principal
+@import '../home.scss';
+
 .carrousel-section {
   width: 100%;
-  padding: 80px 0;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  padding: 4rem 0;
+  background: white;
   position: relative;
   overflow: hidden;
 
-  // Patrón de fondo sutil
+  // Alternancia de fondos para variedad
+  &:nth-of-type(even) {
+    background: linear-gradient(180deg, var(--color-gray-50) 0%, #FFFFFF 100%);
+  }
+
+  // Patrón de fondo sutil con colores del tema
   &::before {
     content: '';
     position: absolute;
@@ -15,56 +23,102 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: 
-      radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(35, 61, 255, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(79, 99, 255, 0.03) 0%, transparent 50%);
     pointer-events: none;
+  }
+
+  // Tablets
+  @media (min-width: 769px) {
+    padding: 6rem 0;
+  }
+
+  // Desktop
+  @media (min-width: 1025px) {
+    padding: 8rem 0;
   }
 }
 
 .carrousel-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 1rem;
   position: relative;
   z-index: 1;
+
+  @media (min-width: 769px) {
+    padding: 0 2rem;
+  }
+
+  @media (min-width: 1025px) {
+    padding: 0 3rem;
+  }
 }
 
 // 📌 HEADER
 .carrousel-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 48px;
-  gap: 24px;
+  align-items: center;
+  margin-bottom: 3rem;
+  gap: 1.5rem;
 
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
-    margin-bottom: 32px;
+    margin-bottom: 2rem;
   }
 }
 
 .header-content {
   flex: 1;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    text-align: left;
+    width: 100%;
+  }
 }
 
 .carrousel-title {
-  font-size: clamp(28px, 4vw, 42px);
+  font-family: var(--font-title);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
   font-weight: 800;
-  color: #1a1a1a;
-  margin: 0 0 8px 0;
+  color: var(--color-gray-900);
+  margin: 0 0 0.75rem 0;
   line-height: 1.2;
-  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  background: linear-gradient(135deg, var(--color-gray-900) 0%, var(--color-gray-700) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.02em;
+  position: relative;
+  display: inline-block;
+
+  // Subrayado decorativo
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-accent) 100%);
+    border-radius: 2px;
+
+    @media (max-width: 768px) {
+      left: 0;
+      transform: translateX(0);
+    }
+  }
 }
 
 .carrousel-subtitle {
-  font-size: 16px;
-  color: #64748b;
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 2vw, 1.125rem);
+  color: var(--color-gray-600);
   margin: 0;
   font-weight: 400;
 }
@@ -72,7 +126,7 @@
 // 🎮 CONTROLES
 .carrousel-controls {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
 
   @media (max-width: 768px) {
     width: 100%;
@@ -84,26 +138,31 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--color-gray-200);
   background: white;
-  color: #475569;
+  color: var(--color-gray-600);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-soft);
 
   &:hover:not(.disabled) {
-    background: #6366f1;
-    border-color: #6366f1;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
     color: white;
     transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
+    box-shadow: var(--shadow-medium);
   }
 
   &:active:not(.disabled) {
     transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(35, 61, 255, 0.4);
+    outline-offset: 2px;
   }
 
   &.disabled {
@@ -116,6 +175,16 @@
     width: 24px;
     height: 24px;
   }
+
+  @media (max-width: 768px) {
+    width: 44px;
+    height: 44px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
 }
 
 // 🎠 CARROUSEL WRAPPER
@@ -127,8 +196,8 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 8px 0 24px;
-  margin: 0 -8px;
+  padding: 0.5rem 0 1.5rem;
+  margin: 0 -0.5rem;
 
   &::-webkit-scrollbar {
     display: none;
@@ -141,9 +210,13 @@
 
 .carrousel-track {
   display: flex;
-  gap: 24px;
-  padding: 0 8px;
+  gap: 1.5rem;
+  padding: 0 0.5rem;
   width: fit-content;
+
+  @media (max-width: 768px) {
+    gap: 1rem;
+  }
 }
 
 .carrousel-item {
@@ -159,10 +232,11 @@
     width: 280px;
   }
 
-  // Efecto hover en el contenedor
+  // Efecto hover profesional
   &:hover {
     .worker-card {
       transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(35, 61, 255, 0.15);
     }
   }
 }
@@ -171,16 +245,20 @@
 .scroll-indicator {
   width: 100%;
   height: 3px;
-  background: #e2e8f0;
+  background: var(--color-gray-200);
   border-radius: 2px;
-  margin-top: 32px;
+  margin-top: 2rem;
   overflow: hidden;
   position: relative;
+
+  @media (max-width: 768px) {
+    margin-top: 1.5rem;
+  }
 }
 
 .scroll-progress {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-accent) 100%);
   border-radius: 2px;
   transition: width 0.3s ease;
   position: relative;
@@ -200,18 +278,32 @@
 // 🔍 EMPTY STATE
 .empty-state {
   text-align: center;
-  padding: 80px 24px;
-  color: #64748b;
+  padding: 5rem 1.5rem;
+  color: var(--color-gray-500);
 
   .empty-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
+    font-size: 4rem;
+    margin-bottom: 1rem;
     opacity: 0.5;
   }
 
   p {
-    font-size: 18px;
+    font-family: var(--font-body);
+    font-size: 1.125rem;
     margin: 0;
+    color: var(--color-gray-600);
+  }
+
+  @media (max-width: 768px) {
+    padding: 4rem 1rem;
+
+    .empty-icon {
+      font-size: 3rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
   }
 }
 
@@ -241,44 +333,62 @@
   .worker-card {
     height: 100%;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-medium);
+    border: 1px solid var(--color-gray-200);
 
     &:hover {
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 20px 40px rgba(35, 61, 255, 0.15);
+      border-color: var(--color-primary-light);
     }
   }
 
   .worker-card-link {
     display: block;
     height: 100%;
+    text-decoration: none;
   }
 }
 
 // 📱 RESPONSIVE
 @media (max-width: 768px) {
   .carrousel-section {
-    padding: 60px 0;
+    padding: 4rem 0;
   }
 
   .carrousel-track {
-    gap: 16px;
+    gap: 1rem;
   }
 
   .scroll-indicator {
-    margin-top: 24px;
+    margin-top: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .carrousel-section {
-    padding: 40px 0;
+    padding: 3rem 0;
   }
 
   .carrousel-container {
-    padding: 0 16px;
+    padding: 0 1rem;
   }
 
   .carrousel-header {
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
+  }
+}
+
+// 🎯 MEJORAS DE ACCESIBILIDAD
+@media (prefers-reduced-motion: reduce) {
+  .carrousel-item {
+    animation: none;
+  }
+
+  .scroll-progress::after {
+    animation: none;
+  }
+
+  .carrousel-wrapper {
+    scroll-behavior: auto;
   }
 }

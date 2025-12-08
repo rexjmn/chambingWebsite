@@ -1,0 +1,306 @@
+// Usar variables con @use (moderna sintaxis de Sass)
+@use './variables.scss' as *;
+
+// Botón base personalizado con efectos cool
+.custom-btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-transform: none;
+  border-radius: var(--border-radius);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 3px solid rgba(35, 61, 255, 0.4);
+    outline-offset: 2px;
+  }
+
+  // Tamaños
+  &-small {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+  }
+
+  &-medium {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+
+  &-large {
+    padding: 14px 32px;
+    font-size: 1.125rem;
+  }
+
+  // ============================================
+  // BOTÓN PRIMARY - Efecto de brillo y elevación
+  // ============================================
+  &-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
+    box-shadow:
+      0 4px 12px rgba(35, 61, 255, 0.3),
+      0 0 0 0 rgba(35, 61, 255, 0.5);
+    animation: pulse-shadow 2s ease-in-out infinite;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      transition: left 0.5s ease;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover:not(.custom-btn-disabled) {
+      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+      box-shadow:
+        0 8px 24px rgba(35, 61, 255, 0.4),
+        0 0 40px rgba(35, 61, 255, 0.2);
+      transform: translateY(-3px) scale(1.02);
+
+      &::before {
+        left: 100%;
+      }
+
+      &::after {
+        opacity: 1;
+      }
+    }
+
+    &:active:not(.custom-btn-disabled) {
+      transform: translateY(-1px) scale(0.98);
+      box-shadow: 0 4px 12px rgba(35, 61, 255, 0.3);
+    }
+  }
+
+  // ============================================
+  // BOTÓN SECONDARY - Efecto de borde animado
+  // ============================================
+  &-secondary {
+    background: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    border-width: 2px;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(45deg,
+        var(--color-primary),
+        var(--color-accent),
+        var(--color-primary)
+      );
+      border-radius: var(--border-radius);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+      background-size: 300% 300%;
+      animation: gradient-shift 3s ease infinite;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: white;
+      border-radius: calc(var(--border-radius) - 2px);
+      z-index: -1;
+    }
+
+    &:hover:not(.custom-btn-disabled) {
+      color: white;
+      border-color: transparent;
+      transform: translateY(-3px);
+      box-shadow:
+        0 8px 24px rgba(35, 61, 255, 0.3),
+        0 0 30px rgba(35, 61, 255, 0.15);
+
+      &::before {
+        opacity: 1;
+      }
+
+      &::after {
+        background: transparent;
+      }
+    }
+
+    &:active:not(.custom-btn-disabled) {
+      transform: translateY(-1px);
+    }
+  }
+
+  // ============================================
+  // BOTÓN OUTLINED - Efecto de relleno desde abajo
+  // ============================================
+  &-outlined {
+    background: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    position: relative;
+    z-index: 1;
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+      background: linear-gradient(180deg, var(--color-primary-light), var(--color-primary));
+      transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: -1;
+      border-radius: var(--border-radius);
+    }
+
+    &:hover:not(.custom-btn-disabled) {
+      color: white;
+      border-color: var(--color-primary-dark);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-medium);
+
+      &::before {
+        height: 100%;
+      }
+    }
+  }
+
+  // ============================================
+  // BOTÓN TEXT - Efecto ripple sutil
+  // ============================================
+  &-text {
+    background: transparent;
+    color: var(--color-primary);
+    border: none;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(35, 61, 255, 0.15), transparent);
+      border-radius: var(--border-radius);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.3s ease;
+    }
+
+    &:hover:not(.custom-btn-disabled) {
+      background: rgba(35, 61, 255, 0.08);
+
+      &::before {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  }
+
+  // ============================================
+  // BOTÓN GLASS - Efecto glassmorphism
+  // ============================================
+  &-glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+      border-radius: var(--border-radius);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover:not(.custom-btn-disabled) {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+      &::before {
+        opacity: 1;
+      }
+    }
+  }
+
+  // Full width
+  &-fullwidth {
+    width: 100%;
+  }
+
+  // Disabled
+  &-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+// Animaciones cool
+@keyframes pulse-shadow {
+  0%, 100% {
+    box-shadow:
+      0 4px 12px rgba(35, 61, 255, 0.3),
+      0 0 0 0 rgba(35, 61, 255, 0);
+  }
+  50% {
+    box-shadow:
+      0 4px 12px rgba(35, 61, 255, 0.3),
+      0 0 0 8px rgba(35, 61, 255, 0);
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .custom-btn-large {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+
+  .custom-btn-medium {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+  }
+}

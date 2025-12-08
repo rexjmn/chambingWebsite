@@ -2,23 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Carrousel from '../components/home/Carrousel';
 import { useTranslations } from '../hooks/useTranslations';
+import Button from '../components/common/Button';
+import SearchInput from '../components/common/SearchInput';
+import Chip from '../components/common/Chip';
 import {
   Box,
   Container,
   Typography,
-  Button,
   Grid,
   Card,
   CardContent,
   CardActions,
   Avatar,
-  Chip,
   Paper,
   useTheme,
   useMediaQuery,
   Rating,
-  TextField,
-  InputAdornment,
   CircularProgress,
 } from '@mui/material';
 import {
@@ -41,6 +40,7 @@ import { serviceService } from '../services/serviceService';
 import { workerService } from '../services/workerService'; // 👈 AGREGAR
 import heroManImage from '../assets/images/heroman.png';
 import '../styles/home.scss';
+import '../styles/button.scss';
 
 const Home = () => {
   const { t, translateService, common } = useTranslations();
@@ -207,68 +207,57 @@ const Home = () => {
   ];
 
   return (
-    <Box>
-      {/* Hero Section */}
+    <div>
+      {/* Hero Section - Sin Material-UI */}
       <section className="hero-section">
-        <Container maxWidth="xl" className="hero-container">
+        <div className="hero-container">
           <div className="hero-content">
+            {/* Contenido de texto - Izquierda */}
             <div className="hero-positioning">
               <div className="hero-left">
-                <Typography
-                  variant="h1"
-                  component="h1"
-                  className="hero-title"
-                >
+                <h1 className="hero-title">
                   {t('home.hero.title')}
-                </Typography>
-                
-                <div className="hero-divider"></div>
-                
-                <Typography
-                  variant="h5"
-                  className="hero-subtitle"
-                >
+                </h1>
+
+                <div className="hero-divider" />
+
+                <p className="hero-subtitle">
                   {t('home.hero.subtitle')}
-                </Typography>
-                
+                </p>
+
                 <div className="hero-actions">
                   {isAuthenticated ? (
-                    <Button
-                      variant="contained"
-                      size="large"
+                    <button
                       onClick={() => navigate('/dashboard')}
-                      className="hero-btn hero-btn-primary"
+                      className="custom-btn custom-btn-primary custom-btn-large"
                     >
                       {t('home.hero.dashboard')}
-                    </Button>
+                    </button>
                   ) : (
                     <>
-                      <Button
-                        variant="contained"
-                        size="large"
+                      <button
                         onClick={() => navigate('/register')}
-                        className="hero-btn hero-btn-primary"
+                        className="custom-btn custom-btn-primary custom-btn-large"
                       >
                         {t('home.hero.startNow')}
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        size="large"
+                      </button>
+                      <button
                         onClick={() => navigate('/login')}
-                        className="hero-btn hero-btn-secondary"
+                        className="custom-btn custom-btn-secondary custom-btn-large"
                       >
                         {t('home.hero.login')}
-                      </Button>
+                      </button>
                     </>
                   )}
                 </div>
               </div>
             </div>
 
+            {/* Imagen - Derecha */}
             <div className="hero-image-container">
-              <img 
-                src={heroManImage} 
-                alt="Professional worker" 
+              <img
+                src={heroManImage}
+                alt="Professional worker"
                 className="hero-image"
               />
               <div className="hero-image-glow"></div>
@@ -283,141 +272,305 @@ const Home = () => {
           {/* Barra de Búsqueda */}
           <div className="hero-search-section">
             <div className="hero-search-container">
-              <form onSubmit={handleSearch} className="hero-search-form">
-                <TextField
-                  fullWidth
-                  placeholder="¿Qué servicio necesitas? Ej: limpieza, plomería, electricista..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="hero-search-input"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search className="search-icon" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Button 
-                          type="submit"
-                          variant="contained"
-                          className="search-btn"
-                          disabled={!searchQuery.trim()}
-                        >
-                          Buscar Ahora
-                        </Button>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </form>
-              
+              <SearchInput
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={window.innerWidth < 768 ? t('home.search.placeholder') : t('home.search.placeholderLong')}
+                onSubmit={handleSearch}
+                fullWidth
+                className="hero-search-input"
+                startIcon={<Search className="search-icon" />}
+                endButton={window.innerWidth >= 768 && (
+                  <button
+                    type="submit"
+                    className="custom-btn custom-btn-primary search-btn"
+                    disabled={!searchQuery.trim()}
+                    onClick={handleSearch}
+                  >
+                    {t('home.search.searchNow')}
+                  </button>
+                )}
+              />
+              {window.innerWidth < 768 && (
+                <button
+                  type="submit"
+                  className="custom-btn custom-btn-primary custom-btn-fullwidth"
+                  disabled={!searchQuery.trim()}
+                  onClick={handleSearch}
+                  style={{ marginTop: '16px' }}
+                >
+                  {t('home.search.searchNow')}
+                </button>
+              )}
+
               <div className="popular-searches">
                 <div className="popular-searches-header">
-                  <Typography variant="caption" className="popular-label">
-                    Más solicitados:
-                  </Typography>
-                  <Typography variant="caption" className="popular-stats">
-                    +2,500 servicios completados este mes
-                  </Typography>
+                  <span className="popular-label">
+                    {t('home.search.mostRequested')}
+                  </span>
+                  <span className="popular-stats">
+                    {t('home.search.servicesCompleted')}
+                  </span>
                 </div>
                 <div className="popular-tags">
-                  <Chip 
-                    label="Limpieza Doméstica" 
-                    size="medium" 
-                    className="popular-tag trending"
-                    onClick={() => setSearchQuery('Limpieza doméstica')}
-                  />
-                  <Chip 
-                    label="Plomería 24/7" 
-                    size="medium" 
-                    className="popular-tag urgent"
-                    onClick={() => setSearchQuery('Plomería')}
-                  />
-                  <Chip 
-                    label="Electricista" 
-                    size="medium" 
-                    className="popular-tag popular"
-                    onClick={() => setSearchQuery('Electricista')}
-                  />
-                  <Chip 
-                    label="Jardinería" 
-                    size="medium" 
-                    className="popular-tag seasonal"
-                    onClick={() => setSearchQuery('Jardinería')}
-                  />
-                  <Chip 
-                    label="Carpintería" 
-                    size="medium" 
-                    className="popular-tag"
-                    onClick={() => setSearchQuery('Carpintería')}
-                  />
-                  <Chip 
-                    label="Construcción" 
-                    size="medium" 
-                    className="popular-tag"
-                    onClick={() => setSearchQuery('Construcción')}
-                  />
+                  {[
+                    { labelKey: 'home.search.popularTags.domesticCleaning', variant: 'trending', query: 'Limpieza doméstica' },
+                    { labelKey: 'home.search.popularTags.plumbing247', variant: 'urgent', query: 'Plomería' },
+                    { labelKey: 'home.search.popularTags.electrician', variant: 'popular', query: 'Electricista' },
+                    { labelKey: 'home.search.popularTags.gardening', variant: 'seasonal', query: 'Jardinería' },
+                    { labelKey: 'home.search.popularTags.carpentry', variant: 'default', query: 'Carpintería' },
+                    { labelKey: 'home.search.popularTags.construction', variant: 'default', query: 'Construcción' }
+                  ].map((tag, index) => (
+                    <Chip
+                      key={index}
+                      label={t(tag.labelKey)}
+                      size="medium"
+                      className="popular-tag"
+                      variant={tag.variant}
+                      onClick={() => setSearchQuery(tag.query)}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-        </Container>
+        </div>
       </section>
+
+      {/* More Details Section - Sobre Chambing */}
+      <Box className="more-details-section" sx={{ bgcolor: 'grey.50', py: { xs: 6, sm: 7, md: 8 } }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={{ xs: 4, md: 6 }} alignItems="center">
+            {/* Contenido de texto */}
+            <Grid item xs={12} lg={7}>
+              <Box textAlign={{ xs: 'center', lg: 'left' }}>
+                <Typography
+                  variant="h3"
+                  className="section-title"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: { xs: '2rem', sm: '2.5rem', md: '2.75rem', lg: '3rem' },
+                    mb: 2
+                  }}
+                >
+                  {t('MoreDetails.moreDetailsTitle')}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.25rem' },
+                    lineHeight: 1.7,
+                    color: 'text.secondary',
+                    maxWidth: { lg: '650px' },
+                    mx: { xs: 'auto', lg: 0 }
+                  }}
+                >
+                  {t('MoreDetails.moreDetailsDescription')}
+                </Typography>
+              </Box>
+            </Grid>
+
+            {/* Keywords/Tags para SEO visual */}
+            <Grid item xs={12} lg={5}>
+              <Box sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 1.5,
+                justifyContent: { xs: 'center', lg: 'flex-start' }
+              }}>
+                {t('MoreDetails.moreDetailsKeywords').split(', ').slice(0, 8).map((keyword, index) => (
+                  <Chip
+                    key={index}
+                    label={keyword}
+                    variant="outlined"
+                    sx={{
+                      borderColor: 'primary.main',
+                      color: 'primary.main',
+                      fontSize: { xs: '0.9rem', md: '0.95rem' },
+                      fontWeight: 500,
+                      '&:hover': {
+                        bgcolor: 'primary.main',
+                        color: 'white',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 12px rgba(35, 61, 255, 0.2)',
+                      },
+                      transition: 'all 0.3s ease'
+                    }}
+                  />
+                ))}
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
 
       {/* 🎠 CARROUSEL DE DESTACADOS */}
       {loadingWorkers ? (
         <Box sx={{ py: 8, textAlign: 'center' }}>
           <CircularProgress size={60} />
           <Typography variant="h6" sx={{ mt: 2, color: 'text.secondary' }}>
-            Cargando profesionales...
+            {t('home.workers.loading')}
           </Typography>
         </Box>
       ) : (
         <>
           {featuredWorkers.length > 0 && (
-            <Carrousel 
+            <Carrousel
               workers={featuredWorkers}
-              title="Profesionales Destacados"
-              subtitle="Los más solicitados de la semana"
+              title={t('home.workers.featured')}
+              subtitle={t('home.workers.featuredSubtitle')}
             />
           )}
 
           {topRatedWorkers.length > 0 && (
-            <Carrousel 
+            <Carrousel
               workers={topRatedWorkers}
-              title="Mejor Valorados"
-              subtitle="Calidad garantizada por nuestros usuarios"
+              title={t('home.workers.topRated')}
+              subtitle={t('home.workers.topRatedSubtitle')}
             />
           )}
         </>
       )}
 
-      {/* Features Section */}
-      <Box sx={{ bgcolor: 'grey.50', py: 8 }}>
+      
+
+      {/* Stats Section - Nueva sección de estadísticas */}
+        <Box className="stats-section" sx={{ py: { xs: 6, sm: 8, md: 10 }, bgcolor: 'grey.50' }}>
+          <Container maxWidth="lg">
+            <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} justifyContent="center">
+          {[
+            { number: '5,000+', label: t('home.stats.verifiedProfessionals'), icon: <CheckCircle /> },
+            { number: '15,000+', label: t('home.stats.completedServices'), icon: <Build /> },
+            { number: '4.8/5', label: t('home.stats.averageRating'), icon: <Star /> },
+            { number: '98%', label: t('home.stats.satisfiedClients'), icon: <Security /> },
+          ].map((stat, index) => (
+            <Grid key={index} item xs={12} sm={6} md={3}>
+              <Box 
+          className="stat-card" 
+          sx={{ 
+            textAlign: 'center',
+            p: { xs: 3, sm: 4, md: 4 },
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%'
+          }}
+              >
+            <Box
+              sx={{
+          fontSize: { xs: '4rem', sm: '5rem', md: '5.5rem' },
+          mb: 2,
+          color: 'primary.main',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+              }}
+            >
+              {stat.icon}
+            </Box>
+            <Typography
+              variant="h3"
+              sx={{
+          fontWeight: 800,
+          color: 'primary.main',
+          mb: 1,
+          fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
+              }}
+            >
+              {stat.number}
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ fontSize: { xs: '1rem', sm: '1.1rem', md: '1.15rem' }, fontWeight: 500 }}
+            >
+              {stat.label}
+            </Typography>
+              </Box>
+            </Grid>
+          ))}
+            </Grid>
+          </Container>
+        </Box>
+
+        {/* Features Section */}}}
+      <Box className="features-section" sx={{ bgcolor: 'grey.50', py: { xs: 5, sm: 6, md: 6 } }}>
         <Container maxWidth="lg">
-          <Typography variant="h3" textAlign="center" gutterBottom>
-            {t('home.features.title')}
-          </Typography>
-          <Grid container spacing={4} sx={{ mt: 4 }}>
+          <Box
+            textAlign={{ xs: 'center', lg: 'left' }}
+            sx={{ mb: { xs: 4, md: 5 } }}
+          >
+            <Typography
+              variant="h3"
+              className="section-title"
+              sx={{
+                fontWeight: 700,
+                fontSize: { xs: '2rem', sm: '2.5rem', md: '2.75rem', lg: '3rem' },
+                mb: 2
+              }}
+            >
+              {t('home.features.title')}
+            </Typography>
+            <Typography
+              variant="h6"
+              className="section-subtitle"
+              sx={{
+                fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.3rem' },
+                maxWidth: { lg: '600px' }
+              }}
+            >
+              {t('home.features.subtitle')}
+            </Typography>
+          </Box>
+          <Grid container spacing={{ xs: 3, md: 4 }} sx={{ mt: 1 }}>
             {features.map((feature, index) => (
-              <Grid key={index} item xs={12} md={4}>
-                <Box textAlign="center">
+              <Grid key={index} item xs={12} sm={6} md={4}>
+                <Box
+                  textAlign="center"
+                  sx={{
+                    p: { xs: 3, md: 4 },
+                    borderRadius: 3,
+                    height: '100%',
+                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                    border: '1px solid',
+                    borderColor: 'transparent',
+                    bgcolor: 'white',
+                    '&:hover': {
+                      transform: 'translateY(-8px)',
+                      boxShadow: '0 20px 40px rgba(35, 61, 255, 0.12)',
+                      borderColor: 'primary.light',
+                    }
+                  }}
+                >
                   <Avatar
                     sx={{
                       bgcolor: 'primary.light',
-                      width: 80,
-                      height: 80,
+                      width: { xs: 70, sm: 80, md: 90 },
+                      height: { xs: 70, sm: 80, md: 90 },
                       mx: 'auto',
-                      mb: 2,
+                      mb: 3,
+                      boxShadow: '0 8px 24px rgba(35, 61, 255, 0.2)',
                     }}
                   >
                     {feature.icon}
                   </Avatar>
-                  <Typography variant="h5" gutterBottom>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                      fontWeight: 600,
+                      fontSize: { xs: '1.3rem', sm: '1.45rem', md: '1.6rem' }
+                    }}
+                  >
                     {feature.title}
                   </Typography>
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: '1rem', sm: '1.1rem', md: '1.15rem' } }}
+                  >
                     {feature.description}
                   </Typography>
                 </Box>
@@ -428,26 +581,94 @@ const Home = () => {
       </Box>
 
       {/* Testimonials Section */}
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Typography variant="h3" textAlign="center" gutterBottom>
-          {t('home.testimonials.title')}
-        </Typography>
-        <Grid container spacing={4} sx={{ mt: 4 }}>
+      <Container maxWidth="lg" className="testimonials-section" sx={{ py: { xs: 5, sm: 6, md: 6 } }}>
+        <Box
+          textAlign={{ xs: 'center', lg: 'left' }}
+          sx={{ mb: { xs: 4, md: 5 } }}
+        >
+          <Typography
+            variant="h3"
+            className="section-title"
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: '2rem', sm: '2.5rem', md: '2.75rem', lg: '3rem' },
+              mb: 2
+            }}
+          >
+            {t('home.testimonials.title')}
+          </Typography>
+          <Typography
+            variant="h6"
+            className="section-subtitle"
+            sx={{
+              fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.3rem' },
+              maxWidth: { lg: '600px' }
+            }}
+          >
+            {t('home.testimonials.subtitle')}
+          </Typography>
+        </Box>
+        <Grid container spacing={{ xs: 3, md: 4 }} sx={{ mt: 1 }}>
           {testimonials.map((testimonial, index) => (
-            <Grid key={index} item xs={12} md={4}>
-              <Card sx={{ height: '100%' }}>
-                <CardContent>
-                  <Box display="flex" alignItems="center" mb={2}>
-                    <Avatar sx={{ mr: 2 }}>
+            <Grid key={index} item xs={12} sm={6} md={4}>
+              <Card
+                sx={{
+                  height: '100%',
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'grey.200',
+                  bgcolor: 'white',
+                }}
+              >
+                <CardContent sx={{ p: { xs: 2.5, sm: 3, md: 4 } }}>
+                  <Box display="flex" alignItems="center" mb={2.5}>
+                    <Avatar
+                      sx={{
+                        mr: 2,
+                        width: { xs: 48, sm: 56, md: 64 },
+                        height: { xs: 48, sm: 56, md: 64 },
+                        bgcolor: 'primary.main',
+                        fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
+                        fontWeight: 600
+                      }}
+                    >
                       {testimonial.name.charAt(0)}
                     </Avatar>
                     <Box>
-                      <Typography variant="h6">{testimonial.name}</Typography>
-                      <Chip label={testimonial.service} size="small" />
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.3rem' }
+                        }}
+                      >
+                        {testimonial.name}
+                      </Typography>
+                      <Chip
+                        label={testimonial.service}
+                        size="small"
+                        className="testimonial-chip"
+                        variant="popular"
+                      />
                     </Box>
                   </Box>
-                  <Rating value={testimonial.rating} readOnly sx={{ mb: 2 }} />
-                  <Typography variant="body2">"{testimonial.comment}"</Typography>
+                  <Rating
+                    value={testimonial.rating}
+                    readOnly
+                    size={isMobile ? 'medium' : 'large'}
+                    sx={{ mb: 2 }}
+                  />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
+                      lineHeight: 1.7,
+                      fontStyle: 'italic'
+                    }}
+                  >
+                    "{testimonial.comment}"
+                  </Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -455,39 +676,82 @@ const Home = () => {
         </Grid>
       </Container>
 
+      
       {/* CTA Section */}
-      <Paper
+      <Box
+        className="cta-section"
         sx={{
-          bgcolor: 'primary.main',
+          background: 'linear-gradient(135deg, #233DFF 0%, #4F63FF 100%)',
           color: 'white',
-          py: 8,
+          py: { xs: 6, sm: 7, md: 8 },
           textAlign: 'center',
         }}
       >
-        <Container maxWidth="md">
-          <Typography variant="h3" gutterBottom>
+        <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
+          <Typography
+            variant="h3"
+            gutterBottom
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: '2rem', sm: '2.5rem', md: '2.75rem', lg: '3rem' },
+              mb: 2
+            }}
+          >
             {t('home.cta.title')}
           </Typography>
-          <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              mb: { xs: 4, md: 4 },
+              opacity: 0.95,
+              fontSize: { xs: '1.15rem', sm: '1.25rem', md: '1.35rem' },
+              fontWeight: 400,
+              maxWidth: '650px',
+              mx: 'auto',
+              px: { xs: 2, sm: 0 }
+            }}
+          >
             {t('home.cta.subtitle')}
           </Typography>
           {!isAuthenticated && (
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => navigate('/register')}
-              sx={{
-                bgcolor: 'white',
-                color: 'primary.main',
-                '&:hover': { bgcolor: 'grey.100' },
-              }}
-            >
-              {t('home.cta.createAccount')}
-            </Button>
+            <Box sx={{
+              display: 'flex',
+              gap: 2,
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              px: { xs: 2, sm: 0 }
+            }}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => navigate('/register')}
+                className="cta-btn-primary"
+                sx={{
+                  minWidth: { xs: '100%', sm: 'auto' },
+                  fontSize: { xs: '1.1rem', md: '1.2rem' },
+                  py: { xs: 1.75, md: 2 }
+                }}
+              >
+                {t('home.cta.createAccount')}
+              </Button>
+              <Button
+                variant="outlined"
+                size="large"
+                onClick={() => navigate('/login')}
+                className="cta-btn-secondary"
+                sx={{
+                  minWidth: { xs: '100%', sm: 'auto' },
+                  fontSize: { xs: '1.1rem', md: '1.2rem' },
+                  py: { xs: 1.75, md: 2 }
+                }}
+              >
+                {t('home.hero.login')}
+              </Button>
+            </Box>
           )}
         </Container>
-      </Paper>
-    </Box>
+      </Box>
+    </div>
   );
 };
 

@@ -319,13 +319,42 @@
       "login": "Sign In",
       "dashboard": "Go to Dashboard"
     },
+    "search": {
+      "placeholder": "Search services...",
+      "placeholderLong": "What service do you need? E.g.: cleaning, plumbing, electrician...",
+      "searchNow": "Search Now",
+      "mostRequested": "Most requested:",
+      "servicesCompleted": "+2,500 services completed this month",
+      "popularTags": {
+        "domesticCleaning": "Domestic Cleaning",
+        "plumbing247": "Plumbing 24/7",
+        "electrician": "Electrician",
+        "gardening": "Gardening",
+        "carpentry": "Carpentry",
+        "construction": "Construction"
+      }
+    },
     "services": {
       "title": "Our Services",
       "subtitle": "Find the perfect professional for every task",
       "viewProfessionals": "View Professionals"
     },
+    "workers": {
+      "loading": "Loading professionals...",
+      "featured": "Featured Professionals",
+      "featuredSubtitle": "Most requested this week",
+      "topRated": "Top Rated",
+      "topRatedSubtitle": "Quality guaranteed by our users"
+    },
+    "stats": {
+      "verifiedProfessionals": "Verified Professionals",
+      "completedServices": "Completed Services",
+      "averageRating": "Average Rating",
+      "satisfiedClients": "Satisfied Clients"
+    },
     "features": {
       "title": "Why choose us?",
+      "subtitle": "Everything you need to hire with confidence",
       "verifiedWorkers": {
         "title": "Verified Workers",
         "description": "All our professionals go through a rigorous verification process"
@@ -340,7 +369,8 @@
       }
     },
     "testimonials": {
-      "title": "What our users say"
+      "title": "What our users say",
+      "subtitle": "Real stories from our users"
     },
     "cta": {
       "title": "Ready to get started?",
@@ -483,5 +513,10 @@
   "sendMessage": "Send message",
   "workExperience": "Work experience",
   "education": "Education"
-}
+},
+"MoreDetails": {
+        "moreDetailsTitle": "Chambing: Your Trusted Platform for Freelance Domestic Services in El Salvador",
+        "moreDetailsDescription": "Chambing connects individuals with verified freelance professionals for a wide range of domestic services in El Salvador. Whether you need expert cleaning, reliable plumbing, professional gardening, or other home services, find skilled workers quickly and securely. Empowering independent workers and simplifying your daily life.",
+        "moreDetailsKeywords": "domestic services El Salvador, freelance services, home services, cleaning, plumbing, gardening, independent workers, local services, find professionals, hire services, El Salvador jobs"
+      }
 }

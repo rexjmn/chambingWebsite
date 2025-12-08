@@ -1,0 +1,76 @@
+// Animaciones optimizadas con GPU acceleration
+.animated-section {
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: opacity var(--animation-duration, 600ms) ease-out var(--animation-delay, 0ms),
+              transform var(--animation-duration, 600ms) ease-out var(--animation-delay, 0ms);
+
+  // Estado visible
+  &.is-visible {
+    opacity: 1;
+
+    // Fade Up (defecto)
+    &.animation-fadeUp {
+      transform: translateY(0);
+    }
+
+    // Fade In
+    &.animation-fadeIn {
+      transform: scale(1);
+    }
+
+    // Slide Left
+    &.animation-slideLeft {
+      transform: translateX(0);
+    }
+
+    // Slide Right
+    &.animation-slideRight {
+      transform: translateX(0);
+    }
+
+    // Scale
+    &.animation-scale {
+      transform: scale(1);
+    }
+  }
+
+  // Estados iniciales por tipo de animación
+  &.animation-fadeUp {
+    transform: translateY(40px);
+  }
+
+  &.animation-fadeIn {
+    transform: scale(0.95);
+  }
+
+  &.animation-slideLeft {
+    transform: translateX(-40px);
+  }
+
+  &.animation-slideRight {
+    transform: translateX(40px);
+  }
+
+  &.animation-scale {
+    transform: scale(0.9);
+  }
+
+  // Sin animación para usuarios que prefieren reducción de movimiento
+  &.no-animation {
+    opacity: 1;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto;
+  }
+}
+
+// Optimización de rendimiento
+@media (prefers-reduced-motion: reduce) {
+  .animated-section {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+}

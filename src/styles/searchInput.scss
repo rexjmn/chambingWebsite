@@ -1,0 +1,118 @@
+// Importar variables
+@import './variables.scss';
+
+.search-input-form {
+  width: 100%;
+
+  &.fullwidth {
+    width: 100%;
+  }
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid rgba(35, 61, 255, 0.1);
+  box-shadow: var(--shadow-strong);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 70px;
+
+  &:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+  }
+
+  &:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(35, 61, 255, 0.1), var(--shadow-glow);
+    transform: translateY(-2px);
+  }
+}
+
+.search-input-icon-start {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 20px;
+  padding-right: 12px;
+  color: var(--color-primary);
+  font-size: 1.5rem;
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.search-input-field {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 20px 20px;
+  color: var(--color-gray-800);
+
+  &::placeholder {
+    color: var(--color-gray-500);
+    opacity: 1;
+    font-weight: 400;
+  }
+}
+
+.search-input-icon-end {
+  display: flex;
+  align-items: center;
+  padding-right: 6px;
+}
+
+// Responsive
+@media (max-width: 960px) {
+  .search-input-wrapper {
+    height: 60px;
+  }
+
+  .search-input-field {
+    font-size: 1rem;
+    padding: 16px 16px;
+  }
+
+  .search-input-icon-start {
+    padding-left: 16px;
+    padding-right: 10px;
+    font-size: 1.25rem;
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .search-input-wrapper {
+    height: 56px;
+  }
+
+  .search-input-field {
+    font-size: 0.875rem;
+    padding: 14px;
+  }
+
+  .search-input-icon-start {
+    padding-left: 12px;
+    font-size: 1.125rem;
+
+    svg {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+}

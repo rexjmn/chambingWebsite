@@ -1,0 +1,123 @@
+// Importar variables
+@import './variables.scss';
+
+.custom-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-weight: 500;
+  border-radius: var(--border-radius);
+  border: 1.5px solid var(--color-gray-200);
+  background: var(--color-gray-50);
+  color: var(--color-gray-700);
+  padding: 8px 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  // Tamaños
+  &-small {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  & {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+  }
+
+  &-large {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+
+  // Clickable
+  &-clickable {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-primary);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+      border-color: var(--color-primary);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(35, 61, 255, 0.4);
+      outline-offset: 2px;
+    }
+  }
+
+  // Variantes de estilo
+  &-trending {
+    border-color: #EF4444;
+    background: #FEF2F2;
+    color: #DC2626;
+
+    &.custom-chip-clickable:hover {
+      background: #EF4444;
+      color: white;
+      border-color: #EF4444;
+    }
+  }
+
+  &-urgent {
+    border-color: #F59E0B;
+    background: #FFFBEB;
+    color: #D97706;
+
+    &.custom-chip-clickable:hover {
+      background: #F59E0B;
+      color: white;
+      border-color: #F59E0B;
+    }
+  }
+
+  &-popular {
+    border-color: var(--color-primary);
+    background: var(--color-primary-ultra-light);
+    color: var(--color-primary);
+
+    &.custom-chip-clickable:hover {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+  }
+
+  &-seasonal {
+    border-color: #10B981;
+    background: #ECFDF5;
+    color: #059669;
+
+    &.custom-chip-clickable:hover {
+      background: #10B981;
+      color: white;
+      border-color: #10B981;
+    }
+  }
+
+  &-default {
+    // Ya están los estilos por defecto arriba
+  }
+}
+
+// Responsive
+@media (max-width: 600px) {
+  .custom-chip {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .custom-chip-small {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+
+  .custom-chip-large {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+  }
+}

@@ -1,0 +1,84 @@
+// Modern skeleton loaders with shimmer effect
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #f8f8f8 20%,
+    #f0f0f0 40%,
+    #f0f0f0 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 8px;
+  display: inline-block;
+
+  &-text {
+    height: 16px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+  }
+
+  &-avatar {
+    border-radius: 50%;
+  }
+
+  &-cover {
+    width: 100%;
+    border-radius: 0;
+  }
+
+  &-button {
+    border-radius: 8px;
+  }
+
+  &-icon {
+    border-radius: 50%;
+  }
+}
+
+// Cards con skeleton
+.worker-card-skeleton,
+.stat-card-skeleton {
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      #2a2a2a 0%,
+      #3a3a3a 20%,
+      #2a2a2a 40%,
+      #2a2a2a 100%
+    );
+  }
+
+  .worker-card-skeleton,
+  .stat-card-skeleton {
+    background: #1e1e1e;
+  }
+}
+
+// Optimización de performance
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: #f0f0f0;
+  }
+}

@@ -1,76 +1,73 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+/**
+ * ========================================================================
+ * SERVICE DES TRAVAILLEURS - Utilisant AXIOS avec intercepteurs
+ * ========================================================================
+ *
+ * Ce service gère les travailleurs et leurs données associées.
+ * Il utilise l'instance configurée d'Axios avec des intercepteurs.
+ *
+ * Verbes HTTP utilisés :
+ * - GET : Pour obtenir les travailleurs, les catégories et les données associées
+ */
+import api from './api';
 
 export const workerService = {
   /**
-   * Obtiene trabajadores verificados con filtros
+   * Obtient les travailleurs vérifiés avec des filtres optionnels
+   * Verbe HTTP : GET avec des paramètres de requête
+   *
+   * @param {Object} filters - Filtres de recherche (catégorie, département, recherche, vérifié)
+   * @returns {Promise} Liste des travailleurs
    */
   async getVerifiedWorkers(filters = {}) {
     try {
-      // Construir query params
-      const params = new URLSearchParams();
-      
-      if (filters.categoria) params.append('categoria', filters.categoria);
-      if (filters.departamento) params.append('departamento', filters.departamento);
-      if (filters.search) params.append('search', filters.search);
-      if (filters.verificado !== undefined) params.append('verificado', filters.verificado);
-      
-      const queryString = params.toString();
-      const url = `${API_BASE_URL}/users/workers${queryString ? `?${queryString}` : ''}`;
-      
-      console.log('Fetching workers from:', url);
-      
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      // Construire les paramètres de requête - Axios permet de passer les params directement
+      const params = {};
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al cargar trabajadores');
-      }
+      if (filters.categoria) params.categoria = filters.categoria;
+      if (filters.departamento) params.departamento = filters.departamento;
+      if (filters.search) params.search = filters.search;
+      if (filters.verificado !== undefined) params.verificado = filters.verificado;
 
-      const data = await response.json();
-      return data;
+      // Utilisation d'Axios avec le verbe GET et les params
+      const response = await api.get('/users/workers', { params });
+      return response.data;
     } catch (error) {
-      console.error('Error fetching workers:', error);
       throw error;
     }
   },
 
   /**
-   * Obtiene un trabajador específico por ID
+   * Obtient un travailleur spécifique par ID
+   * Verbe HTTP : GET
+   *
+   * @param {string} workerId - ID du travailleur
+   * @returns {Promise} Données du travailleur
    */
   async getWorkerById(workerId) {
     try {
-      const response = await fetch(`${API_BASE_URL}/users/public/${workerId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al cargar el trabajador');
-      }
-
-      return await response.json();
+      // Utilisation d'Axios avec le verbe GET
+      const response = await api.get(`/users/public/${workerId}`);
+      return response.data;
     } catch (error) {
-      console.error('Error fetching worker:', error);
       throw error;
     }
   },
 
   /**
-   * Obtiene las categorías disponibles (puedes implementar esto en el backend)
+   * Obtient les catégories de services disponibles
+   * Verbe HTTP : GET
+   *
+   * @returns {Promise} Liste des catégories
    */
   async getCategories() {
     try {
-      const response = await fetch(`${API_BASE_URL}/services/categorias`);
-      
-      if (!response.ok) {
-        // Si el endpoint no existe, retornar categorías por defecto
+      // Utilisation d'Axios avec le verbe GET
+      const response = await api.get('/services/categorias');
+      return response.data;
+    } catch (error) {
+      // Si le endpoint n'existe pas, retourner des catégories par défaut
+      if (error.response?.status === 404) {
         return {
           status: 'success',
           data: [
@@ -84,10 +81,7 @@ export const workerService = {
         };
       }
 
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      // Retornar categorías por defecto en caso de error
+      // Pour les autres erreurs, retourner également des catégories par défaut
       return {
         status: 'success',
         data: [
@@ -99,6 +93,54 @@ export const workerService = {
           { id: '6', nombre: 'Carpintería' },
         ]
       };
+    }
+  },
+
+  /**
+   * Obtient les travailleurs mis en avant (featured)
+   * Verbe HTTP : GET (via getVerifiedWorkers)
+   * Pour l'instant, retourne les travailleurs vérifiés comme étant mis en avant
+   *
+   * @param {number} limit - Nombre maximum de travailleurs à retourner
+   * @returns {Promise} Liste des travailleurs mis en avant
+   */
+  async getFeaturedWorkers(limit = 8) {
+    try {
+      // Réutilise getVerifiedWorkers qui utilise Axios GET en interne
+      const response = await this.getVerifiedWorkers({ verificado: true });
+
+      if (response.status === 'success' && response.data) {
+        // Prendre seulement les premiers 'limit' travailleurs
+        return response.data.slice(0, limit);
+      }
+
+      return [];
+    } catch (error) {
+      return [];
+    }
+  },
+
+  /**
+   * Obtient les travailleurs les mieux notés
+   * Verbe HTTP : GET (via getVerifiedWorkers)
+   * Pour l'instant, retourne les travailleurs vérifiés comme étant les mieux notés
+   *
+   * @param {number} limit - Nombre maximum de travailleurs à retourner
+   * @returns {Promise} Liste des travailleurs les mieux notés
+   */
+  async getTopRatedWorkers(limit = 8) {
+    try {
+      // Réutilise getVerifiedWorkers qui utilise Axios GET en interne
+      const response = await this.getVerifiedWorkers({ verificado: true });
+
+      if (response.status === 'success' && response.data) {
+        // Prendre seulement les premiers 'limit' travailleurs
+        return response.data.slice(0, limit);
+      }
+
+      return [];
+    } catch (error) {
+      return [];
     }
   }
 };

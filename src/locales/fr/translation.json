@@ -319,13 +319,42 @@
       "login": "Se Connecter",
       "dashboard": "Aller au Tableau de Bord"
     },
+    "search": {
+      "placeholder": "Rechercher des services...",
+      "placeholderLong": "Quel service avez-vous besoin ? Ex : ménage, plomberie, électricien...",
+      "searchNow": "Rechercher Maintenant",
+      "mostRequested": "Les plus demandés :",
+      "servicesCompleted": "+2 500 services complétés ce mois",
+      "popularTags": {
+        "domesticCleaning": "Ménage Domestique",
+        "plumbing247": "Plomberie 24/7",
+        "electrician": "Électricien",
+        "gardening": "Jardinage",
+        "carpentry": "Menuiserie",
+        "construction": "Construction"
+      }
+    },
     "services": {
       "title": "Nos Services",
       "subtitle": "Trouvez le professionnel parfait pour chaque tâche",
       "viewProfessionals": "Voir les Professionnels"
     },
+    "workers": {
+      "loading": "Chargement des professionnels...",
+      "featured": "Professionnels en Vedette",
+      "featuredSubtitle": "Les plus demandés cette semaine",
+      "topRated": "Les Mieux Notés",
+      "topRatedSubtitle": "Qualité garantie par nos utilisateurs"
+    },
+    "stats": {
+      "verifiedProfessionals": "Professionnels Vérifiés",
+      "completedServices": "Services Complétés",
+      "averageRating": "Note Moyenne",
+      "satisfiedClients": "Clients Satisfaits"
+    },
     "features": {
       "title": "Pourquoi nous choisir ?",
+      "subtitle": "Tout ce dont vous avez besoin pour embaucher en toute confiance",
       "verifiedWorkers": {
         "title": "Travailleurs Vérifiés",
         "description": "Tous nos professionnels passent par un processus de vérification rigoureux"
@@ -340,7 +369,8 @@
       }
     },
     "testimonials": {
-      "title": "Ce que disent nos utilisateurs"
+      "title": "Ce que disent nos utilisateurs",
+      "subtitle": "Histoires réelles de nos utilisateurs"
     },
     "cta": {
       "title": "Prêt à commencer ?",
@@ -484,6 +514,11 @@
   "sendMessage": "Envoyer un message",
   "workExperience": "Expérience professionnelle",
   "education": "Formation"
-}
+},
+"MoreDetails": {
+        "moreDetailsTitle": "Chambing : Votre Plateforme de Confiance pour les Services Domestiques Freelance au Salvador",
+        "moreDetailsDescription": "Chambing met en relation les particuliers avec des professionnels freelance vérifiés pour un large éventail de services domestiques au Salvador. Que vous ayez besoin d'un ménage expert, d'une plomberie fiable, d'un jardinage professionnel ou d'autres services à domicile, trouvez des travailleurs qualifiés rapidement et en toute sécurité. Autonomisant les travailleurs indépendants et simplifiant votre quotidien.",
+        "moreDetailsKeywords": "services domestiques Salvador, services freelance, services à domicile, ménage, plomberie, jardinage, travailleurs indépendants, services locaux, trouver des professionnels, embaucher des services, emplois Salvador"
+      }
 
 }

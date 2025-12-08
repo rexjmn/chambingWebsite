@@ -347,7 +347,7 @@ const Dashboard = () => {
                 </button>
               </div>
 
-              {/* ✅ SECCIÓN CORREGIDA CON BOTONES MUI */}
+              
               <div className="dashboard__user-details">
                 <h2 id="profile-heading">
                   {t('dashboard.welcome', { name: user?.nombre || 'Usuario' })}
@@ -553,7 +553,11 @@ const Dashboard = () => {
               </div>
               <h3>{t('dashboard.noContracts.title')}</h3>
               <p>{t('dashboard.noContracts.subtitle')}</p>
-              <button className="dashboard__btn dashboard__btn--primary" type="button">
+              <button
+                className="dashboard__btn dashboard__btn--primary"
+                onClick={() => navigate('/')}
+                type="button"
+              >
                 {t('dashboard.noContracts.exploreServices')}
               </button>
             </div>
