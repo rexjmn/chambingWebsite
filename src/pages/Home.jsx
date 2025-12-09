@@ -349,7 +349,7 @@ const Home = () => {
                   className="section-title"
                   sx={{
                     fontWeight: 700,
-                    fontSize: { xs: '2rem', sm: '2.5rem', md: '2.75rem', lg: '3rem' },
+                    fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem', lg: '2.5rem' },
                     mb: 2
                   }}
                 >
@@ -358,7 +358,7 @@ const Home = () => {
                 <Typography
                   variant="body1"
                   sx={{
-                    fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.25rem' },
+                    fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
                     lineHeight: 1.7,
                     color: 'text.secondary',
                     maxWidth: { lg: '650px' },
@@ -386,7 +386,7 @@ const Home = () => {
                     sx={{
                       borderColor: 'primary.main',
                       color: 'primary.main',
-                      fontSize: { xs: '0.9rem', md: '0.95rem' },
+                      fontSize: { xs: '0.8rem', md: '0.85rem' },
                       fontWeight: 500,
                       '&:hover': {
                         bgcolor: 'primary.main',
@@ -460,7 +460,7 @@ const Home = () => {
               >
             <Box
               sx={{
-          fontSize: { xs: '4rem', sm: '5rem', md: '5.5rem' },
+          fontSize: { xs: '3rem', sm: '3.5rem', md: '4rem' },
           mb: 2,
           color: 'primary.main',
           display: 'flex',
@@ -476,7 +476,7 @@ const Home = () => {
           fontWeight: 800,
           color: 'primary.main',
           mb: 1,
-          fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
+          fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' }
               }}
             >
               {stat.number}
@@ -484,7 +484,7 @@ const Home = () => {
             <Typography
               variant="body1"
               color="text.secondary"
-              sx={{ fontSize: { xs: '1rem', sm: '1.1rem', md: '1.15rem' }, fontWeight: 500 }}
+              sx={{ fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' }, fontWeight: 500 }}
             >
               {stat.label}
             </Typography>
@@ -507,7 +507,7 @@ const Home = () => {
               className="section-title"
               sx={{
                 fontWeight: 700,
-                fontSize: { xs: '2rem', sm: '2.5rem', md: '2.75rem', lg: '3rem' },
+                fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem', lg: '2.5rem' },
                 mb: 2
               }}
             >
@@ -517,7 +517,7 @@ const Home = () => {
               variant="h6"
               className="section-subtitle"
               sx={{
-                fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.3rem' },
+                fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
                 maxWidth: { lg: '600px' }
               }}
             >
@@ -547,8 +547,8 @@ const Home = () => {
                   <Avatar
                     sx={{
                       bgcolor: 'primary.light',
-                      width: { xs: 70, sm: 80, md: 90 },
-                      height: { xs: 70, sm: 80, md: 90 },
+                      width: { xs: 60, sm: 70, md: 75 },
+                      height: { xs: 60, sm: 70, md: 75 },
                       mx: 'auto',
                       mb: 3,
                       boxShadow: '0 8px 24px rgba(35, 61, 255, 0.2)',
@@ -561,7 +561,7 @@ const Home = () => {
                     gutterBottom
                     sx={{
                       fontWeight: 600,
-                      fontSize: { xs: '1.3rem', sm: '1.45rem', md: '1.6rem' }
+                      fontSize: { xs: '1.15rem', sm: '1.25rem', md: '1.35rem' }
                     }}
                   >
                     {feature.title}
@@ -569,7 +569,7 @@ const Home = () => {
                   <Typography
                     variant="body1"
                     color="text.secondary"
-                    sx={{ fontSize: { xs: '1rem', sm: '1.1rem', md: '1.15rem' } }}
+                    sx={{ fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' } }}
                   >
                     {feature.description}
                   </Typography>
@@ -591,7 +591,7 @@ const Home = () => {
             className="section-title"
             sx={{
               fontWeight: 700,
-              fontSize: { xs: '2rem', sm: '2.5rem', md: '2.75rem', lg: '3rem' },
+              fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem', lg: '2.5rem' },
               mb: 2
             }}
           >
@@ -601,7 +601,7 @@ const Home = () => {
             variant="h6"
             className="section-subtitle"
             sx={{
-              fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.3rem' },
+              fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
               maxWidth: { lg: '600px' }
             }}
           >
@@ -625,10 +625,10 @@ const Home = () => {
                     <Avatar
                       sx={{
                         mr: 2,
-                        width: { xs: 48, sm: 56, md: 64 },
-                        height: { xs: 48, sm: 56, md: 64 },
+                        width: { xs: 44, sm: 48, md: 52 },
+                        height: { xs: 44, sm: 48, md: 52 },
                         bgcolor: 'primary.main',
-                        fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
+                        fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.35rem' },
                         fontWeight: 600
                       }}
                     >
@@ -639,7 +639,7 @@ const Home = () => {
                         variant="h6"
                         sx={{
                           fontWeight: 600,
-                          fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.3rem' }
+                          fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' }
                         }}
                       >
                         {testimonial.name}
@@ -655,14 +655,14 @@ const Home = () => {
                   <Rating
                     value={testimonial.rating}
                     readOnly
-                    size={isMobile ? 'medium' : 'large'}
+                    size="small"
                     sx={{ mb: 2 }}
                   />
                   <Typography
                     variant="body2"
                     color="text.secondary"
                     sx={{
-                      fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
+                      fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' },
                       lineHeight: 1.7,
                       fontStyle: 'italic'
                     }}
@@ -693,7 +693,7 @@ const Home = () => {
             gutterBottom
             sx={{
               fontWeight: 700,
-              fontSize: { xs: '2rem', sm: '2.5rem', md: '2.75rem', lg: '3rem' },
+              fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem', lg: '2.5rem' },
               mb: 2
             }}
           >
@@ -704,7 +704,7 @@ const Home = () => {
             sx={{
               mb: { xs: 4, md: 4 },
               opacity: 0.95,
-              fontSize: { xs: '1.15rem', sm: '1.25rem', md: '1.35rem' },
+              fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
               fontWeight: 400,
               maxWidth: '650px',
               mx: 'auto',
@@ -728,8 +728,8 @@ const Home = () => {
                 className="cta-btn-primary"
                 sx={{
                   minWidth: { xs: '100%', sm: 'auto' },
-                  fontSize: { xs: '1.1rem', md: '1.2rem' },
-                  py: { xs: 1.75, md: 2 }
+                  fontSize: { xs: '1rem', md: '1.05rem' },
+                  py: { xs: 1.5, md: 1.75 }
                 }}
               >
                 {t('home.cta.createAccount')}
@@ -741,8 +741,8 @@ const Home = () => {
                 className="cta-btn-secondary"
                 sx={{
                   minWidth: { xs: '100%', sm: 'auto' },
-                  fontSize: { xs: '1.1rem', md: '1.2rem' },
-                  py: { xs: 1.75, md: 2 }
+                  fontSize: { xs: '1rem', md: '1.05rem' },
+                  py: { xs: 1.5, md: 1.75 }
                 }}
               >
                 {t('home.hero.login')}
