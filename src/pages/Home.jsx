@@ -495,7 +495,7 @@ const Home = () => {
           </Container>
         </Box>
 
-        {/* Features Section */}}}
+        {/* Features Section */}
       <Box className="features-section" sx={{ bgcolor: 'grey.50', py: { xs: 5, sm: 6, md: 6 } }}>
         <Container maxWidth="lg">
           <Box
