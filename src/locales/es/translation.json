@@ -449,6 +449,7 @@
     "availableServices": "Servicios Disponibles",
     "recentContracts": "Contratos Recientes",
     "viewAll": "Ver Todos",
+    "viewWorkers": "Ver Trabajadores",
     "noContracts": {
       "title": "No tienes contratos aún",
       "subtitle": "Comienza explorando nuestros servicios disponibles",
@@ -456,9 +457,18 @@
     },
     "contract": {
       "number": "Contrato #{{id}}",
+      "code": "Contrato {{code}}",
       "status": "Estado: {{status}}",
       "date": "Fecha: {{date}}",
-      "viewDetails": "Ver Detalles"
+      "viewDetails": "Ver Detalles",
+      "category": "Categoría:",
+      "amount": "Monto:",
+      "activationPin": "PIN de activación:",
+      "activateContract": "Activar Contrato",
+      "enterPin": "Ingresa el PIN para activar el contrato {{code}}:",
+      "activating": "Activando contrato...",
+      "activated": "¡Contrato activado exitosamente!",
+      "activationError": "Error al activar el contrato"
     }
   },
   "services": {
@@ -599,10 +609,52 @@
     "mySkills": "Mis habilidades",
     "clientReviews": "Reseñas de clientes",
     "contact": "Contactar",
+    "hire": "Contratar",
     "contactInfo": "Información de contacto",
     "phone": "Teléfono",
-    "rates": "Tarifas"
-  }, 
+    "rates": "Tarifas",
+    "createContract": "Crear Contrato"
+  },
+  "createContract": {
+    "loading": "Cargando...",
+    "back": "Volver",
+    "title": "Crear Nuevo Contrato",
+    "subtitle": "Completa la información para generar un contrato de servicio",
+    "selectedWorker": "Trabajador Seleccionado",
+    "form": {
+      "category": "Categoría del Servicio",
+      "selectCategory": "Selecciona una categoría",
+      "description": "Descripción del Servicio",
+      "descriptionPlaceholder": "Describe el trabajo a realizar...",
+      "amount": "Monto Total (USD)",
+      "startDate": "Fecha de Inicio",
+      "endDate": "Fecha de Finalización",
+      "notes": "Notas Adicionales",
+      "notesPlaceholder": "Información adicional, requisitos especiales, etc...",
+      "cancel": "Cancelar",
+      "create": "Crear Contrato",
+      "creating": "Creando Contrato..."
+    },
+    "success": {
+      "title": "¡Contrato Creado Exitosamente!",
+      "contractCode": "Código del Contrato",
+      "activationPin": "PIN de Activación",
+      "pinInfo": "El trabajador deberá ingresar este PIN para activar el contrato.",
+      "goToDashboard": "Ir al Dashboard"
+    },
+    "errors": {
+      "loadError": "Error al cargar los datos necesarios",
+      "requiredFields": "Por favor completa todos los campos requeridos",
+      "createError": "Error al crear el contrato"
+    },
+    "info": {
+      "title": "Información Importante",
+      "pinGeneration": "Una vez creado el contrato, se generará un PIN de activación",
+      "workerPin": "El trabajador deberá ingresar el PIN para confirmar el contrato",
+      "pendingStatus": "El contrato estará en estado \"Pendiente de Activación\" hasta que el trabajador lo active",
+      "dashboard": "Puedes ver y gestionar tus contratos desde el Dashboard"
+    }
+  },
   "MoreDetails": {
         "moreDetailsTitle": "Chambing: Tu Plataforma de Confianza para Servicios Domésticos Freelance en El Salvador",
         "moreDetailsDescription": "Chambing conecta a particulares con profesionales freelance verificados para una amplia gama de servicios domésticos en El Salvador. Ya sea que necesites limpieza experta, fontanería fiable, jardinería profesional u otros servicios para el hogar, encuentra trabajadores cualificados de forma rápida y segura. Empoderando a los trabajadores independientes y simplificando tu vida diaria.",

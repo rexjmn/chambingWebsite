@@ -449,6 +449,7 @@
     "availableServices": "Services Disponibles",
     "recentContracts": "Contrats Récents",
     "viewAll": "Voir Tout",
+    "viewWorkers": "Voir les Travailleurs",
     "noContracts": {
       "title": "Vous n'avez pas encore de contrats",
       "subtitle": "Commencez par explorer nos services disponibles",
@@ -456,9 +457,18 @@
     },
     "contract": {
       "number": "Contrat #{{id}}",
+      "code": "Contrat {{code}}",
       "status": "Statut : {{status}}",
       "date": "Date : {{date}}",
-      "viewDetails": "Voir les Détails"
+      "viewDetails": "Voir les Détails",
+      "category": "Catégorie :",
+      "amount": "Montant :",
+      "activationPin": "PIN d'activation :",
+      "activateContract": "Activer le Contrat",
+      "enterPin": "Entrez le PIN pour activer le contrat {{code}} :",
+      "activating": "Activation du contrat...",
+      "activated": "Contrat activé avec succès !",
+      "activationError": "Erreur lors de l'activation du contrat"
     }
   },
   "services": {
@@ -600,9 +610,11 @@
   "mySkills": "Mes compétences",
   "clientReviews": "Avis des clients",
   "contact": "Contacter",
+  "hire": "Embaucher",
   "contactInfo": "Informations de contact",
   "phone": "Téléphone",
   "rates": "Tarifs",
+  "createContract": "Créer un Contrat",
   "back": "Retour",
   "professionalTitle": "Titre professionnel",
   "location": "Localisation",
@@ -611,6 +623,46 @@
   "sendMessage": "Envoyer un message",
   "workExperience": "Expérience professionnelle",
   "education": "Formation"
+},
+"createContract": {
+  "loading": "Chargement...",
+  "back": "Retour",
+  "title": "Créer un Nouveau Contrat",
+  "subtitle": "Complétez les informations pour générer un contrat de service",
+  "selectedWorker": "Travailleur Sélectionné",
+  "form": {
+    "category": "Catégorie de Service",
+    "selectCategory": "Sélectionnez une catégorie",
+    "description": "Description du Service",
+    "descriptionPlaceholder": "Décrivez le travail à réaliser...",
+    "amount": "Montant Total (USD)",
+    "startDate": "Date de Début",
+    "endDate": "Date de Fin",
+    "notes": "Notes Supplémentaires",
+    "notesPlaceholder": "Informations supplémentaires, exigences spéciales, etc...",
+    "cancel": "Annuler",
+    "create": "Créer un Contrat",
+    "creating": "Création du Contrat..."
+  },
+  "success": {
+    "title": "Contrat Créé avec Succès !",
+    "contractCode": "Code du Contrat",
+    "activationPin": "Code PIN d'Activation",
+    "pinInfo": "Le travailleur devra entrer ce code PIN pour activer le contrat.",
+    "goToDashboard": "Aller au Tableau de Bord"
+  },
+  "errors": {
+    "loadError": "Erreur lors du chargement des données nécessaires",
+    "requiredFields": "Veuillez remplir tous les champs requis",
+    "createError": "Erreur lors de la création du contrat"
+  },
+  "info": {
+    "title": "Informations Importantes",
+    "pinGeneration": "Une fois le contrat créé, un code PIN d'activation sera généré",
+    "workerPin": "Le travailleur devra entrer le code PIN pour confirmer le contrat",
+    "pendingStatus": "Le contrat sera en état \"En attente d'activation\" jusqu'à ce que le travailleur l'active",
+    "dashboard": "Vous pouvez consulter et gérer vos contrats depuis le Tableau de Bord"
+  }
 },
 "MoreDetails": {
         "moreDetailsTitle": "Chambing : Votre Plateforme de Confiance pour les Services Domestiques Freelance au Salvador",

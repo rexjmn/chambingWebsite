@@ -12,8 +12,15 @@ $secondary-color: #64748b;
 $success-color: #10b981;
 $warning-color: #f59e0b;
 $danger-color: #ef4444;
+$error-color: #ef4444;
 $light-color: #f8fafc;
 $dark-color: #1e293b;
+$white: #ffffff;
+
+// Colores de texto
+$text-primary: #1e293b;
+$text-secondary: #64748b;
+$text-muted: #94a3b8;
 
 // Variables con prefijo brand- (para dashboard)
 $brand-primary: #2540FF;
@@ -57,19 +64,12 @@ $border-radius-xl: 1rem;
 $shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$shadow-primary-sm: 0 4px 6px rgba(37, 99, 235, 0.2);
+$shadow-primary: 0 8px 16px rgba(37, 99, 235, 0.3);
 
 // ===== VARIABLES CSS (Custom Properties) =====
 :root {
-  // ===== Variables del NAVBAR =====
-  --chambing-primary: #1a1a1a;
-  --chambing-secondary: #666666;
-  --chambing-light-gray: #f8f9fa;
-  --chambing-border: rgba(0, 0, 0, 0.08);
-  --chambing-hover: rgba(0, 0, 0, 0.04);
-  --chambing-shadow: rgba(0, 0, 0, 0.12);
-  --chambing-text: #2c3e50;
-  --chambing-text-light: #6c757d;
-  --chambing-brand-shadow: rgba(0, 0, 0, 0.15);
+
 
   // ===== Variables del HOME =====
   // Fuentes

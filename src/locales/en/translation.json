@@ -449,6 +449,7 @@
     "availableServices": "Available Services",
     "recentContracts": "Recent Contracts",
     "viewAll": "View All",
+    "viewWorkers": "View Workers",
     "noContracts": {
       "title": "You don't have any contracts yet",
       "subtitle": "Start exploring our available services",
@@ -456,9 +457,18 @@
     },
     "contract": {
       "number": "Contract #{{id}}",
+      "code": "Contract {{code}}",
       "status": "Status: {{status}}",
       "date": "Date: {{date}}",
-      "viewDetails": "View Details"
+      "viewDetails": "View Details",
+      "category": "Category:",
+      "amount": "Amount:",
+      "activationPin": "Activation PIN:",
+      "activateContract": "Activate Contract",
+      "enterPin": "Enter the PIN to activate contract {{code}}:",
+      "activating": "Activating contract...",
+      "activated": "Contract activated successfully!",
+      "activationError": "Error activating contract"
     }
   },
   "services": {
@@ -599,9 +609,11 @@
   "mySkills": "My skills",
   "clientReviews": "Client reviews",
   "contact": "Contact",
+  "hire": "Hire",
   "contactInfo": "Contact information",
   "phone": "Phone",
   "rates": "Rates",
+  "createContract": "Create Contract",
   "back": "Back",
   "professionalTitle": "Professional Title",
   "location": "Location",
@@ -610,6 +622,46 @@
   "sendMessage": "Send message",
   "workExperience": "Work experience",
   "education": "Education"
+},
+"createContract": {
+  "loading": "Loading...",
+  "back": "Back",
+  "title": "Create New Contract",
+  "subtitle": "Complete the information to generate a service contract",
+  "selectedWorker": "Selected Worker",
+  "form": {
+    "category": "Service Category",
+    "selectCategory": "Select a category",
+    "description": "Service Description",
+    "descriptionPlaceholder": "Describe the work to be done...",
+    "amount": "Total Amount (USD)",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "notes": "Additional Notes",
+    "notesPlaceholder": "Additional information, special requirements, etc...",
+    "cancel": "Cancel",
+    "create": "Create Contract",
+    "creating": "Creating Contract..."
+  },
+  "success": {
+    "title": "Contract Created Successfully!",
+    "contractCode": "Contract Code",
+    "activationPin": "Activation PIN",
+    "pinInfo": "The worker must enter this PIN to activate the contract.",
+    "goToDashboard": "Go to Dashboard"
+  },
+  "errors": {
+    "loadError": "Error loading required data",
+    "requiredFields": "Please complete all required fields",
+    "createError": "Error creating contract"
+  },
+  "info": {
+    "title": "Important Information",
+    "pinGeneration": "Once the contract is created, an activation PIN will be generated",
+    "workerPin": "The worker must enter the PIN to confirm the contract",
+    "pendingStatus": "The contract will be in \"Pending Activation\" status until the worker activates it",
+    "dashboard": "You can view and manage your contracts from the Dashboard"
+  }
 },
 "MoreDetails": {
         "moreDetailsTitle": "Chambing: Your Trusted Platform for Freelance Domestic Services in El Salvador",

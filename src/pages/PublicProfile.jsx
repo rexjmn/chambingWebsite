@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { publicProfileService } from '../services/publicProfileService';
 import '../styles/Public-profile.scss';
 // Iconos de Material UI
@@ -24,12 +25,14 @@ import {
   Email as EmailIcon,
   Close as CloseIcon,
   FormatQuote as FormatQuoteIcon,
+  Assignment as AssignmentIcon,
 } from '@mui/icons-material';
 
 const PublicProfile = () => {
   const { t, i18n } = useTranslation();
   const { userId } = useParams();
   const navigate = useNavigate();
+  const { user: currentUser, isAuthenticated } = useAuth();
 
   const [user, setUser] = useState(null);
   const [skills, setSkills] = useState([]);
@@ -112,6 +115,17 @@ const PublicProfile = () => {
         ))}
       </>
     );
+  };
+
+  const handleHire = () => {
+    if (!isAuthenticated) {
+      // Redirect to login if not authenticated
+      navigate('/login', { state: { from: `/profile/${userId}` } });
+      return;
+    }
+
+    // Navigate to contract creation page with worker ID
+    navigate(`/contracts/create?workerId=${userId}`);
   };
 
   const formatDate = (dateString) => {
@@ -282,16 +296,30 @@ const PublicProfile = () => {
                 </div>
               )}
 
-              {/* Botón de Contacto - Solo si hay teléfono (trabajadores verificados) */}
-              {user.telefono && (
-                <button
-                  onClick={() => setShowContactModal(true)}
-                  className="contact-button"
-                >
-                  <PhoneIcon />
-                  {t('publicProfile.contact') || 'Contactar'}
-                </button>
-              )}
+              {/* Botones de acción */}
+              <div className="action-buttons">
+                {/* Botón de Contacto - Solo si hay teléfono (trabajadores verificados) */}
+                {user.telefono && (
+                  <button
+                    onClick={() => setShowContactModal(true)}
+                    className="contact-button"
+                  >
+                    <PhoneIcon />
+                    {t('publicProfile.contact') || 'Contactar'}
+                  </button>
+                )}
+
+                {/* Botón de Contratar - Solo para trabajadores verificados */}
+                {isTrabajador && isVerified && (
+                  <button
+                    onClick={handleHire}
+                    className="hire-button"
+                  >
+                    <AssignmentIcon />
+                    {t('publicProfile.hire') || 'Contratar'}
+                  </button>
+                )}
+              </div>
 
               {/* Mensaje si no está verificado */}
               {isTrabajador && !isVerified && (

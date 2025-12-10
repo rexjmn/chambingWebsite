@@ -144,7 +144,9 @@ const Navbar = () => {
       PaperProps={{
         sx: {
           width: 300,
-          backgroundColor: 'background.paper',
+          backgroundColor: '#ffffff !important',
+          color: '#1a1a1a !important',
+          colorScheme: 'light',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
           borderRadius: '0 16px 16px 0',
         }
@@ -190,11 +192,11 @@ const Navbar = () => {
               }}
             >
               {item.icon && (
-                <Box 
+                <Box
                   className="chambing-mobile-nav-icon"
-                  sx={{ 
-                    mr: 2.5, 
-                    color: 'text.secondary',
+                  sx={{
+                    mr: 2.5,
+                    color: '#64748b !important',
                     minWidth: 28,
                     display: 'flex',
                     justifyContent: 'center'
@@ -203,12 +205,12 @@ const Navbar = () => {
                   {item.icon}
                 </Box>
               )}
-              <ListItemText 
+              <ListItemText
                 primary={item.label}
                 primaryTypographyProps={{
                   fontWeight: 600,
                   fontSize: '1rem',
-                  color: 'text.primary'
+                  color: '#1a1a1a'
                 }}
               />
             </ListItem>
@@ -217,8 +219,8 @@ const Navbar = () => {
           {isAuthenticated && (
             <>
               <Divider sx={{ my: 3, opacity: 0.1 }} />
-              <ListItem 
-                button 
+              <ListItem
+                button
                 onClick={handleLogout}
                 className="chambing-mobile-logout-item"
                 sx={{
@@ -232,11 +234,11 @@ const Navbar = () => {
                   },
                 }}
               >
-                <Box 
+                <Box
                   className="chambing-mobile-logout-icon"
-                  sx={{ 
-                    mr: 2.5, 
-                    color: 'error.main',
+                  sx={{
+                    mr: 2.5,
+                    color: '#ef4444 !important',
                     minWidth: 28,
                     display: 'flex',
                     justifyContent: 'center'
@@ -244,12 +246,12 @@ const Navbar = () => {
                 >
                   <Logout />
                 </Box>
-                <ListItemText 
+                <ListItemText
                   primary={nav.logout}
                   primaryTypographyProps={{
                     fontWeight: 600,
                     fontSize: '1rem',
-                    color: 'error.main'
+                    color: '#ef4444'
                   }}
                 />
               </ListItem>
@@ -313,12 +315,14 @@ const Navbar = () => {
 
   return (
     <>
-      <AppBar 
-        position="sticky" 
+      <AppBar
+        position="sticky"
         elevation={0}
         className="chambing-main-appbar"
         sx={{
-          backgroundColor: 'background.paper',
+          backgroundColor: '#ffffff !important',
+          color: '#1a1a1a !important',
+          colorScheme: 'light',
           borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
           backdropFilter: 'blur(12px)',
         }}
@@ -337,9 +341,9 @@ const Navbar = () => {
               edge="start"
               onClick={handleMobileMenuToggle}
               className="chambing-mobile-menu-trigger"
-              sx={{ 
+              sx={{
                 mr: 2,
-                color: 'text.primary',
+                color: '#1a1a1a !important',
                 '&:hover': {
                   backgroundColor: 'rgba(0, 0, 0, 0.04)',
                   transform: 'scale(1.05)',
@@ -379,7 +383,7 @@ const Navbar = () => {
                   startIcon={item.icon}
                   className="chambing-nav-button"
                   sx={{
-                    color: 'text.primary',
+                    color: '#1a1a1a !important',
                     textTransform: 'none',
                     fontWeight: 600,
                     fontSize: '0.95rem',
@@ -391,6 +395,9 @@ const Navbar = () => {
                       backgroundColor: 'rgba(0, 0, 0, 0.04)',
                       transform: 'translateY(-2px)',
                       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                    },
+                    '& .MuiButton-startIcon': {
+                      color: '#1a1a1a !important',
                     },
                   }}
                 >
@@ -406,7 +413,7 @@ const Navbar = () => {
                     startIcon={<Dashboard />}
                     className="chambing-dashboard-button"
                     sx={{
-                      color: 'text.primary',
+                      color: '#1a1a1a !important',
                       textTransform: 'none',
                       fontWeight: 600,
                       fontSize: '0.95rem',
@@ -419,6 +426,9 @@ const Navbar = () => {
                         backgroundColor: 'rgba(0, 0, 0, 0.04)',
                         transform: 'translateY(-2px)',
                         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                      },
+                      '& .MuiButton-startIcon': {
+                        color: '#1a1a1a !important',
                       },
                     }}
                   >
@@ -443,12 +453,12 @@ const Navbar = () => {
                     <LanguageSelector variant="icon" size="medium" />
                   </Box>
                   
-                  <Button 
-                    component={Link} 
+                  <Button
+                    component={Link}
                     to="/login"
                     className="chambing-login-button"
                     sx={{
-                      color: 'text.primary',
+                      color: '#1a1a1a !important',
                       textTransform: 'none',
                       fontWeight: 600,
                       fontSize: '0.95rem',
@@ -471,7 +481,7 @@ const Navbar = () => {
                     component={Link}
                     to="/register"
                     className="chambing-register-button"
-                    sx={{ 
+                    sx={{
                       ml: 2,
                       textTransform: 'none',
                       fontWeight: 700,
@@ -479,12 +489,12 @@ const Navbar = () => {
                       px: 4,
                       py: 1.5,
                       borderRadius: 3,
-                      backgroundColor: 'text.primary',
-                      color: 'background.paper',
+                      backgroundColor: '#1a1a1a !important',
+                      color: '#ffffff !important',
                       boxShadow: 'none',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
-                        backgroundColor: 'text.secondary',
+                        backgroundColor: '#64748b !important',
                         boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)',
                         transform: 'translateY(-2px)',
                       },
@@ -517,7 +527,9 @@ const Navbar = () => {
             mt: 1.5,
             minWidth: 260,
             borderRadius: 4,
-            backgroundColor: 'background.paper',
+            backgroundColor: '#ffffff !important',
+            color: '#1a1a1a !important',
+            colorScheme: 'light',
             border: '1px solid rgba(0, 0, 0, 0.08)',
             boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
             '& .MuiMenuItem-root': {
@@ -525,6 +537,7 @@ const Navbar = () => {
               margin: '4px 16px',
               fontWeight: 600,
               fontSize: '0.95rem',
+              color: '#1a1a1a !important',
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               '&:hover': {
                 backgroundColor: 'rgba(0, 0, 0, 0.04)',
@@ -537,11 +550,11 @@ const Navbar = () => {
       >
         {/* Header del menú con info del usuario */}
         {user && (
-          <Box 
+          <Box
             className="chambing-profile-header"
-            sx={{ 
-              px: 4, 
-              py: 3, 
+            sx={{
+              px: 4,
+              py: 3,
               borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
               backgroundColor: 'rgba(0, 0, 0, 0.02)'
             }}
@@ -549,23 +562,23 @@ const Navbar = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
               <UserProfileAvatar size={48} />
               <Box>
-                <Typography 
-                  variant="subtitle1" 
+                <Typography
+                  variant="subtitle1"
                   className="chambing-profile-name"
-                  sx={{ 
+                  sx={{
                     fontWeight: 700,
-                    color: 'text.primary',
+                    color: '#1a1a1a !important',
                     mb: 0.5,
                     fontSize: '1.1rem'
                   }}
                 >
                   {user.nombre}
                 </Typography>
-                <Typography 
-                  variant="caption" 
+                <Typography
+                  variant="caption"
                   className="chambing-profile-email"
-                  sx={{ 
-                    color: 'text.secondary',
+                  sx={{
+                    color: '#64748b !important',
                     fontSize: '0.8rem'
                   }}
                 >
@@ -576,27 +589,27 @@ const Navbar = () => {
           </Box>
         )}
         
-        <MenuItem 
-          component={Link} 
-          to="/perfil" 
+        <MenuItem
+          component={Link}
+          to="/perfil"
           onClick={handleMenuClose}
           className="chambing-profile-menu-item"
           sx={{ mt: 1 }}
         >
-          <Person sx={{ 
-            fontSize: '1.3em', 
-            mr: 2, 
-            color: 'text.secondary' 
+          <Person sx={{
+            fontSize: '1.3em',
+            mr: 2,
+            color: '#64748b !important'
           }} />
           {nav.profile}
         </MenuItem>
-        
-        <MenuItem 
+
+        <MenuItem
           onClick={handleLogout}
           className="chambing-logout-menu-item"
-          sx={{ color: 'error.main' }}
+          sx={{ color: '#ef4444 !important' }}
         >
-          <Logout sx={{ fontSize: '1.3em', mr: 2 }} />
+          <Logout sx={{ fontSize: '1.3em', mr: 2, color: '#ef4444 !important' }} />
           {nav.logout}
         </MenuItem>
       </Menu>

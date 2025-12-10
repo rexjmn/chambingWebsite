@@ -136,7 +136,7 @@ const Dashboard = () => {
   };
 
   const handleActivateContract = async (contract) => {
-    const pin = prompt(`Ingresa el PIN para activar el contrato ${contract.codigo_contrato}:`);
+    const pin = prompt(t('dashboard.contract.enterPin', { code: contract.codigo_contrato }));
     if (!pin) return;
 
     try {
@@ -146,11 +146,11 @@ const Dashboard = () => {
       );
 
       if (response.status === 'success') {
-        alert('Contrato activado exitosamente');
+        alert(t('dashboard.contract.activated'));
         window.location.reload();
       }
     } catch (error) {
-      alert('Error al activar el contrato: ' + (error.response?.data?.message || error.message));
+      alert(t('dashboard.contract.activationError') + ': ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -475,16 +475,16 @@ const Dashboard = () => {
             <h2 id="services-heading">{t('dashboard.availableServices')}</h2>
           </div>
           <div className="dashboard__services">
-            {categories.slice(0, 6).map((category) => (
+            {categories.map((category) => (
               <article key={category.id} className="dashboard__service-card">
                 <h3>{translateService(category.nombre)}</h3>
                 <p>{category.descripcion}</p>
-                <button 
-                  className="dashboard__btn dashboard__btn--outlined" 
+                <button
+                  className="dashboard__btn dashboard__btn--outlined"
                   onClick={() => handleViewWorkers(category.id)}
                   type="button"
                 >
-                  Ver Trabajadores
+                  {t('dashboard.viewWorkers')}
                 </button>
               </article>
             ))}
@@ -505,20 +505,20 @@ const Dashboard = () => {
               {contracts.slice(0, 3).map((contract) => (
                 <article key={contract.id} className="dashboard__contract-card">
                   <div className="dashboard__contract-header">
-                    <h3>Contrato {contract.codigo_contrato}</h3>
+                    <h3>{t('dashboard.contract.code', { code: contract.codigo_contrato })}</h3>
                     <span className={`dashboard__contract-status dashboard__contract-status--${contract.estado}`}>
                       {contract.estado.replace('_', ' ').toUpperCase()}
                     </span>
                   </div>
 
                   <div className="dashboard__contract-details">
-                    <p><strong>Categoría:</strong> {contract.categoria?.nombre || 'N/A'}</p>
-                    <p><strong>Monto:</strong> ${contract.monto_total}</p>
-                    <p><strong>Fecha:</strong> {formatDate(contract.fecha_creacion)}</p>
+                    <p><strong>{t('dashboard.contract.category')}</strong> {contract.categoria?.nombre || 'N/A'}</p>
+                    <p><strong>{t('dashboard.contract.amount')}</strong> ${contract.monto_total}</p>
+                    <p><strong>{t('dashboard.contract.date', { date: formatDate(contract.fecha_creacion) })}</strong></p>
 
                     {contract.estado === 'pendiente_activacion' && (
                       <div className="dashboard__contract-pin">
-                        <p><strong>PIN de activación:</strong></p>
+                        <p><strong>{t('dashboard.contract.activationPin')}</strong></p>
                         <code className="dashboard__pin-code">{contract.pin_activacion}</code>
                       </div>
                     )}
@@ -530,7 +530,7 @@ const Dashboard = () => {
                       onClick={() => navigate(`/contracts/${contract.id}`)}
                       type="button"
                     >
-                      Ver Detalles
+                      {t('dashboard.contract.viewDetails')}
                     </button>
 
                     {contract.estado === 'pendiente_activacion' && (
@@ -539,7 +539,7 @@ const Dashboard = () => {
                         onClick={() => handleActivateContract(contract)}
                         type="button"
                       >
-                        Activar Contrato
+                        {t('dashboard.contract.activateContract')}
                       </button>
                     )}
                   </div>

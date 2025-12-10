@@ -1,14 +1,18 @@
 // Importar variables centralizadas
 @use './variables.scss' as *;
 
+
+
 // Estilos principales del navbar con nuevos nombres de clases
 .chambing-main-appbar {
   // FORZAR color scheme light para prevenir tema oscuro
   color-scheme: light !important;
   -webkit-color-scheme: light !important;
 
-  @include glass-effect;
+  // Fondo blanco sólido sin transparencia
+  background-color: #ffffff !important;
   backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
 
   // Forzar en todos los elementos hijos
   * {
@@ -16,16 +20,20 @@
     -webkit-color-scheme: light !important;
   }
 
-  // Forzar iconos y SVG
+  // Forzar iconos y SVG con color oscuro
   svg,
   .MuiSvgIcon-root {
     filter: none !important;
     -webkit-filter: none !important;
+    color: #1a1a1a !important;
   }
+
+  // Forzar color de texto
+  color: #1a1a1a !important;
 
   // Sombra sutil al hacer scroll
   &.scrolled {
-    @include subtle-shadow;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08) !important;
     backdrop-filter: blur(20px);
   }
 }
@@ -70,13 +78,13 @@
   text-decoration: none;
   padding: 8px 12px;
   border-radius: 12px;
-  
+
   &:hover {
     transform: scale(1.02);
-    background: var(--chambing-hover);
-    
+    background: rgba(0, 0, 0, 0.04) !important;
+
     .chambing-brand-logo {
-      filter: drop-shadow(0 4px 12px var(--chambing-brand-shadow)) brightness(1.05);
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15)) brightness(1.05);
     }
   }
   
@@ -119,7 +127,7 @@
   font-weight: 700;
   font-size: 1.8rem;
   letter-spacing: 0.5px;
-  color: var(--chambing-primary);
+  color: #1a1a1a;
   
   @media (max-width: 768px) {
     font-size: 1.6rem;
@@ -143,7 +151,8 @@
   font-weight: 600 !important;
   padding: 12px 20px !important;
   border-radius: 12px !important;
-  
+  color: #1a1a1a !important;
+
   &::after {
     content: '';
     position: absolute;
@@ -151,20 +160,21 @@
     left: 50%;
     width: 0;
     height: 2px;
-    background: var(--chambing-primary);
+    background: #1a1a1a !important;
     transform: translateX(-50%);
     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 1px;
   }
-  
+
   &:hover {
     @include hover-lift(-2px);
-    
+    background: rgba(0, 0, 0, 0.04) !important;
+
     &::after {
       width: 40%;
     }
   }
-  
+
   &:active {
     transform: scale(0.98);
   }
@@ -221,7 +231,7 @@
   &:hover {
     transform: scale(1.08);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    border-color: var(--chambing-primary);
+    border-color: #1a1a1a;
   }
 }
 
@@ -230,7 +240,7 @@
   
   &:hover {
     transform: scale(1.05);
-    background: var(--chambing-hover);
+    background: rgba(0, 0, 0, 0.04);
   }
 }
 
@@ -239,8 +249,8 @@
   .MuiDrawer-paper {
     @include elegant-shadow;
     border-radius: 0 20px 20px 0 !important;
-    background-color: #ffffff !important;
-    
+    background-color: #ffffff !important; // Fondo blanco sólido
+
     // Overlay sutil
     &::before {
       content: '';
@@ -251,7 +261,7 @@
       bottom: 0;
       background: linear-gradient(
         180deg,
-        rgba(0, 0, 0, 0.02) 0%,
+        rgba(37, 64, 255, 0.02) 0%,
         transparent 25%
       );
       pointer-events: none;
@@ -265,14 +275,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(
-    135deg,
-    var(--chambing-light-gray) 0%,
-    rgba(255, 255, 255, 0.95) 100%
-  );
+  background: #f8f9fa !important;
   margin: 0 16px;
   border-radius: 12px;
-  
+
   .chambing-brand-logo {
     max-height: 72px;
   }
@@ -280,10 +286,15 @@
 
 .chambing-mobile-menu-trigger {
   @include smooth-transition;
-  
+  color: #1a1a1a !important;
+
   &:hover {
     transform: scale(1.05);
-    background: var(--chambing-hover);
+    background: rgba(0, 0, 0, 0.04) !important;
+  }
+
+  svg {
+    color: #1a1a1a !important;
   }
 }
 
@@ -292,7 +303,8 @@
   border-radius: 12px !important;
   margin-bottom: 8px !important;
   padding: 12px 16px !important;
-  
+  color: #1a1a1a !important;
+
   &::before {
     content: '';
     position: absolute;
@@ -301,18 +313,23 @@
     transform: translateY(-50%);
     width: 0;
     height: 70%;
-    background: var(--chambing-primary);
+    background: #1a1a1a !important;
     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 0 4px 4px 0;
   }
-  
+
   &:hover {
     transform: translateX(8px);
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
-    
+    background: rgba(0, 0, 0, 0.04) !important;
+
     &::before {
       width: 4px;
     }
+  }
+
+  svg {
+    color: #1a1a1a !important;
   }
 }
 
@@ -321,7 +338,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: var(--chambing-secondary);
+  color: #666666 !important;
 }
 
 .chambing-mobile-logout-item {
@@ -355,15 +372,11 @@
 }
 
 .chambing-profile-header {
-  background: linear-gradient(
-    135deg, 
-    var(--chambing-light-gray) 0%, 
-    rgba(255, 255, 255, 0.95) 100%
-  );
+  background: #f8f9fa !important;
   border-radius: 12px;
   margin: 8px;
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -372,7 +385,7 @@
     transform: translateX(-50%);
     width: 80%;
     height: 1px;
-    background: var(--chambing-border);
+    background: rgba(0, 0, 0, 0.08) !important;
     opacity: 0.5;
   }
 }
@@ -380,12 +393,12 @@
 .chambing-profile-name {
   font-weight: 700 !important;
   font-size: 1.1rem !important;
-  color: var(--chambing-text) !important;
+  color: #2c3e50 !important;
 }
 
 .chambing-profile-email {
   font-size: 0.8rem !important;
-  color: var(--chambing-text-light) !important;
+  color: #6c757d !important;
   opacity: 0.8;
 }
 
@@ -405,7 +418,7 @@
     top: 0;
     bottom: 0;
     width: 0;
-    background: var(--chambing-primary);
+    background: #1a1a1a;
     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 12px 0 0 12px;
   }
@@ -440,7 +453,7 @@
     
     &:hover {
       transform: scale(1.05);
-      background: var(--chambing-hover);
+      background: rgba(0, 0, 0, 0.04);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
   }
@@ -482,7 +495,7 @@
 .chambing-main-appbar {
   .MuiButton-root:focus-visible,
   .MuiIconButton-root:focus-visible {
-    outline: 2px solid var(--chambing-primary);
+    outline: 2px solid #1a1a1a;
     outline-offset: 3px;
     border-radius: 8px;
   }
@@ -491,7 +504,7 @@
 // Estados activos con mejor indicador
 .chambing-nav-item-active {
   position: relative;
-  background: var(--chambing-hover) !important;
+  background: rgba(0, 0, 0, 0.04) !important;
   
   &::after {
     content: '';
@@ -501,7 +514,7 @@
     transform: translateX(-50%);
     width: 24px;
     height: 3px;
-    background: var(--chambing-primary);
+    background: #1a1a1a;
     border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
@@ -612,7 +625,7 @@
 
 // Bordes elegantes
 .chambing-border {
-  border: 1px solid var(--chambing-border);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
 }
 
@@ -622,11 +635,11 @@
 }
 
 .chambing-border-top {
-  border-top: 1px solid var(--chambing-border);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .chambing-border-bottom {
-  border-bottom: 1px solid var(--chambing-border);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 // Estados de hover personalizados

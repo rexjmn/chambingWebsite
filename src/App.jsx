@@ -15,6 +15,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import EditProfile from './pages/EditProfile';
 import PublicProfile from './pages/PublicProfile';
 import Services from './pages/Service'; // ✅ NUEVA IMPORTACIÓN
+import CreateContract from './pages/CreateContract';
 import './styles/globals.scss';
 
 // Componente para resetear el scroll en cada cambio de ruta
@@ -74,7 +75,17 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                
+
+                {/* Crear Contrato - Solo usuarios autenticados */}
+                <Route
+                  path="/contracts/create"
+                  element={
+                    <ProtectedRoute>
+                      <CreateContract />
+                    </ProtectedRoute>
+                  }
+                />
+
                 {/* Ruta protegida - Dashboard Administrativo */}
                 <Route
                   path="/admin"

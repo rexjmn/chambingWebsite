@@ -142,5 +142,126 @@ export const workerService = {
     } catch (error) {
       return [];
     }
+  },
+
+  /**
+   * Obtient les travailleurs filtrés par catégorie
+   * Verbe HTTP : GET avec paramètres de catégorie
+   *
+   * @param {string} categoryId - ID ou nom de la catégorie
+   * @param {Object} additionalFilters - Filtres supplémentaires optionnels
+   * @returns {Promise} Liste des travailleurs de cette catégorie
+   */
+  async getWorkersByCategory(categoryId, additionalFilters = {}) {
+    try {
+      // Combiner le filtre de catégorie avec d'autres filtres
+      const filters = {
+        ...additionalFilters,
+        categoria: categoryId,
+        verificado: true
+      };
+
+      const response = await this.getVerifiedWorkers(filters);
+
+      if (response.status === 'success' && response.data) {
+        return response.data;
+      }
+
+      return [];
+    } catch (error) {
+      console.error('Error obteniendo trabajadores por categoría:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Categoriza los travailleurs par leurs compétences
+   * Groupe les travailleurs selon leurs skills en une ou plusieurs catégories
+   *
+   * @returns {Promise} Objet avec catégories comme clés et tableaux de travailleurs comme valeurs
+   */
+  async categorizeWorkersBySkills() {
+    try {
+      const response = await this.getVerifiedWorkers({ verificado: true });
+
+      if (response.status !== 'success' || !response.data) {
+        return {};
+      }
+
+      const workers = response.data;
+      const categorized = {};
+
+      // Mapeo de skills a categorías
+      const skillToCategoryMap = {
+        // Limpieza
+        'limpieza_domestica': 'Limpieza',
+        'limpieza_oficinas': 'Limpieza',
+        'lavanderia': 'Limpieza',
+
+        // Construcción
+        'construccion': 'Construcción',
+        'albanileria': 'Construcción',
+        'techos': 'Construcción',
+
+        // Plomería
+        'plomeria': 'Plomería',
+        'instalacion_sanitarios': 'Plomería',
+        'destapes': 'Plomería',
+
+        // Electricidad
+        'electricidad': 'Electricidad',
+        'instalacion_electrica': 'Electricidad',
+        'reparacion_electrodomesticos': 'Electricidad',
+
+        // Carpintería
+        'carpinteria': 'Carpintería',
+        'muebles': 'Carpintería',
+        'ebanisteria': 'Carpintería',
+
+        // Jardinería
+        'jardineria': 'Jardinería',
+        'paisajismo': 'Jardinería',
+        'poda': 'Jardinería',
+
+        // Otros
+        'pintura': 'Pintura',
+        'mecanica': 'Mecánica',
+        'catering': 'Catering',
+        'seguridad': 'Seguridad'
+      };
+
+      workers.forEach(worker => {
+        // Obtener las skills del trabajador (puede estar en worker.skills o worker.habilidades)
+        const workerSkills = worker.skills || worker.habilidades || [];
+
+        // Si el trabajador tiene skills, categorizarlo
+        if (Array.isArray(workerSkills) && workerSkills.length > 0) {
+          workerSkills.forEach(skill => {
+            const skillName = typeof skill === 'string' ? skill : skill.nombre || skill.name;
+            const category = skillToCategoryMap[skillName] || 'Otros';
+
+            if (!categorized[category]) {
+              categorized[category] = [];
+            }
+
+            // Evitar duplicados si el trabajador tiene múltiples skills de la misma categoría
+            if (!categorized[category].find(w => w.id === worker.id)) {
+              categorized[category].push(worker);
+            }
+          });
+        } else {
+          // Si no tiene skills definidas, ponerlo en "Sin categorizar"
+          if (!categorized['Sin categorizar']) {
+            categorized['Sin categorizar'] = [];
+          }
+          categorized['Sin categorizar'].push(worker);
+        }
+      });
+
+      return categorized;
+    } catch (error) {
+      console.error('Error categorizando trabajadores:', error);
+      return {};
+    }
   }
 };
