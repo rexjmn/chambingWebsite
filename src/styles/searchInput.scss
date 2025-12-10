@@ -1,5 +1,5 @@
-// Importar variables
-@import './variables.scss';
+// Importar variables centralizadas
+@use './variables.scss' as *;
 
 .search-input-form {
   width: 100%;

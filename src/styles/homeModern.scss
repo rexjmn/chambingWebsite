@@ -1,16 +1,8 @@
 // ===== ESTILOS MODERNOS HOME =====
 // Glassmorphism, Gradientes, Efectos visuales de última generación
 
-// Variables modernas
-:root {
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --shadow-glow-primary: 0 8px 32px rgba(35, 61, 255, 0.15);
-  --shadow-glow-hover: 0 20px 60px rgba(35, 61, 255, 0.25);
-  --gradient-primary: linear-gradient(135deg, #233DFF 0%, #4F63FF 50%, #8B5CF6 100%);
-  --gradient-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
+// Importar variables centralizadas
+@use './variables.scss' as *;
 
 // ===== HERO SECTION ULTRA MODERNO =====
 .hero-section-modern {
@@ -58,10 +50,6 @@
   }
 }
 
-@keyframes floatBackground {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
-}
 
 // ===== GLASSMORPHISM CARDS =====
 .glass-card {
@@ -320,16 +308,6 @@
   }
 }
 
-@keyframes waveFloat {
-  0%, 100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(-20px);
-    opacity: 0.8;
-  }
-}
 
 // ===== POPULAR TAGS MODERNOS =====
 .popular-tag-modern {
@@ -425,22 +403,3 @@
   }
 }
 
-// ===== DARK MODE SUPPORT =====
-@media (prefers-color-scheme: dark) {
-  :root {
-    --glass-bg: rgba(30, 30, 30, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
-  }
-
-  .hero-section-modern {
-    background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #1f1f2e 100%);
-  }
-
-  .glass-card,
-  .stats-modern .stat-card-premium,
-  .feature-card-modern,
-  .testimonial-card-modern {
-    background: rgba(40, 40, 40, 0.9);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-}

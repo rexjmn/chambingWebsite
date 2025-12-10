@@ -37,9 +37,52 @@ const Chip = ({
     return classes.join(' ');
   };
 
+  // FORZAR estilos inline para prevenir tema oscuro del navegador
+  const getInlineStyles = () => {
+    const baseStyles = {
+      colorScheme: 'light',
+      WebkitColorScheme: 'light',
+    };
+
+    // Estilos por variante
+    const variantStyles = {
+      trending: {
+        borderColor: '#EF4444',
+        backgroundColor: '#FEF2F2',
+        color: '#DC2626',
+      },
+      urgent: {
+        borderColor: '#F59E0B',
+        backgroundColor: '#FFFBEB',
+        color: '#D97706',
+      },
+      popular: {
+        borderColor: '#233DFF',
+        backgroundColor: '#E8EBFF',
+        color: '#233DFF',
+      },
+      seasonal: {
+        borderColor: '#10B981',
+        backgroundColor: '#ECFDF5',
+        color: '#059669',
+      },
+      default: {
+        borderColor: '#E5E7EB',
+        backgroundColor: '#FAFAFB',
+        color: '#374151',
+      },
+    };
+
+    return {
+      ...baseStyles,
+      ...(variantStyles[variant] || variantStyles.default),
+    };
+  };
+
   return (
     <div
       className={getChipClasses()}
+      style={getInlineStyles()}
       onClick={onClick}
       role={onClick ? 'button' : 'status'}
       tabIndex={onClick ? 0 : undefined}

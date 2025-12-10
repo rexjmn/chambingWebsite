@@ -1,10 +1,11 @@
 // ⭐ IMPORTAR el módulo de color de Sass
 @use 'sass:color';
 
-// Variables - Paleta elegante y sofisticada
-$brand-primary: #2540FF;
-$brand-dark: #1a2ecc;
-$brand-light: #4d63ff;
+// Importar variables centralizadas
+@use './variables.scss' as *;
+
+// Variables locales específicas de dashboard
+// Nota: $brand-primary, $brand-dark, $brand-light ahora vienen de variables.scss
 $brand-subtle: #e8ebff;
 
 $accent-gold: #FFD700;

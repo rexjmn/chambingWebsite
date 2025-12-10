@@ -39,6 +39,50 @@
   --border-radius-xl: 32px;
 }
 
+// ===== FORZAR COLOR SCHEME LIGHT EN TODO EL SITIO =====
+// Esto previene que el theme oscuro del navegador afecte los elementos
+
+// Forzar light mode globalmente
+html,
+body,
+#root {
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+}
+
+// Forzar light mode en TODOS los elementos de Material-UI
+.MuiBox-root,
+.MuiContainer-root,
+.MuiGrid-root,
+.MuiPaper-root,
+.MuiCard-root,
+.MuiCardContent-root,
+.MuiTypography-root,
+.MuiButton-root,
+.MuiIconButton-root,
+.MuiAvatar-root,
+.MuiChip-root,
+.MuiRating-root {
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+}
+
+// Forzar colores correctos en TODOS los SVG e iconos
+svg,
+.MuiSvgIcon-root {
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+// Prevenir que el navegador cambie backgrounds
+.MuiBox-root,
+.MuiPaper-root,
+.MuiCard-root {
+  background-color: inherit !important;
+}
+
 // Keyframes para animaciones elegantes
 @keyframes floatSlow {
   0%, 100% { 
@@ -167,12 +211,22 @@
 
 // Hero Section Rediseñada
 .hero-section {
+  // FORZAR color scheme light
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
   min-height: 100vh;
-  background: linear-gradient(135deg, #FAFAFB 0%, #FFFFFF 50%, #F8FAFF 100%);
+  background: linear-gradient(135deg, #FAFAFB 0%, #FFFFFF 50%, #F8FAFF 100%) !important;
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+
+  // Forzar en todos los elementos hijos
+  * {
+    color-scheme: light !important;
+    -webkit-color-scheme: light !important;
+  }
 
   // Patrón de fondo tech más sutil
   &::before {
@@ -754,6 +808,10 @@
 
 // Barra de Búsqueda Fija a lo largo del Hero
 .hero-search-section {
+  // FORZAR color scheme light para prevenir tema oscuro
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
   position: absolute;
   bottom: 50px;
   left: 2rem;
@@ -779,6 +837,12 @@
     right: auto;
     margin-top: 2rem;
     padding: 0;
+  }
+
+  // Forzar color scheme en todos los elementos hijos
+  * {
+    color-scheme: light !important;
+    -webkit-color-scheme: light !important;
   }
 }
 
@@ -957,6 +1021,7 @@
   gap: 0.75rem;
   flex-wrap: wrap;
   justify-content: flex-start;
+ 
   
   @media (max-width: 600px) {
     justify-content: center;
@@ -965,6 +1030,10 @@
 }
 
 .popular-tag {
+  // FORZAR color scheme light para prevenir tema oscuro del navegador
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
   background: var(--color-gray-50) !important;
   color: var(--color-gray-700) !important;
   font-family: var(--font-body) !important;
@@ -978,7 +1047,13 @@
   cursor: pointer !important;
   position: relative;
   overflow: hidden;
-  
+
+  // Prevenir efectos del tema oscuro en el contenido
+  * {
+    color-scheme: light !important;
+    -webkit-color-scheme: light !important;
+  }
+
   &:hover {
     background: var(--color-primary) !important;
     color: white !important;
@@ -986,50 +1061,50 @@
     box-shadow: var(--shadow-medium);
     border-color: var(--color-primary) !important;
   }
-  
+
   // Variaciones de estilo por categoría
   &.trending {
     border-color: #EF4444 !important;
     background: #FEF2F2 !important;
     color: #DC2626 !important;
-    
+
     &:hover {
       background: #EF4444 !important;
       color: white !important;
       border-color: #EF4444 !important;
     }
   }
-  
+
   &.urgent {
     border-color: #F59E0B !important;
     background: #FFFBEB !important;
     color: #D97706 !important;
-    
+
     &:hover {
       background: #F59E0B !important;
       color: white !important;
       border-color: #F59E0B !important;
     }
   }
-  
+
   &.popular {
     border-color: var(--color-primary) !important;
     background: var(--color-primary-ultra-light) !important;
     color: var(--color-primary) !important;
   }
-  
+
   &.seasonal {
     border-color: #10B981 !important;
     background: #ECFDF5 !important;
     color: #059669 !important;
-    
+
     &:hover {
       background: #10B981 !important;
       color: white !important;
       border-color: #10B981 !important;
     }
   }
-  
+
   @media (max-width: 600px) {
     font-size: 0.8rem !important;
     padding: 6px 12px !important;
@@ -1170,9 +1245,12 @@
 
 // ===== FIX PARA MATERIAL-UI CHIPS - PREVENIR ESTILOS OSCUROS DEL THEME =====
 .MuiChip-root {
+  // Forzar color scheme light para todos los chips
+  color-scheme: light !important;
+
   // Sobrescribir estilos del theme oscuro
   &.MuiChip-outlined {
-    background: transparent !important;
+    background: white !important;
     color: var(--color-primary) !important;
     border-color: var(--color-primary) !important;
 
@@ -1196,6 +1274,11 @@
     color: var(--color-primary) !important;
     border-color: var(--color-primary) !important;
   }
+
+  // Forzar estilos para labels y contenido interno
+  .MuiChip-label {
+    color: inherit !important;
+  }
 }
 
 // Dark mode support (preparación futura)
@@ -1212,7 +1295,11 @@
 
 // ===== SECCIÓN DE ESTADÍSTICAS (STATS) =====
 .stats-section {
-  background: linear-gradient(180deg, #FAFAFB 0%, #FFFFFF 100%);
+  // FORZAR color scheme light para toda la sección
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
+  background: linear-gradient(180deg, #FAFAFB 0%, #FFFFFF 100%) !important;
   position: relative;
   overflow: hidden;
   padding: 4rem 0 !important;
@@ -1240,10 +1327,27 @@
       radial-gradient(circle at 90% 80%, rgba(79, 99, 255, 0.03) 0%, transparent 50%);
     pointer-events: none;
   }
+
+  // Forzar color scheme en todos los elementos hijos
+  * {
+    color-scheme: light !important;
+    -webkit-color-scheme: light !important;
+  }
+
+  // Asegurar que los SVG se vean correctamente
+  svg {
+    color: var(--color-primary) !important;
+    fill: var(--color-primary) !important;
+    filter: none !important;
+  }
 }
 
 .stat-card {
-  background: white;
+  // FORZAR color scheme light para prevenir tema oscuro del navegador
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
+  background: white !important;
   border: 1px solid var(--color-gray-200);
   border-radius: var(--border-radius);
   padding: 1.5rem !important;
@@ -1286,22 +1390,81 @@
       animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) #{$i * 0.1}s both;
     }
   }
+
+  // FORZAR estilos para iconos SVG de Material-UI
+  .MuiSvgIcon-root {
+    color: var(--color-primary) !important;
+    fill: var(--color-primary) !important;
+    opacity: 1 !important;
+
+    // Prevenir filtros del navegador
+    filter: none !important;
+    -webkit-filter: none !important;
+  }
+
+  // Forzar color en el contenedor del icono
+  .MuiBox-root {
+    color: var(--color-primary) !important;
+
+    svg {
+      color: var(--color-primary) !important;
+      fill: var(--color-primary) !important;
+    }
+  }
 }
 
 // ===== SECCIÓN DE CARACTERÍSTICAS (FEATURES) =====
 .features-section {
-  // Ya está bien manejada por Material-UI en Home.jsx
-  // Agregar mejoras adicionales si es necesario
+  // FORZAR color scheme light
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
+  // Forzar en todos los elementos hijos
+  * {
+    color-scheme: light !important;
+    -webkit-color-scheme: light !important;
+  }
+
+  // Asegurar que los iconos de features se vean correctamente
+  .MuiAvatar-root {
+    background-color: var(--color-primary-light) !important;
+    color: white !important;
+
+    svg,
+    .MuiSvgIcon-root {
+      color: white !important;
+      fill: white !important;
+      filter: none !important;
+    }
+  }
+
+  // Forzar backgrounds blancos en cards
+  .MuiBox-root {
+    &[class*="textAlign"] {
+      background-color: white !important;
+    }
+  }
 }
 
 // ===== SECCIÓN DE TESTIMONIOS (TESTIMONIALS) =====
 .testimonials-section {
   position: relative;
 
+  // FORZAR color scheme light
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
+  // Forzar en todos los elementos hijos
+  * {
+    color-scheme: light !important;
+    -webkit-color-scheme: light !important;
+  }
+
   // Mejoras para las cards de testimonios
   .MuiCard-root {
     position: relative;
     overflow: visible;
+    background-color: white !important;
 
     // Comillas decorativas
     &::before {
@@ -1327,6 +1490,19 @@
     .MuiCardContent-root {
       position: relative;
       z-index: 1;
+    }
+  }
+
+  // Forzar colores en avatares de testimonios
+  .MuiAvatar-root {
+    background-color: var(--color-primary) !important;
+    color: white !important;
+  }
+
+  // Forzar colores en ratings
+  .MuiRating-root {
+    svg {
+      filter: none !important;
     }
   }
 }
@@ -1392,6 +1568,16 @@
   position: relative;
   overflow: hidden;
 
+  // FORZAR color scheme light
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
+  // Forzar en todos los elementos hijos
+  * {
+    color-scheme: light !important;
+    -webkit-color-scheme: light !important;
+  }
+
   // Efecto de fondo sutil
   &::before {
     content: '';
@@ -1410,9 +1596,14 @@
   .MuiChip-outlined {
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: white !important;
+    color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
 
     &:hover {
       transform: translateY(-3px);
+      background-color: var(--color-primary) !important;
+      color: white !important;
     }
   }
 }
@@ -1421,6 +1612,16 @@
 .cta-section {
   position: relative;
   overflow: hidden;
+
+  // FORZAR color scheme light
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
+  // Forzar en todos los elementos hijos
+  * {
+    color-scheme: light !important;
+    -webkit-color-scheme: light !important;
+  }
 
   // Patrón de ondas sutiles
   &::before {
@@ -1453,6 +1654,22 @@
     @media (max-width: 768px) {
       width: 100px;
       height: 100px;
+    }
+  }
+
+  // Forzar colores en botones del CTA
+  .MuiButton-root {
+    filter: none !important;
+
+    &.cta-btn-primary {
+      background-color: white !important;
+      color: var(--color-primary) !important;
+    }
+
+    &.cta-btn-secondary {
+      background-color: transparent !important;
+      color: white !important;
+      border-color: white !important;
     }
   }
 }

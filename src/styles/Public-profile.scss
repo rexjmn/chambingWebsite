@@ -1,17 +1,16 @@
 // src/styles/Public-profile.scss
 
+// Importar variables centralizadas (DEBE ir ANTES de @import)
+@use './variables.scss' as *;
+
 // Fuentes
 @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
 
-// Colores principales
-$primary-color: #2540FF;
-$primary-dark: #1a2ecc;
-$primary-light: #4d63ff;
+// Variables locales específicas de Public-profile
 $text-primary: #0f1729;
 $text-secondary: #475569;
 $text-muted: #64748b;
 $text-light: #94a3b8;
-$success-color: #059669;
 $gold-star: #FFD700;
 $background-light: #f8fafc;
 $background-gray: #f1f5f9;

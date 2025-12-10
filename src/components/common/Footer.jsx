@@ -24,10 +24,20 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        bgcolor: 'grey.900',
-        color: 'white',
+        // FORZAR colores para prevenir tema oscuro
+        bgcolor: '#1F2937 !important',
+        backgroundColor: '#1F2937 !important',
+        color: 'white !important',
         py: 6,
         mt: 'auto',
+        colorScheme: 'light',
+        WebkitColorScheme: 'light',
+      }}
+      style={{
+        // Estilos inline como backup
+        backgroundColor: '#1F2937',
+        color: 'white',
+        colorScheme: 'light',
       }}
     >
       <Container maxWidth="lg">
@@ -40,13 +50,46 @@ const Footer = () => {
               {t('footer.description')}
             </Typography>
             <Box>
-              <IconButton color="inherit" aria-label="Facebook">
+              <IconButton
+                color="inherit"
+                aria-label="Facebook"
+                sx={{
+                  color: 'white !important',
+                  '& svg': {
+                    color: 'white !important',
+                    fill: 'white !important',
+                    filter: 'none !important'
+                  }
+                }}
+              >
                 <Facebook />
               </IconButton>
-              <IconButton color="inherit" aria-label="Twitter">
+              <IconButton
+                color="inherit"
+                aria-label="Twitter"
+                sx={{
+                  color: 'white !important',
+                  '& svg': {
+                    color: 'white !important',
+                    fill: 'white !important',
+                    filter: 'none !important'
+                  }
+                }}
+              >
                 <Twitter />
               </IconButton>
-              <IconButton color="inherit" aria-label="Instagram">
+              <IconButton
+                color="inherit"
+                aria-label="Instagram"
+                sx={{
+                  color: 'white !important',
+                  '& svg': {
+                    color: 'white !important',
+                    fill: 'white !important',
+                    filter: 'none !important'
+                  }
+                }}
+              >
                 <Instagram />
               </IconButton>
             </Box>
@@ -93,16 +136,46 @@ const Footer = () => {
               {t('footer.contact')}
             </Typography>
             <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
-              <Email sx={{ mr: 1, fontSize: 'small' }} />
-              <Typography variant="body2">{t('footer.email')}</Typography>
+              <Email
+                sx={{
+                  mr: 1,
+                  fontSize: 'small',
+                  color: 'white !important',
+                  fill: 'white !important',
+                  filter: 'none !important'
+                }}
+              />
+              <Typography variant="body2" sx={{ color: 'white !important' }}>
+                {t('footer.email')}
+              </Typography>
             </Box>
             <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
-              <Phone sx={{ mr: 1, fontSize: 'small' }} />
-              <Typography variant="body2">{t('footer.phone')}</Typography>
+              <Phone
+                sx={{
+                  mr: 1,
+                  fontSize: 'small',
+                  color: 'white !important',
+                  fill: 'white !important',
+                  filter: 'none !important'
+                }}
+              />
+              <Typography variant="body2" sx={{ color: 'white !important' }}>
+                {t('footer.phone')}
+              </Typography>
             </Box>
             <Box display="flex" alignItems="center">
-              <LocationOn sx={{ mr: 1, fontSize: 'small' }} />
-              <Typography variant="body2">{t('footer.address')}</Typography>
+              <LocationOn
+                sx={{
+                  mr: 1,
+                  fontSize: 'small',
+                  color: 'white !important',
+                  fill: 'white !important',
+                  filter: 'none !important'
+                }}
+              />
+              <Typography variant="body2" sx={{ color: 'white !important' }}>
+                {t('footer.address')}
+              </Typography>
             </Box>
           </Grid>
         </Grid>

@@ -3,14 +3,26 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* FORZAR SOLO LIGHT MODE - Deshabilitado dark mode completamente */
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
+  color: #213547;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Forzar light mode en html y body también */
+html,
+body {
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+  background-color: #ffffff !important;
+  color: #213547 !important;
 }
 
 a {

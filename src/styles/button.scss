@@ -269,28 +269,7 @@
   }
 }
 
-// Animaciones cool
-@keyframes pulse-shadow {
-  0%, 100% {
-    box-shadow:
-      0 4px 12px rgba(35, 61, 255, 0.3),
-      0 0 0 0 rgba(35, 61, 255, 0);
-  }
-  50% {
-    box-shadow:
-      0 4px 12px rgba(35, 61, 255, 0.3),
-      0 0 0 8px rgba(35, 61, 255, 0);
-  }
-}
-
-@keyframes gradient-shift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
+// Animaciones ahora están centralizadas en variables.scss
 
 // Responsive
 @media (max-width: 768px) {

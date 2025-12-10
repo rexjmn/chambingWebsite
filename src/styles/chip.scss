@@ -1,7 +1,11 @@
-// Importar variables
-@import './variables.scss';
+// Importar variables centralizadas
+@use './variables.scss' as *;
 
 .custom-chip {
+  // FORZAR color scheme light para prevenir tema oscuro
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -9,12 +13,18 @@
   font-weight: 500;
   border-radius: var(--border-radius);
   border: 1.5px solid var(--color-gray-200);
-  background: var(--color-gray-50);
-  color: var(--color-gray-700);
+  background: var(--color-gray-50) !important;
+  color: var(--color-gray-700) !important;
   padding: 8px 16px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+
+  // Forzar en todos los elementos hijos
+  * {
+    color-scheme: light !important;
+    -webkit-color-scheme: light !important;
+  }
 
   // Tamaños
   &-small {

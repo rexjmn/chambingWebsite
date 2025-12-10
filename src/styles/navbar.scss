@@ -1,47 +1,28 @@
-// Variables de colores elegantes y neutros
-:root {
-  --chambing-primary: #1a1a1a;
-  --chambing-secondary: #666666;
-  --chambing-light-gray: #f8f9fa;
-  --chambing-border: rgba(0, 0, 0, 0.08);
-  --chambing-hover: rgba(0, 0, 0, 0.04);
-  --chambing-shadow: rgba(0, 0, 0, 0.12);
-  --chambing-text: #2c3e50;
-  --chambing-text-light: #6c757d;
-  --chambing-brand-shadow: rgba(0, 0, 0, 0.15);
-}
-
-// Mixins elegantes y minimalistas
-@mixin elegant-shadow {
-  box-shadow: 0 6px 20px var(--chambing-shadow);
-}
-
-@mixin subtle-shadow {
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-}
-
-@mixin smooth-transition($duration: 0.3s) {
-  transition: all #{$duration} cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@mixin hover-lift($lift: -2px) {
-  &:hover {
-    transform: translateY(#{$lift});
-    @include subtle-shadow;
-  }
-}
-
-@mixin glass-effect {
-  backdrop-filter: blur(12px);
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid var(--chambing-border);
-}
+// Importar variables centralizadas
+@use './variables.scss' as *;
 
 // Estilos principales del navbar con nuevos nombres de clases
 .chambing-main-appbar {
+  // FORZAR color scheme light para prevenir tema oscuro
+  color-scheme: light !important;
+  -webkit-color-scheme: light !important;
+
   @include glass-effect;
   backdrop-filter: blur(16px);
-  
+
+  // Forzar en todos los elementos hijos
+  * {
+    color-scheme: light !important;
+    -webkit-color-scheme: light !important;
+  }
+
+  // Forzar iconos y SVG
+  svg,
+  .MuiSvgIcon-root {
+    filter: none !important;
+    -webkit-filter: none !important;
+  }
+
   // Sombra sutil al hacer scroll
   &.scrolled {
     @include subtle-shadow;
@@ -464,60 +445,17 @@
   }
 }
 
-// Animaciones elegantes y sutiles
-@keyframes profileMenuFadeIn {
-  from {
-    opacity: 0;
-    transform: translate3d(0, -12px, 0) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translate3d(-24px, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes subtle-pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.02);
-  }
-}
-
 // Estados de loading elegantes
 .chambing-loading-skeleton {
   background: linear-gradient(
-    90deg, 
-    #f0f0f0 25%, 
-    #e8e8e8 50%, 
+    90deg,
+    #f0f0f0 25%,
+    #e8e8e8 50%,
     #f0f0f0 75%
   );
   background-size: 200% 100%;
   animation: shimmer 2.5s infinite;
   border-radius: 8px;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
 }
 
 // Estados de notificación discretos
@@ -660,45 +598,6 @@
   }
 }
 
-// Tema oscuro elegante (opcional)
-@media (prefers-color-scheme: dark) {
-  :root {
-    --chambing-primary: #ffffff;
-    --chambing-secondary: #a0a0a0;
-    --chambing-light-gray: #1e1e1e;
-    --chambing-border: rgba(255, 255, 255, 0.08);
-    --chambing-hover: rgba(255, 255, 255, 0.04);
-    --chambing-shadow: rgba(0, 0, 0, 0.4);
-    --chambing-text: #ffffff;
-    --chambing-text-light: #a0a0a0;
-    --chambing-brand-shadow: rgba(255, 255, 255, 0.1);
-  }
-  
-  .chambing-main-appbar {
-    background: rgba(18, 18, 18, 0.95) !important;
-    border-color: var(--chambing-border);
-  }
-  
-  .chambing-mobile-drawer {
-    .MuiDrawer-paper {
-      background: #1a1a1a !important;
-      color: white !important;
-    }
-  }
-  
-  .chambing-profile-header,
-  .chambing-mobile-brand-section {
-    background: linear-gradient(
-      135deg, 
-      #2a2a2a 0%, 
-      rgba(30, 30, 30, 0.95) 100%
-    ) !important;
-  }
-  
-  .chambing-brand-logo {
-    filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.1)) brightness(1.1);
-  }
-}
 
 // Utilidades para spacing elegante
 .chambing-spacing {

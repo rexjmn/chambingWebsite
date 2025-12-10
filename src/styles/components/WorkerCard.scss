@@ -1,7 +1,7 @@
-// 🎨 Variables optimizadas
-$primary: #2540ff;
-$primary-light: #4d63ff;
-$primary-dark: #1a2ecc;
+// Importar variables centralizadas
+@use '../variables.scss' as *;
+
+// 🎨 Variables locales específicas de WorkerCard
 $text-primary: #0f1729;
 $text-secondary: #475569;
 $text-muted: #64748b;
@@ -9,7 +9,6 @@ $white: #fff;
 $bg-light: #f8fafc;
 $border: #e2e8f0;
 $gold: #ffd700;
-$success: #10b981;
 
 // Sombras profesionales
 $shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -83,7 +82,7 @@ $shadow-hover: 0 12px 40px rgba(37, 64, 255, 0.25);
       z-index: 10;
 
       span {
-        color: $success;
+        color: $success-color;
         font-size: 1.3rem;
         font-weight: bold;
       }
@@ -224,7 +223,7 @@ $shadow-hover: 0 12px 40px rgba(37, 64, 255, 0.25);
         .jobs-count {
           font-size: 0.85rem;
           font-weight: 600;
-          color: $success;
+          color: $success-color;
         }
       }
     }

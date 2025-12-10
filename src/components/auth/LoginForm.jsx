@@ -1,34 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { useTranslations } from '../../hooks/useTranslations'; // ⭐ Usar nuestro hook
+import { useTranslations } from '../../hooks/useTranslations';
 import { useAuth } from '../../context/AuthContext';
-import {
-  Box,
-  Container,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  Typography,
-  Alert,
-  InputAdornment,
-  IconButton,
-  Divider,
-  Paper,
-} from '@mui/material';
-import { 
-  Visibility, 
-  VisibilityOff, 
-  Email, 
-  Lock,
-  Login as LoginIcon 
-} from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { sanitizeInput, isValidEmail } from '../../utils/security';
+import '../../styles/auth.scss';
+import { Lock, Mail, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 
 const LoginForm = () => {
-  const { t, common } = useTranslations(); // ⭐ Usar nuestro hook
+  const { t, common } = useTranslations();
   const [showPassword, setShowPassword] = useState(false);
   const { login, loading, error } = useAuth();
   const navigate = useNavigate();
@@ -37,12 +19,13 @@ const LoginForm = () => {
   const from = location.state?.from?.pathname || '/dashboard';
   const message = location.state?.message;
 
-  // ⭐ Schema de validación con traducciones dinámicas
+  // Schema de validación con seguridad mejorada
   const schema = yup.object().shape({
     email: yup
       .string()
       .email(t('auth.validation.emailInvalid'))
-      .required(t('auth.validation.required')),
+      .required(t('auth.validation.required'))
+      .test('is-valid-email', t('auth.validation.emailInvalid'), value => isValidEmail(value)),
     password: yup
       .string()
       .required(t('auth.validation.required')),
@@ -51,17 +34,20 @@ const LoginForm = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  
   const onSubmit = async (data) => {
     try {
-      console.log('🚀 Intentando login con:', { email: data.email });
-      await login(data);
+      const sanitizedData = {
+        email: sanitizeInput(data.email).toLowerCase(),
+        password: data.password,
+      };
+
+      console.log('🚀 Intentando login con:', { email: sanitizedData.email });
+      await login(sanitizedData);
       console.log('✅ Login exitoso, redirigiendo a:', from);
       navigate(from, { replace: true });
     } catch (error) {
@@ -70,151 +56,128 @@ const LoginForm = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: 8 }}>
-      <Card elevation={3}>
-        <CardContent sx={{ p: 4 }}>
-          <Box textAlign="center" mb={3}>
-            <LoginIcon color="primary" sx={{ fontSize: 48, mb: 2 }} />
-            <Typography variant="h4" component="h1" gutterBottom>
-              {t('auth.login.title')}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {t('auth.login.subtitle')}
-            </Typography>
-          </Box>
-          
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-card">
+          {/* Header */}
+          <div className="auth-header">
+            <div className="auth-icon">
+              <Lock size={32} />
+            </div>
+            <h1 className="auth-title">{t('auth.login.title')}</h1>
+            <p className="auth-subtitle">{t('auth.login.subtitle')}</p>
+          </div>
+
+          {/* Success Message */}
           {message && (
-            <Alert severity="success" sx={{ mb: 2 }}>
-              {message}
-            </Alert>
+            <div className="auth-alert alert-success">
+              <CheckCircle size={20} className="alert-icon" />
+              <span className="alert-message">{message}</span>
+            </div>
           )}
 
+          {/* Error Message */}
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
+            <div className="auth-alert alert-error">
+              <AlertCircle size={20} className="alert-icon" />
+              <span className="alert-message">{error}</span>
+            </div>
           )}
 
-          {/* ⭐ Botones de datos de prueba traducidos */}
-          <Paper 
-            elevation={0} 
-            sx={{ 
-              bgcolor: 'grey.50', 
-              p: 2, 
-              mb: 3, 
-              borderRadius: 2 
-            }}
-          >
-          </Paper>
+          {/* Loading Bar */}
+          {loading && (
+            <div className="auth-loading">
+              <div className="loading-bar"></div>
+            </div>
+          )}
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <TextField
-              {...register('email')}
-              fullWidth
-              label={t('auth.login.email')}
-              type="email"
-              error={!!errors.email}
-              helperText={errors.email?.message}
-              margin="normal"
-              autoComplete="email"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Email color="action" />
-                  </InputAdornment>
-                ),
-              }}
-            />
+          {/* Form */}
+          <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
+            {/* Email */}
+            <div className="form-group">
+              <label className="form-label">
+                {t('auth.login.email')}
+                <span className="label-required">*</span>
+              </label>
+              <div className="input-wrapper">
+                <Mail size={20} className="input-icon" />
+                <input
+                  {...register('email')}
+                  type="email"
+                  className={`form-input ${errors.email ? 'input-error' : ''}`}
+                  placeholder={t('auth.login.email')}
+                  autoComplete="email"
+                  maxLength={255}
+                />
+              </div>
+              {errors.email && (
+                <div className="form-error">
+                  <AlertCircle size={16} className="error-icon" />
+                  {errors.email.message}
+                </div>
+              )}
+            </div>
 
-            <TextField
-              {...register('password')}
-              fullWidth
-              label={t('auth.login.password')}
-              type={showPassword ? 'text' : 'password'}
-              error={!!errors.password}
-              helperText={errors.password?.message}
-              margin="normal"
-              autoComplete="current-password"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock color="action" />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                      aria-label="toggle password visibility"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+            {/* Password */}
+            <div className="form-group">
+              <label className="form-label">
+                {t('auth.login.password')}
+                <span className="label-required">*</span>
+              </label>
+              <div className="input-wrapper">
+                <Lock size={20} className="input-icon" />
+                <input
+                  {...register('password')}
+                  type={showPassword ? 'text' : 'password'}
+                  className={`form-input input-with-end-icon ${errors.password ? 'input-error' : ''}`}
+                  placeholder={t('auth.login.password')}
+                  autoComplete="current-password"
+                  maxLength={128}
+                />
+                <button
+                  type="button"
+                  className="toggle-password input-icon-end"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                </button>
+              </div>
+              {errors.password && (
+                <div className="form-error">
+                  <AlertCircle size={16} className="error-icon" />
+                  {errors.password.message}
+                </div>
+              )}
+            </div>
 
-            <Button
+            {/* Submit Button */}
+            <button
               type="submit"
-              fullWidth
-              variant="contained"
-              size="large"
+              className={`form-submit ${loading ? 'btn-loading' : ''}`}
               disabled={loading}
-              sx={{ mt: 3, mb: 2, py: 1.5 }}
             >
               {loading ? t('auth.login.loginButtonLoading') : t('auth.login.loginButton')}
-            </Button>
+            </button>
 
-            <Divider sx={{ my: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                {common.or}
-              </Typography>
-            </Divider>
+            {/* Divider */}
+            <div className="auth-divider">
+              <span className="divider-text">{common.or}</span>
+            </div>
 
-            <Box textAlign="center">
-              <Typography variant="body2">
+            {/* Footer */}
+            <div className="auth-footer">
+              <p className="footer-text">
                 {t('auth.login.noAccount')}{' '}
-                <Link 
-                  to="/register" 
-                  style={{ 
-                    textDecoration: 'none',
-                    fontWeight: 'bold',
-                    color: '#2563eb'
-                  }}
-                >
+                <Link to="/register" className="footer-link">
                   {t('auth.login.registerHere')}
                 </Link>
-              </Typography>
-            </Box>
+              </p>
+            </div>
           </form>
-        </CardContent>
-      </Card>
-
-      {/* ⭐ Info de debugging traducida */}
-      <Paper
-        elevation={1}
-        sx={{
-          mt: 3,
-          p: 2,
-          bgcolor: 'info.light',
-          color: 'info.contrastText',
-        }}
-      >
-        <Typography variant="subtitle2" gutterBottom>
-          🔧 {t('common.debugInfo')}:
-        </Typography>
-        <Typography variant="caption" component="div">
-          API URL: {import.meta.env.VITE_API_URL || 'http://localhost:3000'}
-        </Typography>
-        <Typography variant="caption" component="div">
-          {t('common.mode')}: {import.meta.env.MODE}
-        </Typography>
-        <Typography variant="caption" component="div">
-          Backend debe estar corriendo en: http://localhost:3000
-        </Typography>
-      </Paper>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 };
 

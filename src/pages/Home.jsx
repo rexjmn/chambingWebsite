@@ -436,66 +436,74 @@ const Home = () => {
       
 
       {/* Stats Section - Nueva sección de estadísticas */}
-        <Box className="stats-section" sx={{ py: { xs: 6, sm: 8, md: 10 }, bgcolor: 'grey.50' }}>
-          <Container maxWidth="lg">
-            <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} justifyContent="center">
-          {[
-            { number: '5,000+', label: t('home.stats.verifiedProfessionals'), icon: <CheckCircle /> },
-            { number: '15,000+', label: t('home.stats.completedServices'), icon: <Build /> },
-            { number: '4.8/5', label: t('home.stats.averageRating'), icon: <Star /> },
-            { number: '98%', label: t('home.stats.satisfiedClients'), icon: <Security /> },
-          ].map((stat, index) => (
-            <Grid key={index} item xs={12} sm={6} md={3}>
-              <Box 
-          className="stat-card" 
-          sx={{ 
-            textAlign: 'center',
-            p: { xs: 3, sm: 4, md: 4 },
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%'
-          }}
-              >
-            <Box
-              sx={{
-          fontSize: { xs: '3rem', sm: '3.5rem', md: '4rem' },
-          mb: 2,
-          color: 'primary.main',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-              }}
-            >
-              {stat.icon}
-            </Box>
-            <Typography
-              variant="h3"
-              sx={{
-          fontWeight: 800,
-          color: 'primary.main',
-          mb: 1,
-          fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' }
-              }}
-            >
-              {stat.number}
-            </Typography>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' }, fontWeight: 500 }}
-            >
-              {stat.label}
-            </Typography>
-              </Box>
-            </Grid>
-          ))}
-            </Grid>
-          </Container>
-        </Box>
+      <Box className="stats-section" sx={{ py: { xs: 6, sm: 8, md: 10 }, bgcolor: 'grey.50' }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
+            {[
+              { number: '5,000+', label: t('home.stats.verifiedProfessionals'), icon: <CheckCircle /> },
+              { number: '15,000+', label: t('home.stats.completedServices'), icon: <Build /> },
+              { number: '4.8/5', label: t('home.stats.averageRating'), icon: <Star /> },
+              { number: '98%', label: t('home.stats.satisfiedClients'), icon: <Security /> },
+            ].map((stat, index) => (
+              <Grid key={index} item xs={12} sm={6} md={3}>
+                <Box 
+                  className="stat-card" 
+                  sx={{ 
+                    textAlign: 'center',
+                    p: { xs: 2.5, sm: 3, md: 3.5 },
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100%',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                    }
+                  }}
+                >
+                  <Box
+                    sx={{
+                      fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' },
+                      mb: 1.5,
+                      color: 'primary.main',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    {stat.icon}
+                  </Box>
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontWeight: 800,
+                      color: 'primary.main',
+                      mb: 1,
+                      fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' }
+                    }}
+                  >
+                    {stat.number}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ 
+                      fontSize: { xs: '0.85rem', sm: '0.9rem', md: '0.95rem' }, 
+                      fontWeight: 500,
+                      lineHeight: 1.4
+                    }}
+                  >
+                    {stat.label}
+                  </Typography>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
 
-        {/* Features Section */}
+      {/* Features Section */}
       <Box className="features-section" sx={{ bgcolor: 'grey.50', py: { xs: 5, sm: 6, md: 6 } }}>
         <Container maxWidth="lg">
           <Box
@@ -524,15 +532,19 @@ const Home = () => {
               {t('home.features.subtitle')}
             </Typography>
           </Box>
-          <Grid container spacing={{ xs: 3, md: 4 }} sx={{ mt: 1 }}>
+          <Grid container spacing={{ xs: 2.5, sm: 3, md: 3.5, lg: 4 }} sx={{ mt: 1 }}>
             {features.map((feature, index) => (
               <Grid key={index} item xs={12} sm={6} md={4}>
                 <Box
                   textAlign="center"
                   sx={{
-                    p: { xs: 3, md: 4 },
+                    p: { xs: 2.5, sm: 3, md: 3.5, lg: 4 },
                     borderRadius: 3,
                     height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
                     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                     border: '1px solid',
                     borderColor: 'transparent',
@@ -547,10 +559,9 @@ const Home = () => {
                   <Avatar
                     sx={{
                       bgcolor: 'primary.light',
-                      width: { xs: 60, sm: 70, md: 75 },
-                      height: { xs: 60, sm: 70, md: 75 },
-                      mx: 'auto',
-                      mb: 3,
+                      width: { xs: 55, sm: 65, md: 70, lg: 75 },
+                      height: { xs: 55, sm: 65, md: 70, lg: 75 },
+                      mb: { xs: 2, sm: 2.5, md: 3 },
                       boxShadow: '0 8px 24px rgba(35, 61, 255, 0.2)',
                     }}
                   >
@@ -561,15 +572,19 @@ const Home = () => {
                     gutterBottom
                     sx={{
                       fontWeight: 600,
-                      fontSize: { xs: '1.15rem', sm: '1.25rem', md: '1.35rem' }
+                      fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.25rem', lg: '1.35rem' },
+                      mb: { xs: 1, md: 1.5 }
                     }}
                   >
                     {feature.title}
                   </Typography>
                   <Typography
-                    variant="body1"
+                    variant="body2"
                     color="text.secondary"
-                    sx={{ fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' } }}
+                    sx={{
+                      fontSize: { xs: '0.85rem', sm: '0.9rem', md: '0.95rem', lg: '1rem' },
+                      lineHeight: 1.6
+                    }}
                   >
                     {feature.description}
                   </Typography>

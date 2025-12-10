@@ -290,8 +290,10 @@
       "lastName": "Nom",
       "email": "Email",
       "phone": "Téléphone",
+      "dui": "Pièce d'identité",
       "department": "Département",
       "municipality": "Municipalité",
+      "address": "Adresse",
       "password": "Mot de passe",
       "confirmPassword": "Confirmer le mot de passe",
       "userType": "Type d'Utilisateur",
@@ -302,7 +304,61 @@
       "registerButton": "Créer un Compte",
       "registerButtonLoading": "Création du compte...",
       "haveAccount": "Vous avez déjà un compte ?",
-      "loginHere": "Connectez-vous ici"
+      "loginHere": "Connectez-vous ici",
+      "sections": {
+        "personalInfo": "Informations Personnelles",
+        "location": "Localisation",
+        "security": "Sécurité"
+      },
+      "placeholders": {
+        "name": "Votre prénom",
+        "lastName": "Votre nom",
+        "email": "votre@email.com",
+        "phone": "7234-5678",
+        "dui": "12345678-9",
+        "department": "Sélectionnez votre département",
+        "municipality": "Sélectionnez votre municipalité",
+        "address": "Votre adresse complète",
+        "password": "Minimum 8 caractères",
+        "confirmPassword": "Répétez votre mot de passe"
+      },
+      "helperTexts": {
+        "phone": "8 chiffres sans espaces",
+        "dui": "Format : 12345678-9",
+        "duiOptional": "Optionnel - Uniquement pour les travailleurs souhaitant une vérification",
+        "workerInfo": "En tant que travailleur, vous pourrez créer votre profil professionnel et recevoir des offres d'emploi"
+      },
+      "passwordStrength": {
+        "label": "Force",
+        "weak": "Faible",
+        "medium": "Moyen",
+        "strong": "Fort",
+        "requirements": "Exigences du mot de passe :",
+        "minLength": "Minimum 8 caractères",
+        "hasUpperCase": "Une lettre majuscule",
+        "hasLowerCase": "Une lettre minuscule",
+        "hasNumber": "Un chiffre",
+        "hasSpecialChar": "Un caractère spécial (!@#$%)"
+      },
+      "validation": {
+        "nameRequired": "Le prénom est requis",
+        "lastNameRequired": "Le nom est requis",
+        "emailRequired": "L'email est requis",
+        "emailInvalid": "Email invalide",
+        "phoneRequired": "Le téléphone est requis",
+        "phoneInvalid": "Téléphone invalide. Doit contenir 8 chiffres",
+        "duiInvalid": "Pièce d'identité invalide. Format : 12345678-9",
+        "departmentRequired": "Le département est requis",
+        "municipalityRequired": "La municipalité est requise",
+        "addressRequired": "L'adresse est requise",
+        "passwordRequired": "Le mot de passe est requis",
+        "passwordMin": "Le mot de passe doit contenir au moins 8 caractères",
+        "passwordStrength": "Le mot de passe doit être plus fort",
+        "confirmPasswordRequired": "Vous devez confirmer votre mot de passe",
+        "passwordMatch": "Les mots de passe ne correspondent pas",
+        "invalidCharacters": "Caractères invalides détectés",
+        "userTypeRequired": "Vous devez sélectionner un type d'utilisateur"
+      }
     },
     "validation": {
       "required": "Ce champ est requis",
@@ -406,13 +462,44 @@
     }
   },
   "services": {
+    "pageTitle": "Trouvez des Professionnels Vérifiés",
+    "pageSubtitle": "Connectez-vous avec des travailleurs qualifiés et fiables au Salvador",
+    "metaTitle": "Services Professionnels au Salvador | ChambingApp",
+    "metaDescription": "Trouvez des professionnels vérifiés au Salvador pour le ménage, la plomberie, l'électricité, le jardinage et plus. Embauchez en toute confiance sur ChambingApp.",
+    "loading": "Chargement des professionnels...",
+    "loadingProfessionals": "Recherche des meilleurs professionnels pour vous...",
+    "error": "Erreur lors du chargement des données",
+    "retryButton": "Réessayer",
+    "filters": {
+      "title": "Filtrer les professionnels",
+      "searchPlaceholder": "Rechercher par nom, profession ou compétences...",
+      "category": "Catégorie",
+      "selectCategory": "Toutes les catégories",
+      "department": "Département",
+      "selectDepartment": "Tous les départements",
+      "clearFilters": "Effacer les filtres",
+      "applyFilters": "Appliquer les filtres"
+    },
+    "results": {
+      "found": "professionnels trouvés",
+      "foundSingular": "professionnel trouvé",
+      "noResults": "Aucun professionnel trouvé",
+      "noResultsDescription": "Essayez d'ajuster vos filtres de recherche ou explorez toutes les catégories",
+      "viewAll": "Voir tous les professionnels",
+      "showing": "Affichage"
+    },
     "categories": {
+      "all": "Toutes les catégories",
       "domesticCleaning": "Nettoyage Domestique",
       "plumbing": "Plomberie",
       "electricity": "Électricité",
       "gardening": "Jardinage",
       "carpentry": "Menuiserie",
-      "construction": "Construction"
+      "construction": "Construction",
+      "painting": "Peinture",
+      "mechanics": "Mécanique",
+      "catering": "Traiteur",
+      "security": "Sécurité"
     },
     "descriptions": {
       "domesticCleaning": "Service de nettoyage professionnel pour votre maison",
@@ -420,7 +507,17 @@
       "electricity": "Installations et réparations électriques",
       "gardening": "Entretien de jardins et espaces verts",
       "carpentry": "Travaux en bois et meubles",
-      "construction": "Travaux de construction et rénovation"
+      "construction": "Travaux de construction et rénovation",
+      "painting": "Peinture professionnelle intérieure et extérieure",
+      "mechanics": "Réparation et entretien automobile",
+      "catering": "Services de traiteur et événements",
+      "security": "Services de sécurité privée"
+    },
+    "trustBadges": {
+      "verified": "Vérifiés",
+      "backgroundCheck": "Antécédents vérifiés",
+      "insured": "Assurés",
+      "topRated": "Les mieux notés"
     }
   },
   "footer": {

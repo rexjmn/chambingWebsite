@@ -1,9 +1,10 @@
 @use "sass:color";
-$admin-primary: #2540FF;
-$admin-primary-dark: #1a2ecc;
-$admin-success: #10b981;
-$admin-warning: #f59e0b;
-$admin-danger: #ef4444;
+
+// Importar variables centralizadas
+@use './variables.scss' as *;
+
+// Variables locales específicas de admin-dashboard
+// Nota: $admin-primary, $admin-primary-dark, $admin-success, $admin-warning, $admin-danger ahora vienen de variables.scss
 $admin-info: #3b82f6;
 $admin-muted: #64748b;
 

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, Box } from '@mui/material';
 import { AuthProvider } from './context/AuthContext';
@@ -30,17 +31,18 @@ function ScrollToTop() {
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AuthProvider>
-        <Router>
-          <ScrollToTop />
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            minHeight: '100vh' 
-          }}>
-            <Navbar />
+    <HelmetProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AuthProvider>
+          <Router>
+            <ScrollToTop />
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: '100vh'
+            }}>
+              <Navbar />
             
             <Box component="main" sx={{ flexGrow: 1 }}>
               <Routes>
@@ -116,6 +118,7 @@ function App() {
         </Router>
       </AuthProvider>
     </ThemeProvider>
+    </HelmetProvider>
   );
 }
 
