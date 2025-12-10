@@ -1,7 +1,7 @@
 // src/styles/components/Carrousel.scss
 
 // Importar variables del archivo principal
-@import '../home.scss';
+@use '../home' as *;
 
 .carrousel-section {
   width: 100%;

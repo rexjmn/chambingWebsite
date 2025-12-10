@@ -4,6 +4,7 @@
 
 // Importar variables centralizadas
 @use './variables.scss' as *;
+@use 'sass:color';
 
 // ===== VARIABLES LOCALES =====
 $auth-bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e8ecf4 100%);
@@ -157,19 +158,19 @@ $auth-shadow-input: 0 0 0 4px rgba(37, 64, 255, 0.08);
     &.alert-error {
       background: rgba($auth-error, 0.1);
       border: 1px solid rgba($auth-error, 0.3);
-      color: darken($auth-error, 10%);
+      color: color.adjust($auth-error, $lightness: -10%);
     }
 
     &.alert-success {
       background: rgba($auth-success, 0.1);
       border: 1px solid rgba($auth-success, 0.3);
-      color: darken($auth-success, 10%);
+      color: color.adjust($auth-success, $lightness: -10%);
     }
 
     &.alert-warning {
       background: rgba($auth-warning, 0.1);
       border: 1px solid rgba($auth-warning, 0.3);
-      color: darken($auth-warning, 15%);
+      color: color.adjust($auth-warning, $lightness: -10%);
     }
 
     &.alert-info {
