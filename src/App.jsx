@@ -30,7 +30,6 @@ function ScrollToTop() {
 
 function App() {
   return (
-    <HelmetProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthProvider>
@@ -117,7 +116,6 @@ function App() {
         </Router>
       </AuthProvider>
     </ThemeProvider>
-    </HelmetProvider>
   );
 }
 

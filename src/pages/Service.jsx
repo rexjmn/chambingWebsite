@@ -136,9 +136,9 @@ const Service = () => {
   if (loading) {
     return (
       <>
-        <Helmet>
+
           <title>{t('services.loading')} | ChambingApp</title>
-        </Helmet>
+       
         <div className="services-page">
           <div className="container">
             <div className="loading-state">
@@ -158,9 +158,9 @@ const Service = () => {
   if (error) {
     return (
       <>
-        <Helmet>
+       
           <title>{t('services.error')} | ChambingApp</title>
-        </Helmet>
+        
         <div className="services-page">
           <div className="container">
             <div className="error-state">
@@ -179,7 +179,7 @@ const Service = () => {
 
   return (
     <>
-      <Helmet>
+     
         <title>{t('services.metaTitle')}</title>
         <meta name="description" content={t('services.metaDescription')} />
         <meta property="og:title" content={t('services.metaTitle')} />
@@ -192,7 +192,7 @@ const Service = () => {
         <script type="application/ld+json">
           {JSON.stringify(schemaData)}
         </script>
-      </Helmet>
+      
 
       <div className="services-page">
         <div className="container">
