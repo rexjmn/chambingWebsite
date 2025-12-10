@@ -194,11 +194,18 @@ const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
   };
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={handleClose}
       maxWidth="md"
       fullWidth
+      PaperProps={{
+        sx: {
+          backgroundColor: '#ffffff !important',
+          color: '#1a1a1a !important',
+          colorScheme: 'light',
+        }
+      }}
     >
       <DialogTitle>
         <Box display="flex" justifyContent="space-between" alignItems="center">

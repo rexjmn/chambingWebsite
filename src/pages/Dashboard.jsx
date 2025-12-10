@@ -82,6 +82,7 @@ const Dashboard = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [coverPhotoModalOpen, setCoverPhotoModalOpen] = useState(false);
+  const [showAllContracts, setShowAllContracts] = useState(false);
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -494,15 +495,21 @@ const Dashboard = () => {
         <section className="dashboard__section" aria-labelledby="contracts-heading">
           <div className="dashboard__section-header">
             <h2 id="contracts-heading">{t('dashboard.recentContracts')}</h2>
-            <button className="dashboard__btn dashboard__btn--outlined" type="button">
-              <AssignmentIcon />
-              {t('dashboard.viewAll')}
-            </button>
+            {contracts.length > 3 && (
+              <button
+                className="dashboard__btn dashboard__btn--outlined"
+                type="button"
+                onClick={() => setShowAllContracts(!showAllContracts)}
+              >
+                <AssignmentIcon />
+                {showAllContracts ? t('dashboard.showLess') : t('dashboard.viewAll')}
+              </button>
+            )}
           </div>
 
           {contracts.length > 0 ? (
             <div className="dashboard__contracts">
-              {contracts.slice(0, 3).map((contract) => (
+              {(showAllContracts ? contracts : contracts.slice(0, 3)).map((contract) => (
                 <article key={contract.id} className="dashboard__contract-card">
                   <div className="dashboard__contract-header">
                     <h3>{t('dashboard.contract.code', { code: contract.codigo_contrato })}</h3>

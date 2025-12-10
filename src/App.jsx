@@ -16,6 +16,7 @@ import EditProfile from './pages/EditProfile';
 import PublicProfile from './pages/PublicProfile';
 import Services from './pages/Service'; // ✅ NUEVA IMPORTACIÓN
 import CreateContract from './pages/CreateContract';
+import ContractDetails from './pages/ContractDetails';
 import './styles/globals.scss';
 
 // Componente para resetear el scroll en cada cambio de ruta
@@ -82,6 +83,16 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <CreateContract />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Detalles del Contrato - Solo usuarios autenticados */}
+                <Route
+                  path="/contracts/:contractId"
+                  element={
+                    <ProtectedRoute>
+                      <ContractDetails />
                     </ProtectedRoute>
                   }
                 />

@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { contractService } from '../services/contractService';
-import { serviceService } from '../services/serviceService';
+import adminService from '../services/adminService';
 import { workerService } from '../services/workerService';
 import '../styles/createContract.scss';
 import {
@@ -35,9 +35,10 @@ const CreateContract = () => {
 
   const [formData, setFormData] = useState({
     trabajador_id: workerId || '',
-    categoria_servicio_id: '',
-    descripcion_servicio: '',
-    monto_total: '',
+    categoria_id: '',
+    descripcion: '',
+    direccion: '',
+    monto: '',
     fecha_inicio: '',
     fecha_fin: '',
     notas: '',
@@ -53,11 +54,9 @@ const CreateContract = () => {
       try {
         setLoading(true);
 
-        // Load categories
-        const categoriesResponse = await serviceService.getCategorias();
-        if (categoriesResponse.status === 'success') {
-          setCategories(categoriesResponse.data || []);
-        }
+        // Load categories from admin service
+        const categoriesData = await adminService.getCategories();
+        setCategories(categoriesData || []);
 
         // Load worker info if workerId is provided
         if (workerId) {
@@ -93,17 +92,34 @@ const CreateContract = () => {
 
     try {
       // Validate required fields
-      if (!formData.trabajador_id || !formData.categoria_servicio_id || !formData.monto_total) {
+      if (!formData.trabajador_id || !formData.categoria_id || !formData.monto || !formData.descripcion || !formData.direccion || !formData.fecha_inicio) {
         setError(t('createContract.errors.requiredFields') || 'Por favor completa todos los campos requeridos');
         setSubmitting(false);
         return;
       }
 
+      // Get current user from auth context
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+
+      // Transform data to match backend DTO
+      const contractData = {
+        empleadorId: currentUser.id,
+        trabajadorId: formData.trabajador_id,
+        categoriaId: formData.categoria_id,
+        fechaInicio: formData.fecha_inicio,
+        fechaFin: formData.fecha_fin || undefined,
+        detallesServicio: {
+          descripcion: formData.descripcion,
+          direccion: formData.direccion,
+          notas_adicionales: formData.notas || undefined,
+        },
+        terminosCondiciones: 'Términos y condiciones estándar del servicio',
+        monto: parseFloat(formData.monto),
+        metodoPago: 'efectivo',
+      };
+
       // Create contract
-      const response = await contractService.createContract({
-        ...formData,
-        monto_total: parseFloat(formData.monto_total),
-      });
+      const response = await contractService.createContract(contractData);
 
       if (response.status === 'success') {
         setSuccess(true);
@@ -199,14 +215,14 @@ const CreateContract = () => {
         <form onSubmit={handleSubmit} className="contract-form">
           {/* Categoría del Servicio */}
           <div className="form-group">
-            <label htmlFor="categoria_servicio_id">
+            <label htmlFor="categoria_id">
               <CategoryIcon />
               {t('createContract.form.category') || 'Categoría del Servicio'} *
             </label>
             <select
-              id="categoria_servicio_id"
-              name="categoria_servicio_id"
-              value={formData.categoria_servicio_id}
+              id="categoria_id"
+              name="categoria_id"
+              value={formData.categoria_id}
               onChange={handleChange}
               required
             >
@@ -221,14 +237,14 @@ const CreateContract = () => {
 
           {/* Descripción del Servicio */}
           <div className="form-group">
-            <label htmlFor="descripcion_servicio">
+            <label htmlFor="descripcion">
               <DescriptionIcon />
               {t('createContract.form.description') || 'Descripción del Servicio'} *
             </label>
             <textarea
-              id="descripcion_servicio"
-              name="descripcion_servicio"
-              value={formData.descripcion_servicio}
+              id="descripcion"
+              name="descripcion"
+              value={formData.descripcion}
               onChange={handleChange}
               placeholder={t('createContract.form.descriptionPlaceholder') || 'Describe el trabajo a realizar...'}
               rows="4"
@@ -236,17 +252,34 @@ const CreateContract = () => {
             />
           </div>
 
+          {/* Dirección del Servicio */}
+          <div className="form-group">
+            <label htmlFor="direccion">
+              <DescriptionIcon />
+              {t('createContract.form.address') || 'Dirección del Servicio'} *
+            </label>
+            <input
+              type="text"
+              id="direccion"
+              name="direccion"
+              value={formData.direccion}
+              onChange={handleChange}
+              placeholder={t('createContract.form.addressPlaceholder') || 'Ingresa la dirección donde se realizará el servicio...'}
+              required
+            />
+          </div>
+
           {/* Monto Total */}
           <div className="form-group">
-            <label htmlFor="monto_total">
+            <label htmlFor="monto">
               <MoneyIcon />
               {t('createContract.form.amount') || 'Monto Total (USD)'} *
             </label>
             <input
               type="number"
-              id="monto_total"
-              name="monto_total"
-              value={formData.monto_total}
+              id="monto"
+              name="monto"
+              value={formData.monto}
               onChange={handleChange}
               placeholder="0.00"
               step="0.01"

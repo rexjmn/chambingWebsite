@@ -449,7 +449,9 @@
     "availableServices": "Servicios Disponibles",
     "recentContracts": "Contratos Recientes",
     "viewAll": "Ver Todos",
+    "showLess": "Ver Menos",
     "viewWorkers": "Ver Trabajadores",
+    "viewDetails": "Ver Detalles",
     "noContracts": {
       "title": "No tienes contratos aún",
       "subtitle": "Comienza explorando nuestros servicios disponibles",
@@ -626,6 +628,8 @@
       "selectCategory": "Selecciona una categoría",
       "description": "Descripción del Servicio",
       "descriptionPlaceholder": "Describe el trabajo a realizar...",
+      "address": "Dirección del Servicio",
+      "addressPlaceholder": "Ingresa la dirección donde se realizará el servicio...",
       "amount": "Monto Total (USD)",
       "startDate": "Fecha de Inicio",
       "endDate": "Fecha de Finalización",
@@ -653,6 +657,51 @@
       "workerPin": "El trabajador deberá ingresar el PIN para confirmar el contrato",
       "pendingStatus": "El contrato estará en estado \"Pendiente de Activación\" hasta que el trabajador lo active",
       "dashboard": "Puedes ver y gestionar tus contratos desde el Dashboard"
+    }
+  },
+  "contractDetails": {
+    "loading": "Cargando contrato...",
+    "title": "Detalles del Contrato",
+    "contractNumber": "Número de contrato",
+    "creationDate": "Fecha de creación",
+    "back": "Volver",
+    "backToDashboard": "Volver al Dashboard",
+    "notSpecified": "No especificado",
+    "status": {
+      "pending": "Pendiente de Activación",
+      "active": "Activo",
+      "completed": "Completado",
+      "cancelled": "Cancelado",
+      "closed": "Cerrado"
+    },
+    "parties": {
+      "title": "1. Información de las Partes",
+      "client": "Cliente",
+      "provider": "Prestador del Servicio"
+    },
+    "service": {
+      "title": "2. Detalles del Servicio",
+      "category": "Categoría del servicio",
+      "address": "Dirección del servicio",
+      "description": "Descripción del servicio",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de finalización",
+      "notes": "Notas adicionales"
+    },
+    "payment": {
+      "title": "3. Condiciones Económicas",
+      "totalAmount": "Monto total",
+      "workerAmount": "Monto trabajador",
+      "platformFee": "Comisión plataforma"
+    },
+    "activation": {
+      "title": "⚠️ Pendiente de Activación",
+      "message": "Este contrato requiere activación por parte del trabajador.",
+      "pin": "PIN de activación"
+    },
+    "errors": {
+      "notFound": "Contrato no encontrado",
+      "loadError": "Error al cargar el contrato"
     }
   },
   "MoreDetails": {

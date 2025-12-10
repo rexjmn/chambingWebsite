@@ -246,6 +246,13 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
       onClose={handleClose}
       maxWidth="lg"
       fullWidth
+      PaperProps={{
+        sx: {
+          backgroundColor: '#ffffff !important',
+          color: '#1a1a1a !important',
+          colorScheme: 'light',
+        }
+      }}
     >
       <DialogTitle>
         <Box display="flex" justifyContent="space-between" alignItems="center">

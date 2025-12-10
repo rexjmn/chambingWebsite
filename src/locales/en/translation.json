@@ -634,6 +634,8 @@
     "selectCategory": "Select a category",
     "description": "Service Description",
     "descriptionPlaceholder": "Describe the work to be done...",
+    "address": "Service Address",
+    "addressPlaceholder": "Enter the address where the service will be performed...",
     "amount": "Total Amount (USD)",
     "startDate": "Start Date",
     "endDate": "End Date",
