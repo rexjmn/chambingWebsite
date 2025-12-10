@@ -449,6 +449,7 @@
     "availableServices": "Available Services",
     "recentContracts": "Recent Contracts",
     "viewAll": "View All",
+    "showLess": "Show Less",
     "viewWorkers": "View Workers",
     "noContracts": {
       "title": "You don't have any contracts yet",
@@ -663,6 +664,51 @@
     "workerPin": "The worker must enter the PIN to confirm the contract",
     "pendingStatus": "The contract will be in \"Pending Activation\" status until the worker activates it",
     "dashboard": "You can view and manage your contracts from the Dashboard"
+  }
+},
+"contractDetails": {
+  "loading": "Loading contract...",
+  "title": "Contract Details",
+  "contractNumber": "Contract number",
+  "creationDate": "Creation date",
+  "back": "Back",
+  "backToDashboard": "Back to Dashboard",
+  "notSpecified": "Not specified",
+  "status": {
+    "pending": "Pending Activation",
+    "active": "Active",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "closed": "Closed"
+  },
+  "parties": {
+    "title": "1. Party Information",
+    "client": "Client",
+    "provider": "Service Provider"
+  },
+  "service": {
+    "title": "2. Service Details",
+    "category": "Service category",
+    "address": "Service address",
+    "description": "Service description",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "notes": "Additional notes"
+  },
+  "payment": {
+    "title": "3. Economic Conditions",
+    "totalAmount": "Total amount",
+    "workerAmount": "Worker amount",
+    "platformFee": "Platform fee"
+  },
+  "activation": {
+    "title": "⚠️ Pending Activation",
+    "message": "This contract requires activation by the worker.",
+    "pin": "Activation PIN"
+  },
+  "errors": {
+    "notFound": "Contract not found",
+    "loadError": "Error loading contract"
   }
 },
 "MoreDetails": {

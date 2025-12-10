@@ -449,6 +449,7 @@
     "availableServices": "Services Disponibles",
     "recentContracts": "Contrats Récents",
     "viewAll": "Voir Tout",
+    "showLess": "Voir Moins",
     "viewWorkers": "Voir les Travailleurs",
     "noContracts": {
       "title": "Vous n'avez pas encore de contrats",
@@ -664,6 +665,51 @@
     "workerPin": "Le travailleur devra entrer le code PIN pour confirmer le contrat",
     "pendingStatus": "Le contrat sera en état \"En attente d'activation\" jusqu'à ce que le travailleur l'active",
     "dashboard": "Vous pouvez consulter et gérer vos contrats depuis le Tableau de Bord"
+  }
+},
+"contractDetails": {
+  "loading": "Chargement du contrat...",
+  "title": "Détails du Contrat",
+  "contractNumber": "Numéro de contrat",
+  "creationDate": "Date de création",
+  "back": "Retour",
+  "backToDashboard": "Retour au Tableau de Bord",
+  "notSpecified": "Non spécifié",
+  "status": {
+    "pending": "En Attente d'Activation",
+    "active": "Actif",
+    "completed": "Terminé",
+    "cancelled": "Annulé",
+    "closed": "Fermé"
+  },
+  "parties": {
+    "title": "1. Informations sur les Parties",
+    "client": "Client",
+    "provider": "Prestataire de Service"
+  },
+  "service": {
+    "title": "2. Détails du Service",
+    "category": "Catégorie de service",
+    "address": "Adresse du service",
+    "description": "Description du service",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "notes": "Notes supplémentaires"
+  },
+  "payment": {
+    "title": "3. Conditions Économiques",
+    "totalAmount": "Montant total",
+    "workerAmount": "Montant travailleur",
+    "platformFee": "Frais de plateforme"
+  },
+  "activation": {
+    "title": "⚠️ En Attente d'Activation",
+    "message": "Ce contrat nécessite l'activation par le travailleur.",
+    "pin": "PIN d'Activation"
+  },
+  "errors": {
+    "notFound": "Contrat non trouvé",
+    "loadError": "Erreur lors du chargement du contrat"
   }
 },
 "MoreDetails": {
