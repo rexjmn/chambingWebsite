@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  Button, 
-  Stack 
+import {
+  Button,
+  Stack,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import MuiEditIcon from '@mui/icons-material/Edit'; // ✅ Renombrar para evitar conflicto
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -12,7 +14,9 @@ import { serviceService } from '../services/serviceService';
 import { contractService } from '../services/contractService';
 import ProfilePhotoModal from '../components/ProfilePhotoModal';
 import CoverPhotoModal from '../components/CoverPhotoModal';
+import PinModal from '../components/PinModal';
 import { DashboardSkeleton } from '../components/SkeletonLoader';
+import { logger } from '../utils/logger';
 import '../styles/dashboard.scss';
 import '../styles/components/SkeletonLoader.scss';
 
@@ -83,6 +87,10 @@ const Dashboard = () => {
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [coverPhotoModalOpen, setCoverPhotoModalOpen] = useState(false);
   const [showAllContracts, setShowAllContracts] = useState(false);
+  const [pinModalOpen, setPinModalOpen] = useState(false);
+  const [selectedContract, setSelectedContract] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -92,7 +100,7 @@ const Dashboard = () => {
 
         const dataPromises = Promise.all([
           serviceService.getCategorias().catch(error => {
-            console.error('Error cargando categorías:', error);
+            logger.error('Error cargando categorías:', error);
             return [
               { id: 1, nombre: 'domesticCleaning', descripcion: 'Servicio de limpieza' },
               { id: 2, nombre: 'plumbing', descripcion: 'Reparaciones' },
@@ -103,7 +111,7 @@ const Dashboard = () => {
             ];
           }),
           contractService.getMyContracts().catch(error => {
-            console.error('Error cargando contratos:', error);
+            logger.error('Error cargando contratos:', error);
             return { status: 'success', data: [] };
           })
         ]);
@@ -121,37 +129,52 @@ const Dashboard = () => {
           setContracts([]);
         }
       } catch (error) {
-        console.error('Error general:', error);
+        logger.error('Error general:', error);
         setError('Error al cargar los datos del dashboard');
       } finally {
         setLoading(false);
       }
     };
-    
+
     window.scrollTo(0, 0);
     loadDashboardData();
-  }, []);
+  }, [refreshKey]);
 
   const handleViewWorkers = (categoryId) => {
     navigate(`/workers?category=${categoryId}`);
   };
 
-  const handleActivateContract = async (contract) => {
-    const pin = prompt(t('dashboard.contract.enterPin', { code: contract.codigo_contrato }));
-    if (!pin) return;
+  const handleActivateContract = (contract) => {
+    setSelectedContract(contract);
+    setPinModalOpen(true);
+  };
+
+  const handlePinSubmit = async (pin) => {
+    if (!selectedContract) return;
 
     try {
       const response = await contractService.activarContratoConPIN(
-        contract.codigo_contrato,
+        selectedContract.codigo_contrato,
         pin
       );
 
       if (response.status === 'success') {
-        alert(t('dashboard.contract.activated'));
-        window.location.reload();
+        setSnackbar({
+          open: true,
+          message: t('dashboard.contract.activated'),
+          severity: 'success'
+        });
+        setPinModalOpen(false);
+        setSelectedContract(null);
+        // Trigger re-fetch instead of page reload
+        setRefreshKey(prev => prev + 1);
       }
     } catch (error) {
-      alert(t('dashboard.contract.activationError') + ': ' + (error.response?.data?.message || error.message));
+      setSnackbar({
+        open: true,
+        message: t('dashboard.contract.activationError') + ': ' + (error.response?.data?.message || error.message),
+        severity: 'error'
+      });
     }
   };
 
@@ -169,7 +192,7 @@ const Dashboard = () => {
   };
 
   const handleRefresh = () => {
-    window.location.reload();
+    setRefreshKey(prev => prev + 1);
   };
 
   const formatDate = (dateString) => {
@@ -576,14 +599,41 @@ const Dashboard = () => {
       <ProfilePhotoModal
         open={photoModalOpen}
         onClose={() => setPhotoModalOpen(false)}
-        onPhotoUpdated={(newPhotoUrl) => console.log('Foto actualizada:', newPhotoUrl)}
+        onPhotoUpdated={(newPhotoUrl) => logger.log('Foto actualizada:', newPhotoUrl)}
       />
 
       <CoverPhotoModal
         open={coverPhotoModalOpen}
         onClose={() => setCoverPhotoModalOpen(false)}
-        onPhotoUpdated={(newCoverUrl) => console.log('Foto de portada actualizada:', newCoverUrl)}
+        onPhotoUpdated={(newCoverUrl) => logger.log('Foto de portada actualizada:', newCoverUrl)}
       />
+
+      {/* Pin Modal */}
+      <PinModal
+        open={pinModalOpen}
+        onClose={() => {
+          setPinModalOpen(false);
+          setSelectedContract(null);
+        }}
+        onSubmit={handlePinSubmit}
+        contractCode={selectedContract?.codigo_contrato}
+      />
+
+      {/* Success/Error Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

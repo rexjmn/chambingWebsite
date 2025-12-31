@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { sanitizeInput, isValidEmail } from '../../utils/security';
+import { logger } from '../../utils/logger';
 import '../../styles/auth.scss';
 import { Lock, Mail, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 
@@ -46,12 +47,12 @@ const LoginForm = () => {
         password: data.password,
       };
 
-      console.log('🚀 Intentando login con:', { email: sanitizedData.email });
+      logger.form('Intentando login', { email: sanitizedData.email });
       await login(sanitizedData);
-      console.log('✅ Login exitoso, redirigiendo a:', from);
+      logger.form('Login exitoso, redirigiendo');
       navigate(from, { replace: true });
     } catch (error) {
-      console.error('❌ Error en login:', error);
+      logger.error('Error en login:', error.message);
     }
   };
 

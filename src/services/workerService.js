@@ -10,6 +10,7 @@
  * - GET : Pour obtenir les travailleurs, les catégories et les données associées
  */
 import api from './api';
+import { logger } from '../utils/logger';
 
 export const workerService = {
   /**
@@ -169,7 +170,7 @@ export const workerService = {
 
       return [];
     } catch (error) {
-      console.error('Error obteniendo trabajadores por categoría:', error);
+      logger.error('Error obteniendo trabajadores por categoría:', error.message);
       return [];
     }
   },
@@ -260,7 +261,7 @@ export const workerService = {
 
       return categorized;
     } catch (error) {
-      console.error('Error categorizando trabajadores:', error);
+      logger.error('Error categorizando trabajadores:', error.message);
       return {};
     }
   }

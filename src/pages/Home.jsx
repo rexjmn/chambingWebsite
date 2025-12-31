@@ -38,6 +38,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { serviceService } from '../services/serviceService';
 import { workerService } from '../services/workerService'; // 👈 AGREGAR
+import { logger } from '../utils/logger';
 import heroManImage from '../assets/images/heroman.png';
 import '../styles/home.scss';
 import '../styles/button.scss';
@@ -60,13 +61,13 @@ const Home = () => {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        console.log('🔄 Intentando cargar categorías...');
+        logger.api('Intentando cargar categorías');
         const data = await serviceService.getCategories();
         setCategories(data.slice(0, 6));
-        console.log('✅ Categorías cargadas:', data.length);
+        logger.api('Categorías cargadas', { count: data.length });
       } catch (error) {
-        console.error('❌ Error loading categories:', error);
-        console.log('📝 Usando datos mock por error de conexión');
+        logger.error('Error loading categories:', error);
+        logger.log('Usando datos mock por error de conexión');
         setCategories([
           { id: 1, nombre: 'domesticCleaning', descripcion: 'domesticCleaning', icono: 'cleaning' },
           { id: 2, nombre: 'plumbing', descripcion: 'plumbing', icono: 'plumbing' },
@@ -86,20 +87,20 @@ const Home = () => {
     const loadWorkers = async () => {
       setLoadingWorkers(true);
       try {
-        console.log('🔄 Cargando trabajadores...');
+        logger.api('Cargando trabajadores');
 
         // Cargar trabajadores destacados
         const featured = await workerService.getFeaturedWorkers(8);
-        console.log('✅ Trabajadores destacados:', featured);
+        logger.api('Trabajadores destacados cargados', { count: featured?.length });
         setFeaturedWorkers(featured || []);
 
         // Cargar mejor valorados
         const topRated = await workerService.getTopRatedWorkers(8);
-        console.log('✅ Trabajadores mejor valorados:', topRated);
+        logger.api('Trabajadores mejor valorados cargados', { count: topRated?.length });
         setTopRatedWorkers(topRated || []);
 
       } catch (error) {
-        console.error('❌ Error cargando trabajadores:', error);
+        logger.error('Error cargando trabajadores:', error);
         
         // 📝 Datos mock en caso de error
         const mockWorkers = generateMockWorkers(6);
@@ -259,6 +260,8 @@ const Home = () => {
                 src={heroManImage}
                 alt="Professional worker"
                 className="hero-image"
+                fetchpriority="high"
+                decoding="async"
               />
               <div className="hero-image-glow"></div>
               <div className="hero-image-glow-rings"></div>

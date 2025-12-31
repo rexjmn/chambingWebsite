@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { logger } from '../utils/logger';
 
 // Importar traducciones
 import esTranslation from '../locales/es/translation.json';
@@ -51,7 +52,7 @@ i18n
 
 // Función simple para cambiar idioma
 export const changeLanguage = (lng) => {
-  console.log(`🌐 Cambiando idioma a: ${lng}`);
+  logger.log(`🌐 Cambiando idioma a: ${lng}`);
   return i18n.changeLanguage(lng);
 };
 

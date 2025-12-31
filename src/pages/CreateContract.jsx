@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { contractService } from '../services/contractService';
 import adminService from '../services/adminService';
 import { workerService } from '../services/workerService';
+import { logger } from '../utils/logger';
 import '../styles/createContract.scss';
 import {
   Assignment as AssignmentIcon,
@@ -68,7 +69,7 @@ const CreateContract = () => {
 
         setLoading(false);
       } catch (err) {
-        console.error('Error loading data:', err);
+        logger.error('Error loading data:', err);
         setError(t('createContract.errors.loadError') || 'Error al cargar los datos necesarios');
         setLoading(false);
       }
@@ -131,7 +132,7 @@ const CreateContract = () => {
         }, 3000);
       }
     } catch (err) {
-      console.error('Error creating contract:', err);
+      logger.error('Error creating contract:', err);
       setError(err.response?.data?.message || t('createContract.errors.createError') || 'Error al crear el contrato');
     } finally {
       setSubmitting(false);

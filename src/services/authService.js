@@ -1,83 +1,71 @@
 import api from './api';
+import { logger } from '../utils/logger';
 
 export const authService = {
   async login(credentials) {
     try {
-      console.log('🔧 authService: Enviando petición login...', credentials);
+      logger.auth('Enviando petición login', { email: credentials.email });
       const response = await api.post('/auth/login', credentials);
-      console.log('🔧 authService: Respuesta recibida:', response.data);
-      
-      // ✅ Usar los nombres correctos que retorna el backend
-      const { accessToken, refreshToken, user } = response.data;
+      logger.auth('Login exitoso');
 
-      // Guardar tokens y usuario en localStorage
-      localStorage.setItem('token', accessToken);           // ✅ accessToken del backend
-      localStorage.setItem('refresh_token', refreshToken);  // ✅ refreshToken del backend
-      
-      // Guardar usuario solo si existe en la respuesta
+      // ✅ Los tokens ahora se envían en httpOnly cookies (más seguro)
+      // El backend configura las cookies automáticamente
+      const { user } = response.data;
+
+      // Solo guardamos información del usuario (no tokens)
       if (user) {
         localStorage.setItem('user', JSON.stringify(user));
       }
 
-     
       return {
-        access_token: accessToken,  
-        refresh_token: refreshToken,
-        user: user
+        user: user,
+        message: response.data.message
       };
     } catch (error) {
-      console.error('❌ authService: Error en login:', error.response?.data || error);
+      logger.error('Error en login:', error.response?.data?.message || error.message);
       throw error;
     }
   },
 
   async register(userData) {
     try {
-      console.log('🔧 authService: Enviando petición registro...', userData);
-     const response = await api.post('/users/register', userData);
-      console.log('🔧 authService: Respuesta registro:', response.data);
+      logger.auth('Enviando petición registro', { email: userData.email });
+      const response = await api.post('/users/register', userData);
+      logger.auth('Registro exitoso');
       return response.data;
     } catch (error) {
-      console.error('❌ authService: Error en registro:', error.response?.data || error);
+      logger.error('Error en registro:', error.response?.data?.message || error.message);
       throw error;
     }
   },
 
   async logout() {
     try {
-      console.log('🔧 authService: Enviando petición logout...');
+      logger.auth('Cerrando sesión');
+      // El backend limpiará las cookies automáticamente
       await api.post('/auth/logout');
     } catch (error) {
-      console.error('❌ authService: Error en logout:', error.response?.data || error);
+      logger.error('Error en logout:', error.response?.data?.message || error.message);
     }
-    
-    // Limpiar localStorage siempre
-    localStorage.removeItem('token');
-    localStorage.removeItem('refresh_token');
+
+    // Limpiar solo información del usuario de localStorage
     localStorage.removeItem('user');
+
+    logger.auth('Sesión cerrada - Redirigiendo a login');
     window.location.href = '/login';
   },
 
   async refresh_token() {
     try {
-      const refresh_token = localStorage.getItem('refresh_token');
-      console.log('🔧 authService: Refrescando token...');
-      
-      if (!refresh_token) {
-        throw new Error('No hay refresh token disponible');
-      }
+      logger.auth('Refrescando token de acceso');
+      // El backend lee el refreshToken desde las cookies
+      // y configura los nuevos tokens en las cookies automáticamente
+      const response = await api.post('/auth/refresh');
 
-      const response = await api.post('/auth/refresh', { 
-        refreshToken: refresh_token  
-      });
-      
-      const { accessToken } = response.data;  
-      
-      localStorage.setItem('token', accessToken);
-      console.log('✅ authService: Token refrescado exitosamente');
-      return accessToken;
+      logger.auth('Token refrescado exitosamente');
+      return response.data;
     } catch (error) {
-      console.error('❌ authService: Error refrescando token:', error);
+      logger.error('Error refrescando token:', error.message);
       this.logout();
       throw error;
     }
@@ -89,6 +77,9 @@ export const authService = {
   },
 
   isAuthenticated() {
-    return !!localStorage.getItem('token');
+    // Con httpOnly cookies, no podemos acceder al token desde JavaScript
+    // En su lugar, verificamos si hay información de usuario
+    // El backend validará el token en cada petición
+    return !!localStorage.getItem('user');
   },
 };

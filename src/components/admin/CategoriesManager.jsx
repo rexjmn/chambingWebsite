@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import adminService from '../../services/adminService';
+import { logger } from '../../utils/logger';
 
 const CategoriesManager = () => {
   const { t } = useTranslation();
@@ -25,7 +26,7 @@ const CategoriesManager = () => {
       const data = await adminService.getCategories();
       setCategories(data);
     } catch (error) {
-      console.error('Error cargando categorías:', error);
+      logger.error('Error cargando categorías:', error);
       alert(t('errors.serverError'));
     } finally {
       setLoading(false);
@@ -47,7 +48,7 @@ const CategoriesManager = () => {
       setEditingCategory(null);
       loadCategories();
     } catch (error) {
-      console.error('Error guardando categoría:', error);
+      logger.error('Error guardando categoría:', error);
       alert(t('errors.serverError'));
     }
   };
@@ -71,7 +72,7 @@ const CategoriesManager = () => {
       alert(t('success.generic'));
       loadCategories();
     } catch (error) {
-      console.error('Error eliminando categoría:', error);
+      logger.error('Error eliminando categoría:', error);
       alert(t('errors.serverError'));
     }
   };

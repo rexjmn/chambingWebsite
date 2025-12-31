@@ -1,13 +1,36 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ChambingApp</title>
+
+    <!-- ✅ Preconnect para fuentes y APIs externas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- ✅ DNS Prefetch para API -->
+    <link rel="dns-prefetch" href="https://chambingapi.onrender.com" />
+
+    <title>ChambingApp - Servicios Freelance en El Salvador</title>
+    <meta name="description" content="Conecta con profesionales verificados para servicios de plomería, electricidad, limpieza y más en El Salvador." />
+
+    <!-- ✅ Performance hints -->
+    <meta name="theme-color" content="#1976d2" />
   </head>
   <body>
-    <div id="root"></div>
+    <!-- ✅ Loading placeholder para mejorar FCP -->
+    <div id="root">
+      <div style="display:flex;justify-content:center;align-items:center;min-height:100vh;background:#fafafa">
+        <div style="text-align:center">
+          <div style="width:40px;height:40px;margin:0 auto 16px;border:4px solid #e0e0e0;border-top-color:#1976d2;border-radius:50%;animation:spin 1s linear infinite"></div>
+          <p style="color:#666;font-family:system-ui">Cargando ChambingApp...</p>
+        </div>
+      </div>
+      <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+      </style>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

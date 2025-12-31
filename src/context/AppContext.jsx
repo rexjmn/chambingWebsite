@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { serviceService } from '../services/serviceService';
 import { contractService } from '../services/contractService';
+import { logger } from '../utils/logger';
 
 const AppContext = createContext();
 
@@ -77,12 +78,12 @@ export const AppProvider = ({ children }) => {
 
   const loadCategories = async () => {
     try {
-      console.log('📂 AppContext: Cargando categorías...');
+      logger.log('📂 AppContext: Cargando categorías...');
       const categories = await serviceService.getCategories();
       dispatch({ type: 'SET_CATEGORIES', payload: categories });
-      console.log('✅ AppContext: Categorías cargadas', categories.length);
+      logger.log('✅ AppContext: Categorías cargadas', categories.length);
     } catch (error) {
-      console.error('❌ AppContext: Error cargando categorías', error);
+      logger.error('❌ AppContext: Error cargando categorías', error);
       // No mostrar error en UI para categorías, usar datos mock
       const mockCategories = [
         { id: 1, nombre: 'Limpieza Doméstica', descripcion: 'Servicio de limpieza para el hogar', icono: 'cleaning' },
@@ -99,12 +100,12 @@ export const AppProvider = ({ children }) => {
   const loadContracts = async () => {
     try {
       setLoading(true);
-      console.log('📋 AppContext: Cargando contratos...');
+      logger.log('📋 AppContext: Cargando contratos...');
       const contracts = await contractService.getMyContracts();
       dispatch({ type: 'SET_CONTRACTS', payload: contracts });
-      console.log('✅ AppContext: Contratos cargados', contracts.length);
+      logger.log('✅ AppContext: Contratos cargados', contracts.length);
     } catch (error) {
-      console.error('❌ AppContext: Error cargando contratos', error);
+      logger.error('❌ AppContext: Error cargando contratos', error);
       setError('Error al cargar contratos');
     } finally {
       setLoading(false);
@@ -114,17 +115,17 @@ export const AppProvider = ({ children }) => {
   const createContract = async (contractData) => {
     try {
       setLoading(true);
-      console.log('📝 AppContext: Creando contrato...');
+      logger.log('📝 AppContext: Creando contrato...');
       const newContract = await contractService.createContract(contractData);
       dispatch({ type: 'ADD_CONTRACT', payload: newContract });
       addNotification({
         type: 'success',
         message: 'Contrato creado exitosamente',
       });
-      console.log('✅ AppContext: Contrato creado', newContract);
+      logger.log('✅ AppContext: Contrato creado', newContract);
       return newContract;
     } catch (error) {
-      console.error('❌ AppContext: Error creando contrato', error);
+      logger.error('❌ AppContext: Error creando contrato', error);
       setError('Error al crear contrato');
       throw error;
     } finally {
@@ -135,7 +136,7 @@ export const AppProvider = ({ children }) => {
   const updateContract = async (contractId, updateData) => {
     try {
       setLoading(true);
-      console.log('📝 AppContext: Actualizando contrato...');
+      logger.log('📝 AppContext: Actualizando contrato...');
       const updatedContract = await contractService.updateContractStatus(contractId, updateData);
       dispatch({ type: 'UPDATE_CONTRACT', payload: updatedContract });
       addNotification({
@@ -144,7 +145,7 @@ export const AppProvider = ({ children }) => {
       });
       return updatedContract;
     } catch (error) {
-      console.error('❌ AppContext: Error actualizando contrato', error);
+      logger.error('❌ AppContext: Error actualizando contrato', error);
       setError('Error al actualizar contrato');
       throw error;
     } finally {

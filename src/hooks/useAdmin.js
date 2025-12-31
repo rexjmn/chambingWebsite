@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import adminService from '../services/adminService';
 import { useAuth } from '../context/AuthContext';
+import { logger } from '../utils/logger';
 
 export const useAdmin = () => {
   const { user } = useAuth();
@@ -21,7 +22,7 @@ export const useAdmin = () => {
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || 'Error en la operación';
       setError(errorMessage);
-      console.error('Admin operation error:', err);
+      logger.error('Admin operation error:', err);
       return { success: false, error: errorMessage };
     } finally {
       setLoading(false);

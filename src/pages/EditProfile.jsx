@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { profileService } from '../services/profileService';
 import { serviceService } from '../services/serviceService';
+import { logger } from '../utils/logger';
 import '../styles/edit-profile.scss';
 
 const EditProfile = () => {
@@ -46,7 +47,7 @@ const EditProfile = () => {
 
         // Cargar habilidades disponibles
         const skillsResponse = await profileService.getAvailableSkills();
-        console.log('Skills response:', skillsResponse);
+        logger.api('Skills loaded', skillsResponse);
         setAvailableSkills(skillsResponse?.data || []);
 
         // Cargar datos del usuario
@@ -65,17 +66,17 @@ const EditProfile = () => {
           if (user.tipo_usuario === 'trabajador') {
             try {
               const userSkillsResponse = await profileService.getMySkills();
-              console.log('User skills response:', userSkillsResponse);
+              logger.api('User skills loaded', userSkillsResponse);
               setSelectedSkills(userSkillsResponse?.data || []);
             } catch (err) {
-              console.warn('Error loading user skills:', err);
+              logger.warn('Error loading user skills:', err);
               setSelectedSkills([]);
             }
 
             // 🆕 NUEVO - Cargar tarifas del trabajador
             try {
               const tarifasResponse = await serviceService.getTarifasByWorker(user.id);
-              console.log('Tarifas response:', tarifasResponse);
+              logger.api('Tarifas loaded', tarifasResponse);
 
               if (tarifasResponse && tarifasResponse.tarifa_hora !== undefined) {
                 setTarifas({
@@ -88,13 +89,13 @@ const EditProfile = () => {
                 setHasTarifas(true);
               }
             } catch (err) {
-              console.warn('Error loading tarifas:', err);
+              logger.warn('Error loading tarifas:', err);
               setHasTarifas(false);
             }
           }
         }
       } catch (err) {
-        console.error('Error loading data:', err);
+        logger.error('Error loading data:', err);
         setError('Error al cargar los datos. Por favor recarga la página.');
       } finally {
         setLoading(false);
@@ -173,7 +174,7 @@ const EditProfile = () => {
               await serviceService.createTarifas(user.id, tarifasToSave);
             }
           } catch (tarifaError) {
-            console.warn('Error guardando tarifas:', tarifaError);
+            logger.warn('Error guardando tarifas:', tarifaError);
               setError(prev => `${prev || ''} Advertencia: No se pudieron guardar las tarifas.`);
           }
         }
@@ -190,8 +191,8 @@ const EditProfile = () => {
       }, 1500);
 
     } catch (err) {
-      console.error('Error actualizando perfil:', err);
-      console.error('Error details:', err.response);
+      logger.error('Error actualizando perfil:', err);
+      logger.error('Error details:', err.response);
 
       const errorMessage = err.response?.data?.message
         || err.message

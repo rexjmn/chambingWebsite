@@ -1,4 +1,5 @@
 import api from './api';
+import { logger } from '../utils/logger';
 
 const adminService = {
   // ============ CATEGORÍAS ============
@@ -134,7 +135,7 @@ const adminService = {
       });
       return response.data.data || response.data;
     } catch (error) {
-      console.error('Error loading stats:', error);
+      logger.error('Error loading stats:', error.message);
       // Fallback a stats básicas si el endpoint falla
       const users = await this.getAllUsers();
       return {
@@ -168,7 +169,7 @@ const adminService = {
       });
       return response.data.data || response.data;
     } catch (error) {
-      console.error('Metrics endpoint not available, using basic stats');
+      logger.warn('Metrics endpoint not available, using basic stats');
       return await this.getAdminStats(period);
     }
   },
@@ -178,7 +179,7 @@ const adminService = {
       const response = await api.get('/admin/workers/stats');
       return response.data.data || response.data;
     } catch (error) {
-      console.error('Error loading workers stats:', error);
+      logger.error('Error loading workers stats:', error.message);
       return null;
     }
   }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import adminService from '../../services/adminService';
+import { logger } from '../../utils/logger';
 
 const RolesManager = () => {
   const { t } = useTranslation();
@@ -27,7 +28,7 @@ const RolesManager = () => {
       setRoles(rolesData);
       setUsers(usersData);
     } catch (error) {
-      console.error('Error cargando datos:', error);
+      logger.error('Error cargando datos:', error);
       alert(t('admin.roles.messages.loadError'));
     } finally {
       setLoading(false);
@@ -48,7 +49,7 @@ const RolesManager = () => {
       setAssignmentData({ usuarioId: '', rolId: '' });
       loadData();
     } catch (error) {
-      console.error('Error asignando rol:', error);
+      logger.error('Error asignando rol:', error);
       alert(t('admin.roles.messages.assignError'));
     }
   };
@@ -63,7 +64,7 @@ const RolesManager = () => {
       alert(t('admin.roles.messages.removeSuccess'));
       loadData();
     } catch (error) {
-      console.error('Error removiendo rol:', error);
+      logger.error('Error removiendo rol:', error);
       alert(t('admin.roles.messages.removeError'));
     }
   };

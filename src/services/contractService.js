@@ -1,36 +1,37 @@
 import api from './api';
+import { logger } from '../utils/logger';
 
 export const contractService = {
   // ========== OBTENER CONTRATOS ==========
-  
+
   /**
    * Obtiene todos los contratos del usuario autenticado
    */
   async getMyContracts(rol = null, estado = null) {
     try {
-      console.log('🔧 Obteniendo mis contratos...');
-      
+      logger.api('Obteniendo mis contratos', { rol, estado });
+
       let url = '/contracts/mis-contratos';
       const params = [];
-      
+
       if (rol) params.push(`rol=${rol}`); // 'empleador' o 'trabajador'
       if (estado) params.push(`estado=${estado}`);
-      
+
       if (params.length > 0) {
         url += '?' + params.join('&');
       }
-      
+
       const response = await api.get(url);
-      console.log('✅ Contratos recibidos:', response.data);
-      
+      logger.api('Contratos recibidos', { count: response.data?.count || 0 });
+
       return response.data;
     } catch (error) {
-      console.error('❌ Error obteniendo contratos:', error);
-      
+      logger.error('Error obteniendo contratos:', error.message);
+
       if (error.response?.status === 404 || error.response?.status === 401) {
         return { status: 'success', data: [], count: 0 };
       }
-      
+
       throw error;
     }
   },
@@ -40,11 +41,11 @@ export const contractService = {
    */
   async getContractById(id) {
     try {
-      console.log('🔧 Obteniendo contrato:', id);
+      logger.api('Obteniendo contrato por ID', { id });
       const response = await api.get(`/contracts/${id}`);
       return response.data;
     } catch (error) {
-      console.error('❌ Error obteniendo contrato:', error);
+      logger.error('Error obteniendo contrato:', error.message);
       throw error;
     }
   },
@@ -54,49 +55,49 @@ export const contractService = {
    */
   async getContractByCode(codigo) {
     try {
-      console.log('🔧 Buscando contrato por código:', codigo);
+      logger.api('Buscando contrato por código');
       const response = await api.get(`/contracts/codigo/${codigo}`);
       return response.data;
     } catch (error) {
-      console.error('❌ Error buscando contrato:', error);
+      logger.error('Error buscando contrato:', error.message);
       throw error;
     }
   },
 
   // ========== CREAR CONTRATO ==========
-  
+
   /**
    * Crea un nuevo contrato
    */
   async createContract(contractData) {
     try {
-      console.log('🔧 Creando contrato:', contractData);
+      logger.api('Creando contrato');
       const response = await api.post('/contracts', contractData);
-      console.log('✅ Contrato creado:', response.data);
+      logger.api('Contrato creado exitosamente');
       return response.data;
     } catch (error) {
-      console.error('❌ Error creando contrato:', error);
+      logger.error('Error creando contrato:', error.message);
       throw error;
     }
   },
 
   // ========== ACTIVAR CONTRATO (PIN o QR) ==========
-  
+
   /**
    * Activa un contrato usando PIN
    */
   async activarContratoConPIN(codigoContrato, pin) {
     try {
-      console.log('🔧 Activando contrato con PIN:', codigoContrato);
+      logger.api('Activando contrato con PIN');
       const response = await api.post('/contracts/activar', {
         metodoActivacion: 'pin',
         codigoContrato,
         pin
       });
-      console.log('✅ Contrato activado:', response.data);
+      logger.api('Contrato activado exitosamente');
       return response.data;
     } catch (error) {
-      console.error('❌ Error activando contrato:', error);
+      logger.error('Error activando contrato:', error.message);
       throw error;
     }
   },
@@ -106,88 +107,88 @@ export const contractService = {
    */
   async activarContratoConQR(qrData) {
     try {
-      console.log('🔧 Activando contrato con QR');
+      logger.api('Activando contrato con QR');
       const response = await api.post('/contracts/activar', {
         metodoActivacion: 'qr',
         qrData
       });
-      console.log('✅ Contrato activado:', response.data);
+      logger.api('Contrato activado exitosamente');
       return response.data;
     } catch (error) {
-      console.error('❌ Error activando contrato con QR:', error);
+      logger.error('Error activando contrato con QR:', error.message);
       throw error;
     }
   },
 
   // ========== COMPLETAR CONTRATO ==========
-  
+
   /**
    * Marca el contrato como completado (solo trabajador)
    */
   async completarContrato(contratoId, notas = '') {
     try {
-      console.log('🔧 Completando contrato:', contratoId);
+      logger.api('Completando contrato', { contratoId });
       const response = await api.patch(`/contracts/${contratoId}/completar`, {
         notas
       });
-      console.log('✅ Contrato completado:', response.data);
+      logger.api('Contrato completado exitosamente');
       return response.data;
     } catch (error) {
-      console.error('❌ Error completando contrato:', error);
+      logger.error('Error completando contrato:', error.message);
       throw error;
     }
   },
 
   // ========== CERRAR CONTRATO (LIBERAR PAGO) ==========
-  
+
   /**
    * Cierra el contrato y libera el pago (solo empleador)
    */
   async cerrarContrato(contratoId, notas = '') {
     try {
-      console.log('🔧 Cerrando contrato:', contratoId);
+      logger.api('Cerrando contrato', { contratoId });
       const response = await api.patch(`/contracts/${contratoId}/cerrar`, {
         notas
       });
-      console.log('✅ Contrato cerrado:', response.data);
+      logger.api('Contrato cerrado exitosamente');
       return response.data;
     } catch (error) {
-      console.error('❌ Error cerrando contrato:', error);
+      logger.error('Error cerrando contrato:', error.message);
       throw error;
     }
   },
 
   // ========== CANCELAR CONTRATO ==========
-  
+
   /**
    * Cancela el contrato
    */
   async cancelarContrato(contratoId, motivo) {
     try {
-      console.log('🔧 Cancelando contrato:', contratoId);
+      logger.api('Cancelando contrato', { contratoId });
       const response = await api.patch(`/contracts/${contratoId}/cancelar`, {
         motivo
       });
-      console.log('✅ Contrato cancelado:', response.data);
+      logger.api('Contrato cancelado exitosamente');
       return response.data;
     } catch (error) {
-      console.error('❌ Error cancelando contrato:', error);
+      logger.error('Error cancelando contrato:', error.message);
       throw error;
     }
   },
 
   // ========== HISTORIAL ==========
-  
+
   /**
    * Obtiene el historial de cambios de estado
    */
   async getHistorial(contratoId) {
     try {
-      console.log('🔧 Obteniendo historial:', contratoId);
+      logger.api('Obteniendo historial', { contratoId });
       const response = await api.get(`/contracts/${contratoId}/historial`);
       return response.data;
     } catch (error) {
-      console.error('❌ Error obteniendo historial:', error);
+      logger.error('Error obteniendo historial:', error.message);
       throw error;
     }
   }

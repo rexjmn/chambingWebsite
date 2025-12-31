@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import adminService from '../../services/adminService';
+import { logger } from '../../utils/logger';
+import TextInputModal from '../TextInputModal';
+import ConfirmDialog from '../ConfirmDialog';
+import SuccessSnackbar from '../SuccessSnackbar';
 
 const UsersManager = ({ isSuperAdmin }) => {
   const { t } = useTranslation();
@@ -13,10 +17,16 @@ const UsersManager = ({ isSuperAdmin }) => {
   const [showModal, setShowModal] = useState(false);
   const [showVerificationTab, setShowVerificationTab] = useState(true);
 
+  // New state for modals and snackbar
+  const [suspendModal, setSuspendModal] = useState({ open: false, userId: null });
+  const [deleteDialog, setDeleteDialog] = useState({ open: false, userId: null });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [refreshKey, setRefreshKey] = useState(0);
+
   useEffect(() => {
     loadUsers();
     loadPendingWorkers();
-  }, []);
+  }, [refreshKey]);
 
   const loadUsers = async () => {
     try {
@@ -24,8 +34,12 @@ const UsersManager = ({ isSuperAdmin }) => {
       const data = await adminService.getAllUsers();
       setUsers(data);
     } catch (error) {
-      console.error('Error cargando usuarios:', error);
-      alert('Error al cargar usuarios');
+      logger.error('Error cargando usuarios:', error);
+      setSnackbar({
+        open: true,
+        message: 'Error al cargar usuarios',
+        severity: 'error'
+      });
     } finally {
       setLoading(false);
     }
@@ -36,48 +50,75 @@ const UsersManager = ({ isSuperAdmin }) => {
       const data = await adminService.getPendingWorkers();
       setPendingWorkers(data);
     } catch (error) {
-      console.error('Error cargando trabajadores pendientes:', error);
+      logger.error('Error cargando trabajadores pendientes:', error);
     }
   };
 
   const handleVerifyWorker = async (userId, verified) => {
     try {
       await adminService.verifyWorker(userId, verified);
-      alert(verified ? 'Trabajador verificado exitosamente' : 'Verificación removida');
-      loadUsers();
-      loadPendingWorkers();
+      setSnackbar({
+        open: true,
+        message: verified ? 'Trabajador verificado exitosamente' : 'Verificación removida',
+        severity: 'success'
+      });
+      setRefreshKey(prev => prev + 1);
     } catch (error) {
-      console.error('Error verificando trabajador:', error);
-      alert('Error al verificar trabajador');
+      logger.error('Error verificando trabajador:', error);
+      setSnackbar({
+        open: true,
+        message: 'Error al verificar trabajador',
+        severity: 'error'
+      });
     }
   };
 
   const handleDelete = async (userId) => {
-    if (!window.confirm('¿Estás seguro de eliminar este usuario?')) {
-      return;
-    }
+    setDeleteDialog({ open: true, userId });
+  };
 
+  const confirmDelete = async () => {
+    const { userId } = deleteDialog;
     try {
       await adminService.deleteUser(userId);
-      alert('Usuario eliminado exitosamente');
-      loadUsers();
+      setSnackbar({
+        open: true,
+        message: 'Usuario eliminado exitosamente',
+        severity: 'success'
+      });
+      setRefreshKey(prev => prev + 1);
     } catch (error) {
-      console.error('Error eliminando usuario:', error);
-      alert('Error al eliminar usuario');
+      logger.error('Error eliminando usuario:', error);
+      setSnackbar({
+        open: true,
+        message: 'Error al eliminar usuario',
+        severity: 'error'
+      });
     }
   };
 
   const handleSuspend = async (userId) => {
-    const reason = window.prompt('Motivo de la suspensión:');
-    if (!reason) return;
+    setSuspendModal({ open: true, userId });
+  };
 
+  const confirmSuspend = async (reason) => {
+    const { userId } = suspendModal;
     try {
       await adminService.suspendUser(userId, reason);
-      alert('Usuario suspendido exitosamente');
-      loadUsers();
+      setSnackbar({
+        open: true,
+        message: 'Usuario suspendido exitosamente',
+        severity: 'success'
+      });
+      setSuspendModal({ open: false, userId: null });
+      setRefreshKey(prev => prev + 1);
     } catch (error) {
-      console.error('Error suspendiendo usuario:', error);
-      alert('Error al suspender usuario');
+      logger.error('Error suspendiendo usuario:', error);
+      setSnackbar({
+        open: true,
+        message: 'Error al suspender usuario',
+        severity: 'error'
+      });
     }
   };
 
@@ -499,6 +540,35 @@ const UsersManager = ({ isSuperAdmin }) => {
           </div>
         </>
       )}
+
+      {/* Modals and Dialogs */}
+      <TextInputModal
+        open={suspendModal.open}
+        onClose={() => setSuspendModal({ open: false, userId: null })}
+        onSubmit={confirmSuspend}
+        title="Suspender Usuario"
+        label="Motivo de la suspensión"
+        placeholder="Ingresa el motivo de la suspensión..."
+        required={true}
+      />
+
+      <ConfirmDialog
+        open={deleteDialog.open}
+        onClose={() => setDeleteDialog({ open: false, userId: null })}
+        onConfirm={confirmDelete}
+        title="Eliminar Usuario"
+        message="¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        severity="error"
+      />
+
+      <SuccessSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </div>
   );
 };

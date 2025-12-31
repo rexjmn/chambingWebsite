@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import adminService from '../../services/adminService';
+import { logger } from '../../utils/logger';
 
 const AdminStats = ({ isSuperAdmin }) => {
   const { t } = useTranslation();
@@ -26,17 +27,17 @@ const AdminStats = ({ isSuperAdmin }) => {
       
       // Cargar datos reales desde el backend
       const data = await adminService.getDashboardMetrics(timeRange);
-      console.log('📊 Stats loaded:', data);
-      
+      logger.api('Stats loaded', data);
+
       setStats(data);
     } catch (error) {
-      console.error('Error loading stats:', error);
+      logger.error('Error loading stats:', error);
       // Mostrar mensaje de error pero intentar con stats básicas
       try {
         const basicStats = await adminService.getAdminStats(timeRange);
         setStats(basicStats);
       } catch (fallbackError) {
-        console.error('Error loading basic stats:', fallbackError);
+        logger.error('Error loading basic stats:', fallbackError);
       }
     } finally {
       setLoading(false);

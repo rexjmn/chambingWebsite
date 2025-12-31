@@ -1,23 +1,43 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, Box } from '@mui/material';
+import { CssBaseline, Box, CircularProgress } from '@mui/material';
 import { AuthProvider } from './context/AuthContext';
 import { theme } from './theme/muiTheme';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import Home from './pages/Home';
-import LoginForm from './components/auth/LoginForm';
-import RegisterForm from './components/auth/RegisterForm';
-import Dashboard from './pages/Dashboard';
-import AdminDashboard from './pages/AdminDashboard';
-import EditProfile from './pages/EditProfile';
-import PublicProfile from './pages/PublicProfile';
-import Services from './pages/Service'; // ✅ NUEVA IMPORTACIÓN
-import CreateContract from './pages/CreateContract';
-import ContractDetails from './pages/ContractDetails';
+import ErrorBoundary from './components/ErrorBoundary';
 import './styles/globals.scss';
+
+// ✅ Code splitting con React.lazy() - carga páginas solo cuando se necesitan
+const Home = lazy(() => import('./pages/Home'));
+const LoginForm = lazy(() => import('./components/auth/LoginForm'));
+const RegisterForm = lazy(() => import('./components/auth/RegisterForm'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const EditProfile = lazy(() => import('./pages/EditProfile'));
+const PublicProfile = lazy(() => import('./pages/PublicProfile'));
+const Services = lazy(() => import('./pages/Service'));
+const CreateContract = lazy(() => import('./pages/CreateContract'));
+const ContractDetails = lazy(() => import('./pages/ContractDetails'));
+
+// Loading fallback component - optimizado
+const LoadingFallback = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '60vh'
+    }}
+  >
+    <CircularProgress size={40} />
+  </Box>
+);
+
+// Conditional Error Boundary wrapper para mejor performance en dev
+const ErrorBoundaryWrapper = import.meta.env.PROD ? ErrorBoundary : React.Fragment;
 
 // Componente para resetear el scroll en cada cambio de ruta
 function ScrollToTop() {
@@ -32,48 +52,55 @@ function ScrollToTop() {
 
 function App() {
   return (
+    <ErrorBoundary title="Error en la aplicación" message="Ha ocurrido un error inesperado. Por favor, recarga la página.">
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <AuthProvider>
-          <Router>
-            <ScrollToTop />
-            <Box sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              minHeight: '100vh'
-            }}>
-              <Navbar />
-            
-            <Box component="main" sx={{ flexGrow: 1 }}>
-              <Routes>
-                {/* Rutas públicas */}
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<LoginForm />} />
-                <Route path="/register" element={<RegisterForm />} />
-                
-                {/* Perfil Público - Sin autenticación requerida */}
-                <Route path="/profile/:userId" element={<PublicProfile />} />
-                
-                {/* ✅ Página de Servicios - Pública */}
-                <Route path="/service" element={<Services />} />
-                
-                {/* Rutas protegidas - Dashboard normal */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                
+        <ErrorBoundary title="Error de autenticación" message="Hubo un problema con la autenticación. Por favor, recarga la página.">
+          <AuthProvider>
+            <Router>
+              <ScrollToTop />
+              <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: '100vh'
+              }}>
+                <Navbar />
+
+              <Box component="main" sx={{ flexGrow: 1 }}>
+                <Suspense fallback={<LoadingFallback />}>
+                  <Routes>
+                  {/* Rutas públicas */}
+                  <Route path="/" element={<ErrorBoundaryWrapper><Home /></ErrorBoundaryWrapper>} />
+                  <Route path="/login" element={<ErrorBoundaryWrapper><LoginForm /></ErrorBoundaryWrapper>} />
+                  <Route path="/register" element={<ErrorBoundaryWrapper><RegisterForm /></ErrorBoundaryWrapper>} />
+
+                  {/* Perfil Público - Sin autenticación requerida */}
+                  <Route path="/profile/:userId" element={<ErrorBoundaryWrapper><PublicProfile /></ErrorBoundaryWrapper>} />
+
+                  {/* ✅ Página de Servicios - Pública */}
+                  <Route path="/service" element={<ErrorBoundaryWrapper><Services /></ErrorBoundaryWrapper>} />
+
+                  {/* Rutas protegidas - Dashboard normal */}
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ErrorBoundaryWrapper>
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      </ErrorBoundaryWrapper>
+                    }
+                  />
+
                 {/* Editar Perfil - Solo usuarios autenticados */}
                 <Route
                   path="/edit-profile"
                   element={
-                    <ProtectedRoute>
-                      <EditProfile />
-                    </ProtectedRoute>
+                    <ErrorBoundaryWrapper>
+                      <ProtectedRoute>
+                        <EditProfile />
+                      </ProtectedRoute>
+                    </ErrorBoundaryWrapper>
                   }
                 />
 
@@ -81,9 +108,11 @@ function App() {
                 <Route
                   path="/contracts/create"
                   element={
-                    <ProtectedRoute>
-                      <CreateContract />
-                    </ProtectedRoute>
+                    <ErrorBoundaryWrapper>
+                      <ProtectedRoute>
+                        <CreateContract />
+                      </ProtectedRoute>
+                    </ErrorBoundaryWrapper>
                   }
                 />
 
@@ -91,9 +120,11 @@ function App() {
                 <Route
                   path="/contracts/:contractId"
                   element={
-                    <ProtectedRoute>
-                      <ContractDetails />
-                    </ProtectedRoute>
+                    <ErrorBoundaryWrapper>
+                      <ProtectedRoute>
+                        <ContractDetails />
+                      </ProtectedRoute>
+                    </ErrorBoundaryWrapper>
                   }
                 />
 
@@ -101,9 +132,11 @@ function App() {
                 <Route
                   path="/admin"
                   element={
-                    <ProtectedRoute requiredRoles={['admin', 'super_admin']}>
-                      <AdminDashboard />
-                    </ProtectedRoute>
+                    <ErrorBoundaryWrapper>
+                      <ProtectedRoute requiredRoles={['admin', 'super_admin']}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    </ErrorBoundaryWrapper>
                   }
                 />
                 
@@ -128,16 +161,19 @@ function App() {
                       <h2>Página no encontrada</h2>
                       <p>La página que buscas no existe.</p>
                     </div>
-                  } 
+                  }
                 />
-              </Routes>
+                </Routes>
+              </Suspense>
             </Box>
             
-            <Footer />
-          </Box>
-        </Router>
-      </AuthProvider>
+              <Footer />
+            </Box>
+          </Router>
+        </AuthProvider>
+      </ErrorBoundary>
     </ThemeProvider>
+  </ErrorBoundary>
   );
 }
 

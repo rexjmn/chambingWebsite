@@ -14,6 +14,7 @@ import {
   detectSQLInjection,
   detectXSS
 } from '../../utils/security';
+import { logger } from '../../utils/logger';
 import '../../styles/auth.scss';
 import { User, Mail, Phone, IdCard, MapPin, Home, Lock, Eye, EyeOff, AlertCircle, Info, Users } from 'lucide-react';
 
@@ -120,7 +121,7 @@ const RegisterForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log('🚀 Iniciando registro para:', data.email);
+      logger.form('Iniciando registro', { email: data.email });
 
       clearError();
 
@@ -140,11 +141,11 @@ const RegisterForm = () => {
         tipo_usuario: data.tipo_usuario,
       };
 
-      console.log('📤 Enviando datos sanitizados');
+      logger.form('Enviando datos sanitizados');
 
       await registerUser(sanitizedData);
 
-      console.log('✅ Registro exitoso');
+      logger.form('Registro exitoso');
 
       navigate('/login', {
         state: {
@@ -153,7 +154,7 @@ const RegisterForm = () => {
         }
       });
     } catch (error) {
-      console.error('❌ Error en registro:', error);
+      logger.error('Error en registro:', error.message);
     }
   };
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { contractService } from '../services/contractService';
+import { logger } from '../utils/logger';
 import {
   Box,
   Container,
@@ -52,7 +53,7 @@ const ContractDetails = () => {
           setError(t('contractDetails.errors.notFound') || 'Contrato no encontrado');
         }
       } catch (err) {
-        console.error('Error loading contract:', err);
+        logger.error('Error loading contract:', err);
         setError(t('contractDetails.errors.loadError') || 'Error al cargar el contrato');
       } finally {
         setLoading(false);

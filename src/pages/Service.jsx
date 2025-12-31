@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import WorkerCard from '../components/WorkerCard';
+import { logger } from '../utils/logger';
 import '../styles/services.scss';
 
 const Service = () => {
@@ -93,7 +94,7 @@ const Service = () => {
       setWorkers(workersArray);
 
     } catch (err) {
-      console.error('❌ Error:', err);
+      logger.error('Error fetching workers:', err);
       setError(err.message);
     } finally {
       setLoading(false);

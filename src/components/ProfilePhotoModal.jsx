@@ -24,6 +24,7 @@ import {
 } from '@mui/icons-material';
 import Cropper from 'react-easy-crop';
 import { useAuth } from '../context/AuthContext';
+import { logger } from '../utils/logger';
 
 const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
   const { user, updateUser } = useAuth();
@@ -171,7 +172,7 @@ const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
       handleClose();
       
     } catch (error) {
-      console.error('Error uploading photo:', error);
+      logger.error('Error uploading photo:', error);
       setError(error.message || 'Error al subir la foto');
     } finally {
       setUploading(false);

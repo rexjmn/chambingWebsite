@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { logger } from '../utils/logger';
 
 export const useForm = (initialValues = {}, validationSchema = null) => {
   const [values, setValues] = useState(initialValues);
@@ -88,7 +89,7 @@ export const useForm = (initialValues = {}, validationSchema = null) => {
     try {
       await onSubmit(values);
     } catch (error) {
-      console.error('Form submission error:', error);
+      logger.error('Form submission error:', error);
     } finally {
       setIsSubmitting(false);
     }

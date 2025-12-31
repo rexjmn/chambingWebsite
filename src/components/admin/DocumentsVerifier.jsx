@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/adminService';
+import { logger } from '../../utils/logger';
 
 const DocumentsVerifier = () => {
   const { user } = useAuth();
@@ -23,7 +24,7 @@ const DocumentsVerifier = () => {
       });
       setDocuments(data);
     } catch (error) {
-      console.error('Error cargando documentos:', error);
+      logger.error('Error cargando documentos:', error);
       alert('Error al cargar los documentos');
     } finally {
       setLoading(false);
@@ -47,7 +48,7 @@ const DocumentsVerifier = () => {
       setVerificationNotes('');
       loadDocuments();
     } catch (error) {
-      console.error('Error verificando documento:', error);
+      logger.error('Error verificando documento:', error);
       alert('Error al verificar el documento');
     }
   };

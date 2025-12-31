@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '../utils/logger';
 
 export const useApi = (apiFunction, dependencies = []) => {
     const [data, setData] = useState(null);
@@ -11,12 +12,12 @@ export const useApi = (apiFunction, dependencies = []) => {
       try {
         setLoading(true);
         setError(null);
-        console.log('🔄 useApi: Fetching data...');
+        logger.api('Fetching data...');
         const result = await apiFunction();
         setData(result);
-        console.log('✅ useApi: Data fetched successfully');
+        logger.api('Data fetched successfully');
       } catch (err) {
-        console.error('❌ useApi: Error fetching data', err);
+        logger.error('❌ useApi: Error fetching data', err);
         setError(err.response?.data?.message || err.message || 'Error desconocido');
       } finally {
         setLoading(false);

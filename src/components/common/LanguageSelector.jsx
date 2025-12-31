@@ -15,6 +15,7 @@ import {
   Check as CheckIcon,
 } from '@mui/icons-material';
 import { changeLanguage, getCurrentLanguage } from '../../i18n/config';
+import { logger } from '../../utils/logger';
 
 const LanguageSelector = ({ 
   variant = 'icon', // 'icon' o 'button'
@@ -46,19 +47,19 @@ const LanguageSelector = ({
     if (lng === currentLanguage || isChanging) return;
     
     setIsChanging(true);
-    
+
     try {
-      console.log(`🌐 LanguageSelector: Cambiando a ${lng}`);
+      logger.log(`LanguageSelector: Cambiando a ${lng}`);
       await changeLanguage(lng);
-      
+
       // Pequeña pausa para mostrar feedback visual
       setTimeout(() => {
         setIsChanging(false);
         handleClose();
       }, 300);
-      
+
     } catch (error) {
-      console.error('❌ Error changing language:', error);
+      logger.error('Error changing language:', error);
       setIsChanging(false);
     }
   };

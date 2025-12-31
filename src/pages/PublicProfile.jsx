@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { publicProfileService } from '../services/publicProfileService';
+import { logger } from '../utils/logger';
 import '../styles/Public-profile.scss';
 // Iconos de Material UI
 import {
@@ -79,12 +80,12 @@ const PublicProfile = () => {
                 });
               }
             } catch (additionalError) {
-              console.warn('Error loading additional data:', additionalError);
+              logger.warn('Error loading additional data:', additionalError);
             }
           }
         }
       } catch (err) {
-        console.error('Error fetching user profile:', err);
+        logger.error('Error fetching user profile:', err);
         setError(err.message || 'Error al cargar el perfil');
       } finally {
         setLoading(false);

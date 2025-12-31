@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logger } from '../utils/logger';
 
 /**
  * ========================================================================
@@ -29,6 +30,7 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 30000, // Timeout de 30 secondes
+  withCredentials: true, // ✅ Enviar cookies httpOnly automáticamente
 });
 
 // Variable pour éviter les redirections multiples simultanées
@@ -41,19 +43,14 @@ let isRedirecting = false;
  *
  * S'exécute AVANT chaque requête HTTP
  * Fonctionnalités :
- * - Ajoute automatiquement le token d'authentification dans l'en-tête Authorization
- * - Peut ajouter d'autres en-têtes communs
+ * - Los tokens se envían automáticamente en cookies httpOnly
+ * - No es necesario agregar manualmente el token al header
  */
 api.interceptors.request.use(
   (config) => {
-    // Obtenir le token du localStorage
-    const token = localStorage.getItem('token');
-
-    // Si le token existe, l'ajouter à l'en-tête Authorization
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
+    // ✅ Los tokens ahora se envían automáticamente en cookies httpOnly
+    // No necesitamos agregar manualmente el token al header
+    // El navegador envía las cookies automáticamente con withCredentials: true
     return config;
   },
   (error) => {
@@ -87,25 +84,26 @@ api.interceptors.response.use(
       }
 
       // Tenter de rafraîchir le token automatiquement
-      const refreshToken = localStorage.getItem('refresh_token');
-
-      if (refreshToken && !error.config._retry) {
+      if (!error.config._retry) {
         error.config._retry = true;
 
         try {
-          // Utiliser une instance d'axios séparée pour éviter l'intercepteur récursif
-          const refreshResponse = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-            refreshToken: refreshToken
+          logger.api('Token expirado - Intentando refrescar automáticamente');
+
+          // ✅ El backend lee el refreshToken desde las cookies automáticamente
+          // No necesitamos enviarlo en el body
+          await axios.post(`${API_BASE_URL}/auth/refresh`, {}, {
+            withCredentials: true // Enviar cookies con la petición
           });
 
-          const newToken = refreshResponse.data.accessToken;
-          localStorage.setItem('token', newToken);
+          logger.api('Token refrescado automáticamente');
 
-          // Réessayer la requête originale avec le nouveau token
-          error.config.headers.Authorization = `Bearer ${newToken}`;
+          // Réessayer la requête originale
+          // Las nuevas cookies se enviarán automáticamente
           return api.request(error.config);
 
         } catch (refreshError) {
+          logger.error('Error al refrescar token automáticamente:', refreshError.message);
           handleLogout();
         }
       } else {
@@ -133,9 +131,10 @@ function handleLogout() {
 
   isRedirecting = true;
 
-  // Nettoyer toutes les données d'authentification du localStorage
-  localStorage.removeItem('token');
-  localStorage.removeItem('refresh_token');
+  logger.auth('Sesión expirada - Cerrando sesión automáticamente');
+
+  // Limpiar solo información del usuario de localStorage
+  // Las cookies httpOnly se limpian automáticamente al llamar /auth/logout
   localStorage.removeItem('user');
 
   // Rediriger vers la page de connexion après un court délai

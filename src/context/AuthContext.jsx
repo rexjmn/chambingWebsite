@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useReducer, useEffect } from 'react';
-import { authService } from '../services/authService'; 
+import { authService } from '../services/authService';
+import { logger } from '../utils/logger';
+import api from '../services/api'; 
 
 const AuthContext = createContext();
 
 // Debug: Verificar múltiples instancias
-console.log('🔍 AuthContext module loaded:', new Date().toISOString());
+logger.debug('🔍 AuthContext module loaded:', new Date().toISOString());
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -14,7 +16,7 @@ const authReducer = (state, action) => {
     case 'LOGIN_SUCCESS':
       // Validación para evitar el error
       if (!action.payload) {
-        console.error('❌ LOGIN_SUCCESS: payload es undefined');
+        logger.error('❌ LOGIN_SUCCESS: payload es undefined');
         return {
           ...state,
           loading: false,
@@ -22,19 +24,19 @@ const authReducer = (state, action) => {
           isAuthenticated: false,
         };
       }
-      
+
       // ⭐ SOLUCIÓN: Guardar token en localStorage
       const token = action.payload.access_token || action.payload.token;
       const user = action.payload.user;
-      
+
       if (token) {
         localStorage.setItem('token', token);
-        console.log('✅ Token guardado en localStorage:', token.substring(0, 20) + '...');
+        logger.auth('Token guardado en localStorage', { tokenPreview: token.substring(0, 20) + '...' });
       }
-      
+
       if (user) {
         localStorage.setItem('user', JSON.stringify(user));
-        console.log('✅ Usuario guardado en localStorage:', user.email);
+        logger.auth('Usuario guardado en localStorage', { email: user.email });
       }
       
       return {
@@ -58,7 +60,7 @@ const authReducer = (state, action) => {
       // ⭐ Limpiar localStorage en logout
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      console.log('🚪 Token y usuario removidos del localStorage');
+      logger.auth('Token y usuario removidos del localStorage');
       
       return {
         ...state,
@@ -81,9 +83,9 @@ const authReducer = (state, action) => {
         ...state.user,
         ...action.payload
       };
-      
+
       localStorage.setItem('user', JSON.stringify(updatedUser));
-      console.log('🔄 Usuario actualizado en localStorage');
+      logger.auth('Usuario actualizado en localStorage');
       
       return {
         ...state,
@@ -100,7 +102,7 @@ const authReducer = (state, action) => {
       // Guardar usuario actualizado en localStorage
       if (action.payload) {
         localStorage.setItem('user', JSON.stringify(action.payload));
-        console.log('✅ Usuario actualizado desde servidor');
+        logger.auth('Usuario actualizado desde servidor');
       }
       
       return {
@@ -167,45 +169,22 @@ const initialState = {
 };
 
 export const AuthProvider = ({ children }) => {
-  console.log('🔍 AuthProvider renderizado');
+  logger.debug('🔍 AuthProvider renderizado');
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   // Nueva función: Refrescar datos del usuario desde el servidor
+  // Con httpOnly cookies, no necesitamos el token - se envía automáticamente
   const refreshUser = async () => {
-    const token = state.token || localStorage.getItem('token');
-    
-    if (!token) {
-      console.log('🔒 No token available for refresh');
-      return;
-    }
-
     dispatch({ type: 'REFRESH_USER_START' });
-    
+
     try {
-      console.log('🔄 Refreshing user data from server...');
-      
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/users/me`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      logger.auth('Refreshing user data from server...');
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          // Token expirado, cerrar sesión
-          console.log('🔒 Token expired, logging out');
-          dispatch({ type: 'LOGOUT' });
-          return;
-        }
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
+      // ✅ Usar api.get() en lugar de fetch() - aprovecha interceptores
+      const response = await api.get('/users/me');
 
-      const userData = await response.json();
-      console.log('✅ User data refreshed:', {
+      const userData = response.data;
+      logger.auth('User data refreshed', {
         id: userData.data?.id,
         email: userData.data?.email,
         hasFoto: !!userData.data?.foto_perfil,
@@ -218,7 +197,14 @@ export const AuthProvider = ({ children }) => {
       });
 
     } catch (error) {
-      console.error('❌ Error refreshing user:', error);
+      logger.error('❌ Error refreshing user:', error);
+
+      // El interceptor de api.js ya maneja errores 401
+      if (error.response?.status === 401) {
+        logger.auth('Session invalid (401), logging out');
+        dispatch({ type: 'LOGOUT' });
+      }
+
       dispatch({
         type: 'REFRESH_USER_FAILURE',
         payload: error.message
@@ -227,143 +213,73 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Nueva función: Debug del estado del usuario
+  // Con httpOnly cookies, no necesitamos el token
   const debugUserState = async () => {
-    const token = state.token || localStorage.getItem('token');
-    
-    if (!token) {
-      console.log('🐛 Debug: No token available');
-      return { error: 'No token available' };
+    // Si el usuario no está autenticado, no hay nada que debuggear
+    if (!state.isAuthenticated) {
+      logger.debug('🐛 Debug: User not authenticated');
+      return { error: 'User not authenticated' };
     }
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/users/debug`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        const debugData = await response.json();
-        console.log('🐛 Debug data from server:', debugData);
-        return debugData;
-      } else {
-        console.error('🐛 Debug request failed:', response.status);
-        return { error: `HTTP ${response.status}` };
-      }
+      // ✅ Usar api.get() en lugar de fetch()
+      const response = await api.get('/users/debug');
+      const debugData = response.data;
+      logger.debug('🐛 Debug data from server:', debugData);
+      return debugData;
     } catch (error) {
-      console.error('🐛 Debug error:', error);
+      logger.error('🐛 Debug error:', error);
       return { error: error.message };
     }
   };
 
-  // ⭐ INICIALIZACIÓN MEJORADA
+  // ⭐ INICIALIZACIÓN MEJORADA - Con httpOnly cookies
   useEffect(() => {
     const initializeAuth = async () => {
-      const token = localStorage.getItem('token');
+      // ✅ Con httpOnly cookies, el token NO está en localStorage
+      // Solo verificamos si hay información de usuario guardada
       const storedUser = localStorage.getItem('user');
-      
-      console.log('🔍 Inicializando auth...', {
-        hasToken: !!token,
+
+      logger.auth('Inicializando auth con httpOnly cookies...', {
         hasStoredUser: !!storedUser,
-        tokenPreview: token ? token.substring(0, 20) + '...' : 'No token'
       });
-      
-      if (token) {
-        console.log('🔍 Found stored token, initializing auth...');
-        
-        // Si hay usuario en localStorage, restaurar estado inmediatamente
-        if (storedUser) {
-          try {
-            const user = JSON.parse(storedUser);
-            console.log('✅ Restored user from localStorage:', user.email);
-            
-            // ⭐ Restaurar estado completo desde localStorage
-            dispatch({
-              type: 'INIT_FROM_STORAGE',
-              payload: { token, user }
-            });
-            
-            // Después, refrescar datos del servidor en background
-            setTimeout(async () => {
-              try {
-                await refreshUser();
-              } catch (error) {
-                console.error('❌ Error refreshing user in background:', error);
-                // Si falla la verificación del token, limpiar todo
-                if (error.message.includes('401') || error.message.includes('Token')) {
-                  console.log('🔒 Token invalid, logging out');
-                  dispatch({ type: 'LOGOUT' });
-                }
-              }
-            }, 100);
-            
-          } catch (error) {
-            console.error('❌ Error parsing stored user:', error);
-            // Si hay error parseando, limpiar localStorage y probar con solo token
-            localStorage.removeItem('user');
-            
-            // Intentar verificar token con el servidor
+
+      if (storedUser) {
+        try {
+          const user = JSON.parse(storedUser);
+          logger.auth('Restored user from localStorage', { email: user.email });
+
+          // ⭐ Restaurar estado con usuario (el token está en las cookies httpOnly)
+          dispatch({
+            type: 'INIT_FROM_STORAGE',
+            payload: { token: null, user } // token es null porque está en httpOnly cookie
+          });
+
+          // Después, refrescar datos del servidor en background para verificar que la sesión sigue válida
+          setTimeout(async () => {
             try {
-              const response = await fetch(
-                `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/users/me`,
-                {
-                  headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                  },
-                }
-              );
-              
-              if (response.ok) {
-                const userData = await response.json();
-                dispatch({
-                  type: 'INIT_FROM_STORAGE',
-                  payload: { token, user: userData.data }
-                });
-              } else {
-                throw new Error('Invalid token');
+              await refreshUser();
+            } catch (error) {
+              logger.error('❌ Error refreshing user in background:', error);
+              // Si falla la verificación (401), limpiar todo
+              if (error.message.includes('401')) {
+                logger.auth('Session expired or invalid, logging out');
+                dispatch({ type: 'LOGOUT' });
               }
-            } catch (verifyError) {
-              console.error('❌ Token verification failed:', verifyError);
-              localStorage.removeItem('token');
-              dispatch({ type: 'INIT_COMPLETE' });
             }
-          }
-        } else {
-          // Si hay token pero no usuario, verificar con servidor
-          try {
-            console.log('🔄 No stored user, verifying token with server...');
-            const response = await fetch(
-              `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/users/me`,
-              {
-                headers: {
-                  'Authorization': `Bearer ${token}`,
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
-            
-            if (response.ok) {
-              const userData = await response.json();
-              console.log('✅ Token verified, user data received');
-              dispatch({
-                type: 'INIT_FROM_STORAGE',
-                payload: { token, user: userData.data }
-              });
-            } else {
-              throw new Error('Invalid token');
-            }
-          } catch (error) {
-            console.error('❌ Token verification failed:', error);
-            localStorage.removeItem('token');
-            dispatch({ type: 'INIT_COMPLETE' });
-          }
+          }, 100);
+
+        } catch (error) {
+          logger.error('❌ Error parsing stored user:', error);
+          // Si hay error parseando el usuario guardado, limpiar localStorage
+          localStorage.removeItem('user');
+
+          // Y simplemente completar la inicialización sin usuario
+          // (Si hay una sesión válida con cookies, se restaurará en el siguiente refresh)
+          dispatch({ type: 'INIT_COMPLETE' });
         }
       } else {
-        console.log('🔒 No token found in localStorage');
+        logger.auth('No user found in localStorage - User not authenticated');
         dispatch({ type: 'INIT_COMPLETE' });
       }
     };
@@ -374,15 +290,15 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     dispatch({ type: 'LOGIN_START' });
     try {
-      console.log('🔑 AuthContext: Iniciando login...');
+      logger.auth('Iniciando login...', { email: credentials.email });
       const response = await authService.login(credentials);
-      
+
       // Verificar que la respuesta no sea undefined o null
       if (!response) {
         throw new Error('La respuesta del servidor es undefined');
       }
-      
-      console.log('✅ AuthContext: Login exitoso', response);
+
+      logger.auth('Login exitoso', response);
       
       dispatch({
         type: 'LOGIN_SUCCESS',
@@ -390,18 +306,18 @@ export const AuthProvider = ({ children }) => {
       });
 
       // Después del login exitoso, refrescar datos del usuario
-      console.log('🔄 Refreshing user data after login...');
+      logger.auth('Refreshing user data after login...');
       setTimeout(async () => {
         try {
           await refreshUser();
         } catch (error) {
-          console.error('❌ Error refreshing user after login:', error);
+          logger.error('❌ Error refreshing user after login:', error);
         }
       }, 500);
-      
+
       return response;
     } catch (error) {
-      console.error('❌ AuthContext: Error en login', error);
+      logger.error('❌ AuthContext: Error en login', error);
       const errorMessage = error.response?.data?.message || 
                           error.message || 
                           'Error al iniciar sesión';
@@ -416,18 +332,18 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     dispatch({ type: 'LOGIN_START' });
     try {
-      console.log('📝 AuthContext: Iniciando registro...');
+      logger.auth('Iniciando registro...', { email: userData.email });
       const response = await authService.register(userData);
-      
+
       // Verificar que la respuesta no sea undefined
       if (!response) {
         throw new Error('La respuesta del servidor es undefined');
       }
-      
-      console.log('✅ AuthContext: Registro exitoso', response);
+
+      logger.auth('Registro exitoso', response);
       return response;
     } catch (error) {
-      console.error('❌ AuthContext: Error en registro', error);
+      logger.error('❌ AuthContext: Error en registro', error);
       const errorMessage = error.response?.data?.message || 
                           error.message || 
                           'Error al registrarse';
@@ -441,18 +357,18 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      console.log('🚪 AuthContext: Cerrando sesión...');
+      logger.auth('Cerrando sesión...');
       await authService.logout();
     } catch (error) {
-      console.error('Error during logout:', error);
+      logger.error('Error during logout:', error);
     } finally {
       dispatch({ type: 'LOGOUT' });
-      console.log('✅ AuthContext: Sesión cerrada');
+      logger.auth('Sesión cerrada');
     }
   };
 
   const updateUser = (userData) => {
-    console.log('🔄 Updating user locally:', userData);
+    logger.auth('Updating user locally', userData);
     dispatch({ type: 'UPDATE_USER', payload: userData });
   };
 
@@ -476,7 +392,7 @@ export const AuthProvider = ({ children }) => {
     setLoading,
   };
 
-  console.log('🔍 AuthProvider value:', {
+  logger.debug('🔍 AuthProvider value:', {
     hasUser: !!value.user,
     hasToken: !!value.token,
     isAuthenticated: value.isAuthenticated,
@@ -489,13 +405,13 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => {
-  console.log('🔍 useAuth llamado');
+  logger.debug('🔍 useAuth llamado');
   const context = useContext(AuthContext);
-  
+
   if (!context) {
-    console.error('❌ useAuth: Context es undefined!');
-    console.error('❌ Esto significa que useAuth se está llamando fuera del AuthProvider');
-    console.trace('❌ Stack trace:');
+    logger.error('❌ useAuth: Context es undefined!');
+    logger.error('❌ Esto significa que useAuth se está llamando fuera del AuthProvider');
+    logger.error('❌ Stack trace:');
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

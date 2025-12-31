@@ -1,12 +1,18 @@
 // src/components/WorkerCard.jsx
 
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom'; // ← ¡AGREGAR ESTA LÍNEA!
+import React, { useEffect, useState, memo } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { serviceService } from '../services/serviceService';
+import { logger } from '../utils/logger';
 import '../styles/components/WorkerCard.scss';
 
-const WorkerCard = ({ worker }) => { // ← Quitar onCardClick de los props
+/**
+ * ✅ Memoized Worker Card Component
+ * Optimizado para prevenir re-renders innecesarios en listas grandes
+ * Solo se re-renderiza si worker.id cambia
+ */
+const WorkerCard = memo(({ worker }) => {
   const [tarifas, setTarifas] = useState(null);
   const [loadingTarifas, setLoadingTarifas] = useState(true);
 
@@ -22,7 +28,7 @@ const WorkerCard = ({ worker }) => { // ← Quitar onCardClick de los props
         const tarifasData = await serviceService.getTarifasByWorker(worker.id);
         setTarifas(tarifasData);
       } catch (error) {
-        console.error('Error cargando tarifas:', error);
+        logger.error('Error cargando tarifas:', error);
         setTarifas(null);
       } finally {
         setLoadingTarifas(false);
@@ -134,12 +140,12 @@ const WorkerCard = ({ worker }) => { // ← Quitar onCardClick de los props
 
   // 🛡️ Guard clause - Validar que worker existe y tiene ID
   if (!worker || !worker.id) {
-    console.error('❌ Worker sin ID:', worker);
+    logger.error('Worker sin ID:', worker);
     return <div className="worker-card-error">Trabajador no disponible</div>;
   }
 
   // 🔍 DEBUG: Ver el ID antes de renderizar
-  console.log('🔍 Rendering WorkerCard for ID:', worker.id);
+  logger.debug('Rendering WorkerCard for ID:', worker.id);
 
   return (
     <Link 
@@ -243,7 +249,13 @@ const WorkerCard = ({ worker }) => { // ← Quitar onCardClick de los props
       </div>
     </Link>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison: only re-render if worker.id changes
+  // This prevents unnecessary re-renders when parent components update
+  return prevProps.worker.id === nextProps.worker.id;
+});
+
+WorkerCard.displayName = 'WorkerCard';
 
 WorkerCard.propTypes = {
   worker: PropTypes.shape({

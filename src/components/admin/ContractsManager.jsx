@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/adminService';
+import { logger } from '../../utils/logger';
 
 const ContractsManager = () => {
   const { user } = useAuth();
@@ -23,7 +24,7 @@ const ContractsManager = () => {
       });
       setContracts(data);
     } catch (error) {
-      console.error('Error cargando contratos:', error);
+      logger.error('Error cargando contratos:', error);
       alert('Error al cargar los contratos');
     } finally {
       setLoading(false);
@@ -37,7 +38,7 @@ const ContractsManager = () => {
       setHistory(historyData);
       setShowModal(true);
     } catch (error) {
-      console.error('Error cargando historial:', error);
+      logger.error('Error cargando historial:', error);
     }
   };
 
@@ -56,7 +57,7 @@ const ContractsManager = () => {
       setShowModal(false);
       loadContracts();
     } catch (error) {
-      console.error('Error actualizando estado:', error);
+      logger.error('Error actualizando estado:', error);
       alert('Error al actualizar el estado del contrato');
     }
   };

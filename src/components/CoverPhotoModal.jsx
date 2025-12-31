@@ -23,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import Cropper from 'react-easy-crop';
 import { useAuth } from '../context/AuthContext';
+import { logger } from '../utils/logger';
 
 const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
   const { user, updateUser } = useAuth();
@@ -172,7 +173,7 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
       handleClose();
 
     } catch (error) {
-      console.error('Error uploading cover photo:', error);
+      logger.error('Error uploading cover photo:', error);
       setError(error.message || 'Error al subir la foto');
     } finally {
       setUploading(false);
@@ -217,7 +218,7 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
       handleClose();
 
     } catch (error) {
-      console.error('Error deleting cover photo:', error);
+      logger.error('Error deleting cover photo:', error);
       setError(error.message || 'Error al eliminar la foto');
     } finally {
       setUploading(false);
