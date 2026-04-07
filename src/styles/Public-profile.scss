@@ -603,6 +603,25 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
   }
 }
 
+// Sección de disponibilidad - ancho completo
+.availability-section {
+  margin-bottom: 2rem;
+  padding: 0;
+  overflow: hidden;
+
+  .section-header {
+    padding: 1.75rem 2rem 1.25rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid $border-color;
+  }
+
+  // El AvailabilityCalendar maneja su propio padding interno
+  .availability-calendar {
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
 // Sección de reseñas
 .reviews-section {
   .reviews-list {

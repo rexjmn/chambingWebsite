@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import MuiEditIcon from '@mui/icons-material/Edit'; // ✅ Renombrar para evitar conflicto
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { useNavigate } from 'react-router-dom';
 import { useTranslations } from '../hooks/useTranslations';
 import { useAuth } from '../context/AuthContext';
@@ -419,6 +420,30 @@ const Dashboard = () => {
                   >
                     Ver Perfil Público
                   </Button>
+
+                  {/* ✅ Botón de Calendario - Solo para trabajadores */}
+                  {user?.tipo_usuario === 'trabajador' && (
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      startIcon={<CalendarTodayIcon />}
+                      onClick={() => navigate('/availability')}
+                      sx={{
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        px: 3,
+                        py: 1,
+                        borderWidth: 2,
+                        '&:hover': {
+                          borderWidth: 2,
+                          backgroundColor: 'success.light',
+                        },
+                      }}
+                    >
+                      Gestionar Disponibilidad
+                    </Button>
+                  )}
                 </Stack>
               </div>
 

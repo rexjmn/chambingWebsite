@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { profileService } from '../services/profileService';
 import { serviceService } from '../services/serviceService';
 import { logger } from '../utils/logger';
+import WorkerCalendar from '../components/calendar/WorkerCalendar';
 import '../styles/edit-profile.scss';
 
 const EditProfile = () => {
@@ -539,6 +540,35 @@ const EditProfile = () => {
                 No hay habilidades disponibles en este momento.
               </div>
             )}
+          </section>
+        )}
+
+        {/* ✅ Calendario de Disponibilidad - Solo para trabajadores */}
+        {user?.tipo_usuario === 'trabajador' && (
+          <section className="edit-profile__section">
+            <div className="edit-profile__section-header">
+              <h2>Calendario de Disponibilidad</h2>
+              <button
+                type="button"
+                className="edit-profile__btn edit-profile__btn--secondary"
+                onClick={() => navigate('/availability')}
+                style={{ marginLeft: 'auto' }}
+              >
+                Gestionar Disponibilidad
+              </button>
+            </div>
+
+            <div className="edit-profile__calendar-container">
+              <WorkerCalendar trabajadorId={user?.id} showReservas={false} />
+            </div>
+
+            <div className="edit-profile__calendar-note">
+              <p>
+                <strong>Tip:</strong> Gestiona tu horario de disponibilidad para que los clientes
+                puedan ver cuándo estás disponible. Haz clic en "Gestionar Disponibilidad" para
+                configurar tu calendario.
+              </p>
+            </div>
           </section>
         )}
 

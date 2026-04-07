@@ -12,7 +12,10 @@ const Service = () => {
   const [filters, setFilters] = useState({
     categoria: '',
     departamento: '',
-    search: ''
+    search: '',
+    fechaInicio: '', // ✅ Filtro de disponibilidad
+    fechaFin: '', // ✅ Filtro de disponibilidad
+    modalidad: '' // ✅ Filtro de modalidad
   });
 
   // Lista de categorías disponibles
@@ -49,6 +52,16 @@ const Service = () => {
     { id: 'usulutan', name: t('departments.usulutan') }
   ];
 
+  // ✅ Lista de modalidades de contratación
+  const modalidades = [
+    { id: '', name: 'Todas las modalidades' },
+    { id: 'hora', name: 'Por Hora', icon: '⏰' },
+    { id: 'dia', name: 'Por Día', icon: '📅' },
+    { id: 'semana', name: 'Por Semana', icon: '📆' },
+    { id: 'mes', name: 'Por Mes', icon: '🗓️' },
+    { id: 'proyecto', name: 'Por Proyecto', icon: '📋' }
+  ];
+
   useEffect(() => {
     fetchWorkers();
   }, [filters]);
@@ -68,6 +81,11 @@ const Service = () => {
       if (filters.departamento) params.append('departamento', filters.departamento);
       if (filters.search) params.append('search', filters.search);
       if (filters.categoria) params.append('categoria', filters.categoria);
+
+      // ✅ Filtros de disponibilidad
+      if (filters.fechaInicio) params.append('fechaInicio', filters.fechaInicio);
+      if (filters.fechaFin) params.append('fechaFin', filters.fechaFin);
+      if (filters.modalidad) params.append('modalidad', filters.modalidad);
 
       const url = `${API_BASE_URL}/users/workers?${params.toString()}`;
 
@@ -268,6 +286,49 @@ const Service = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              {/* ✅ Filtro de Modalidad */}
+              <div className="filter-item">
+                <select
+                  className="filter-select"
+                  value={filters.modalidad}
+                  onChange={(e) => handleFilterChange('modalidad', e.target.value)}
+                >
+                  {modalidades.map(mod => (
+                    <option key={mod.id} value={mod.id}>
+                      {mod.icon && `${mod.icon} `}{mod.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* ✅ Filtro de Fecha de Inicio */}
+              <div className="filter-item">
+                <label className="filter-label" style={{ fontSize: '0.85rem', marginBottom: '0.25rem', display: 'block', color: '#555' }}>
+                  📅 Fecha Inicio
+                </label>
+                <input
+                  type="datetime-local"
+                  className="filter-input"
+                  value={filters.fechaInicio}
+                  onChange={(e) => handleFilterChange('fechaInicio', e.target.value)}
+                  style={{ fontSize: '0.9rem' }}
+                />
+              </div>
+
+              {/* ✅ Filtro de Fecha de Fin (Opcional) */}
+              <div className="filter-item">
+                <label className="filter-label" style={{ fontSize: '0.85rem', marginBottom: '0.25rem', display: 'block', color: '#555' }}>
+                  📅 Fecha Fin (opcional)
+                </label>
+                <input
+                  type="datetime-local"
+                  className="filter-input"
+                  value={filters.fechaFin}
+                  onChange={(e) => handleFilterChange('fechaFin', e.target.value)}
+                  style={{ fontSize: '0.9rem' }}
+                />
               </div>
 
               {/* Clear Filters Button */}

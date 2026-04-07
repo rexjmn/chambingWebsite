@@ -622,7 +622,18 @@
   "noReviews": "No reviews yet",
   "sendMessage": "Send message",
   "workExperience": "Work experience",
-  "education": "Education"
+  "education": "Education",
+  "availability": "Availability & Schedule",
+  "verifiedWorker": "Verified Worker",
+  "worker": "Worker",
+  "client": "Client",
+  "verified": "Verified",
+  "verificationPending": "Verification Pending",
+  "hourlyRate": "Per Hour",
+  "dailyRate": "Per Day",
+  "weeklyRate": "Per Week",
+  "monthlyRate": "Per Month",
+  "email": "Email"
 },
 "createContract": {
   "loading": "Loading...",
@@ -715,5 +726,51 @@
         "moreDetailsTitle": "Chambing: Your Trusted Platform for Freelance Domestic Services in El Salvador",
         "moreDetailsDescription": "Chambing connects individuals with verified freelance professionals for a wide range of domestic services in El Salvador. Whether you need expert cleaning, reliable plumbing, professional gardening, or other home services, find skilled workers quickly and securely. Empowering independent workers and simplifying your daily life.",
         "moreDetailsKeywords": "domestic services El Salvador, freelance services, home services, cleaning, plumbing, gardening, independent workers, local services, find professionals, hire services, El Salvador jobs"
-      }
+      },
+  "workerCalendar": {
+    "loading": "Loading availability...",
+    "notConfigured": "This worker currently has no configured availability",
+    "availableForHire": "Available for hire",
+    "acceptsSameDay": "Accepts same day",
+    "worksWeekends": "Works on weekends",
+    "advanceNotice": "Advance notice: {{days}} day(s)",
+    "weeklySchedule": "Weekly Schedule",
+    "notAvailable": "Not available",
+    "specificDates": "Specific Available Dates",
+    "hiringModalities": "Hiring Modalities",
+    "upcomingReservations": "Upcoming Reservations",
+    "openAvailability": "The worker has open availability",
+    "contactDirectly": "Contact them directly to coordinate schedules"
+  },
+  "availabilityCalendar": {
+    "loading": "Loading calendar...",
+    "notConfigured": "This worker has no configured availability",
+    "today": "Today",
+    "legend": {
+      "available": "Available",
+      "busy": "Busy",
+      "notAvailable": "Not available"
+    },
+    "detail": {
+      "noSchedule": "No schedules configured for this day",
+      "noSchedulePeriod": "No schedules configured for this period",
+      "contactForAvailability": "You can contact the worker to check availability",
+      "available": "Available",
+      "reserved": "Reserved",
+      "notAvailable": "Not available"
+    },
+    "config": {
+      "requiresAdvance": "Requires {{days}} day(s) advance notice",
+      "acceptsSameDay": "Accepts same-day bookings",
+      "maxHours": "Maximum {{hours}}h/week",
+      "availableWeekends": "Available on weekends"
+    },
+    "modalities": {
+      "hora": "Per hour",
+      "dia": "Per day",
+      "semana": "Per week",
+      "mes": "Per month",
+      "proyecto": "Project"
+    }
+  }
 }

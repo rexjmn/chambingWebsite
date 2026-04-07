@@ -615,7 +615,90 @@
     "contactInfo": "Información de contacto",
     "phone": "Teléfono",
     "rates": "Tarifas",
-    "createContract": "Crear Contrato"
+    "createContract": "Crear Contrato",
+    "availability": "Disponibilidad y Horarios",
+    "verifiedWorker": "Trabajador Verificado",
+    "worker": "Trabajador",
+    "client": "Cliente",
+    "verified": "Verificado",
+    "verificationPending": "Pendiente de Verificación",
+    "hourlyRate": "Por Hora",
+    "dailyRate": "Por Día",
+    "weeklyRate": "Por Semana",
+    "monthlyRate": "Por Mes",
+    "email": "Correo electrónico"
+  },
+  "workerCalendar": {
+    "loading": "Cargando disponibilidad...",
+    "notConfigured": "Este trabajador no tiene disponibilidad configurada actualmente",
+    "availableForHire": "Disponible para contratación",
+    "acceptsSameDay": "Acepta mismo día",
+    "worksWeekends": "Trabaja fines de semana",
+    "advanceNotice": "Anticipación: {{days}} día(s)",
+    "weeklySchedule": "Horario Semanal",
+    "notAvailable": "No disponible",
+    "specificDates": "Fechas Específicas Disponibles",
+    "hiringModalities": "Modalidades de Contratación",
+    "upcomingReservations": "Próximas Reservas",
+    "openAvailability": "El trabajador tiene disponibilidad abierta",
+    "contactDirectly": "Contáctalo directamente para coordinar horarios"
+  },
+  "availabilityCalendar": {
+    "loading": "Cargando calendario...",
+    "notConfigured": "Este trabajador no tiene disponibilidad configurada",
+    "today": "Hoy",
+    "legend": {
+      "available": "Disponible",
+      "busy": "Ocupado",
+      "notAvailable": "No disponible"
+    },
+    "detail": {
+      "noSchedule": "No hay horarios configurados para este día",
+      "noSchedulePeriod": "No hay horarios configurados para este período",
+      "contactForAvailability": "Puedes contactar al trabajador para consultar disponibilidad",
+      "available": "Disponible",
+      "reserved": "Reservado",
+      "notAvailable": "No disponible"
+    },
+    "config": {
+      "requiresAdvance": "Requiere {{days}} día(s) de anticipación",
+      "acceptsSameDay": "Acepta contrataciones para el mismo día",
+      "maxHours": "Máximo {{hours}}h/semana",
+      "availableWeekends": "Disponible fines de semana"
+    },
+    "modalities": {
+      "hora": "Por hora",
+      "dia": "Por día",
+      "semana": "Por semana",
+      "mes": "Por mes",
+      "proyecto": "Proyecto"
+    }
+  },
+  "reviews": {
+    "leaveReview": "Califica tu Experiencia",
+    "reviewFor": "Trabajador",
+    "rating": "Calificación",
+    "stars": "estrellas",
+    "ratingHelp": "Selecciona de 1 a 5 estrellas",
+    "comment": "Comentario",
+    "commentPlaceholder": "Cuéntanos sobre tu experiencia con este trabajador...",
+    "characters": "caracteres",
+    "minChars": "Mínimo 10 caracteres",
+    "submit": "Enviar Reseña",
+    "submitting": "Enviando...",
+    "validationError": "Por favor, selecciona una calificación y escribe un comentario (mínimo 10 caracteres)",
+    "alreadyReviewed": "Ya has dejado una reseña para este contrato",
+    "notAuthorized": "No tienes permiso para dejar una reseña en este contrato",
+    "submitError": "Error al enviar la reseña. Por favor, intenta de nuevo.",
+    "infoNote": "Tu reseña será pública y ayudará a otros usuarios a tomar mejores decisiones.",
+    "successTitle": "¡Gracias por tu Reseña!",
+    "successMessage": "Tu opinión ayuda a mejorar nuestra comunidad.",
+    "skipForNow": "Omitir por ahora",
+    "noReviewsYet": "Sin reseñas aún",
+    "beTheFirst": "Sé el primero en dejar una reseña",
+    "viewAll": "Ver todas las reseñas",
+    "helpful": "Útil",
+    "reportReview": "Reportar reseña"
   },
   "createContract": {
     "loading": "Cargando...",
@@ -623,6 +706,22 @@
     "title": "Crear Nuevo Contrato",
     "subtitle": "Completa la información para generar un contrato de servicio",
     "selectedWorker": "Trabajador Seleccionado",
+    "paymentModes": {
+      "title": "Modalidad de Pago",
+      "subtitle": "Selecciona cómo deseas contratar el servicio",
+      "perHour": "Por Hora",
+      "perDay": "Por Día",
+      "perWeek": "Por Semana",
+      "perMonth": "Por Mes",
+      "perProject": "Proyecto Completo",
+      "unitLabels": {
+        "hour": "/hora",
+        "day": "/día",
+        "week": "/semana",
+        "month": "/mes",
+        "project": "total"
+      }
+    },
     "form": {
       "category": "Categoría del Servicio",
       "selectCategory": "Selecciona una categoría",
@@ -631,13 +730,34 @@
       "address": "Dirección del Servicio",
       "addressPlaceholder": "Ingresa la dirección donde se realizará el servicio...",
       "amount": "Monto Total (USD)",
+      "pricePerUnit": "Precio",
+      "quantity": "Cantidad",
+      "quantityLabels": {
+        "hours": "Horas",
+        "days": "Días",
+        "weeks": "Semanas",
+        "months": "Meses"
+      },
+      "totalCalculated": "Total Calculado",
       "startDate": "Fecha de Inicio",
       "endDate": "Fecha de Finalización",
+      "optionalDates": "Fechas (Opcional)",
+      "optionalDatesHelp": "Puedes agregar fechas si ya las tienes definidas",
       "notes": "Notas Adicionales",
       "notesPlaceholder": "Información adicional, requisitos especiales, etc...",
       "cancel": "Cancelar",
       "create": "Crear Contrato",
-      "creating": "Creando Contrato..."
+      "creating": "Creando Contrato...",
+      "descriptionMin": "La descripción debe tener al menos 10 caracteres",
+      "addressRequired": "La dirección es requerida",
+      "amountRequired": "El monto debe ser mayor a 0",
+      "categoryRequired": "Debes seleccionar una categoría"
+    },
+    "sections": {
+      "basicInfo": "Información Básica",
+      "paymentDetails": "Detalles de Pago",
+      "optionalInfo": "Información Opcional",
+      "additionalNotes": "Notas Adicionales"
     },
     "success": {
       "title": "¡Contrato Creado Exitosamente!",
@@ -649,14 +769,18 @@
     "errors": {
       "loadError": "Error al cargar los datos necesarios",
       "requiredFields": "Por favor completa todos los campos requeridos",
-      "createError": "Error al crear el contrato"
+      "createError": "Error al crear el contrato",
+      "descriptionTooShort": "La descripción es muy corta (mínimo 10 caracteres)",
+      "invalidAmount": "El monto debe ser mayor a 0",
+      "categoryRequired": "Debes seleccionar una categoría de servicio"
     },
     "info": {
       "title": "Información Importante",
       "pinGeneration": "Una vez creado el contrato, se generará un PIN de activación",
       "workerPin": "El trabajador deberá ingresar el PIN para confirmar el contrato",
       "pendingStatus": "El contrato estará en estado \"Pendiente de Activación\" hasta que el trabajador lo active",
-      "dashboard": "Puedes ver y gestionar tus contratos desde el Dashboard"
+      "dashboard": "Puedes ver y gestionar tus contratos desde el Dashboard",
+      "flexibleDates": "Las fechas son opcionales. Puedes crear contratos sin fechas específicas para mayor flexibilidad."
     }
   },
   "contractDetails": {

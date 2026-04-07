@@ -623,7 +623,18 @@
   "noReviews": "Aucun avis pour l'instant",
   "sendMessage": "Envoyer un message",
   "workExperience": "Expérience professionnelle",
-  "education": "Formation"
+  "education": "Formation",
+  "availability": "Disponibilité & Horaires",
+  "verifiedWorker": "Travailleur Vérifié",
+  "worker": "Travailleur",
+  "client": "Client",
+  "verified": "Vérifié",
+  "verificationPending": "Vérification en attente",
+  "hourlyRate": "Par heure",
+  "dailyRate": "Par jour",
+  "weeklyRate": "Par semaine",
+  "monthlyRate": "Par mois",
+  "email": "Adresse e-mail"
 },
 "createContract": {
   "loading": "Chargement...",
@@ -716,6 +727,52 @@
         "moreDetailsTitle": "Chambing : Votre Plateforme de Confiance pour les Services Domestiques Freelance au Salvador",
         "moreDetailsDescription": "Chambing met en relation les particuliers avec des professionnels freelance vérifiés pour un large éventail de services domestiques au Salvador. Que vous ayez besoin d'un ménage expert, d'une plomberie fiable, d'un jardinage professionnel ou d'autres services à domicile, trouvez des travailleurs qualifiés rapidement et en toute sécurité. Autonomisant les travailleurs indépendants et simplifiant votre quotidien.",
         "moreDetailsKeywords": "services domestiques Salvador, services freelance, services à domicile, ménage, plomberie, jardinage, travailleurs indépendants, services locaux, trouver des professionnels, embaucher des services, emplois Salvador"
-      }
+      },
+  "workerCalendar": {
+    "loading": "Chargement de la disponibilité...",
+    "notConfigured": "Ce travailleur n'a actuellement pas de disponibilité configurée",
+    "availableForHire": "Disponible pour embauche",
+    "acceptsSameDay": "Accepte le même jour",
+    "worksWeekends": "Travaille le week-end",
+    "advanceNotice": "Préavis : {{days}} jour(s)",
+    "weeklySchedule": "Horaire Hebdomadaire",
+    "notAvailable": "Non disponible",
+    "specificDates": "Dates Spécifiques Disponibles",
+    "hiringModalities": "Modalités d'Embauche",
+    "upcomingReservations": "Prochaines Réservations",
+    "openAvailability": "Le travailleur a une disponibilité ouverte",
+    "contactDirectly": "Contactez-le directement pour coordonner les horaires"
+  },
+  "availabilityCalendar": {
+    "loading": "Chargement du calendrier...",
+    "notConfigured": "Ce travailleur n'a pas de disponibilité configurée",
+    "today": "Aujourd'hui",
+    "legend": {
+      "available": "Disponible",
+      "busy": "Occupé",
+      "notAvailable": "Non disponible"
+    },
+    "detail": {
+      "noSchedule": "Aucun horaire configuré pour ce jour",
+      "noSchedulePeriod": "Aucun horaire configuré pour cette période",
+      "contactForAvailability": "Vous pouvez contacter le travailleur pour vérifier la disponibilité",
+      "available": "Disponible",
+      "reserved": "Réservé",
+      "notAvailable": "Non disponible"
+    },
+    "config": {
+      "requiresAdvance": "Nécessite {{days}} jour(s) de préavis",
+      "acceptsSameDay": "Accepte les réservations le jour même",
+      "maxHours": "Maximum {{hours}}h/semaine",
+      "availableWeekends": "Disponible les week-ends"
+    },
+    "modalities": {
+      "hora": "Par heure",
+      "dia": "Par jour",
+      "semana": "Par semaine",
+      "mes": "Par mois",
+      "proyecto": "Projet"
+    }
+  }
 
 }

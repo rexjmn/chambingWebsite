@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { publicProfileService } from '../services/publicProfileService';
 import { logger } from '../utils/logger';
+import AvailabilityCalendar from '../components/calendar/AvailabilityCalendar';
 import '../styles/Public-profile.scss';
 // Iconos de Material UI
 import {
@@ -426,7 +427,21 @@ const PublicProfile = () => {
               </div>
             </div>
           )}
+
         </div>
+
+        {/* Calendario de Disponibilidad - Ancho completo, fuera del info-grid */}
+        {isTrabajador && isVerified && (
+          <div className="section-card availability-section">
+            <div className="section-header">
+              <CalendarTodayIcon className="section-icon" />
+              <h2 className="section-title">
+                {t('publicProfile.availability') || 'Disponibilidad y Horarios'}
+              </h2>
+            </div>
+            <AvailabilityCalendar trabajadorId={userId} />
+          </div>
+        )}
 
         {/* Reviews - Solo si es trabajador verificado y tiene reviews */}
         {isTrabajador && isVerified && reviews.length > 0 && (
@@ -496,7 +511,7 @@ const PublicProfile = () => {
                 <div className="contact-info">
                   <EmailIcon sx={{ color: 'primary.main', fontSize: 24 }} />
                   <div>
-                    <div className="label">Email</div>
+                    <div className="label">{t('publicProfile.email')}</div>
                     <div className="value">
                       <a href={`mailto:${user.email}`}>{user.email}</a>
                     </div>

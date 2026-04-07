@@ -19,8 +19,11 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const EditProfile = lazy(() => import('./pages/EditProfile'));
 const PublicProfile = lazy(() => import('./pages/PublicProfile'));
 const Services = lazy(() => import('./pages/Service'));
-const CreateContract = lazy(() => import('./pages/CreateContract'));
+// Versión simplificada del formulario de contratos (sin restricciones innecesarias)
+const CreateContract = lazy(() => import('./pages/CreateContractSimple'));
 const ContractDetails = lazy(() => import('./pages/ContractDetails'));
+// ✅ Gestión de disponibilidad para trabajadores
+const WorkerAvailability = lazy(() => import('./pages/availability/WorkerAvailability'));
 
 // Loading fallback component - optimizado
 const LoadingFallback = () => (
@@ -99,6 +102,18 @@ function App() {
                     <ErrorBoundaryWrapper>
                       <ProtectedRoute>
                         <EditProfile />
+                      </ProtectedRoute>
+                    </ErrorBoundaryWrapper>
+                  }
+                />
+
+                {/* ✅ Gestión de Disponibilidad - Solo trabajadores */}
+                <Route
+                  path="/availability"
+                  element={
+                    <ErrorBoundaryWrapper>
+                      <ProtectedRoute>
+                        <WorkerAvailability />
                       </ProtectedRoute>
                     </ErrorBoundaryWrapper>
                   }

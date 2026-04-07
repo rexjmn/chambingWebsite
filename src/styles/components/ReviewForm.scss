@@ -1,0 +1,348 @@
+// =====================================================
+// REVIEW FORM STYLES
+// =====================================================
+
+.review-form-container {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 768px) {
+    padding: 24px;
+    border-radius: 12px;
+  }
+}
+
+.review-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  gap: 16px;
+
+  .close-button {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    svg {
+      font-size: 24px;
+    }
+  }
+}
+
+.review-form-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+}
+
+.review-form-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+
+  strong {
+    color: #1976d2;
+    font-weight: 600;
+  }
+}
+
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .required {
+      color: #d32f2f;
+    }
+  }
+
+  .form-help {
+    font-size: 13px;
+    color: #666;
+    margin: 4px 0 0 0;
+  }
+}
+
+// ============== STARS RATING ==============
+
+.stars-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.star-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  .star-icon {
+    font-size: 36px;
+    color: #e0e0e0;
+    transition: color 0.2s ease;
+  }
+
+  &.filled .star-icon {
+    color: #ffc107;
+  }
+
+  @media (max-width: 768px) {
+    .star-icon {
+      font-size: 32px;
+    }
+  }
+}
+
+.rating-text {
+  font-size: 14px;
+  color: #666;
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+// ============== TEXTAREA ==============
+
+.form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  color: #333;
+  resize: vertical;
+  transition: all 0.2s ease;
+  min-height: 120px;
+
+  &:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+  }
+
+  &:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+  }
+
+  &::placeholder {
+    color: #999;
+  }
+}
+
+.char-counter {
+  font-size: 12px;
+  color: #999;
+  text-align: right;
+
+  .char-warning {
+    color: #f57c00;
+    font-weight: 500;
+  }
+}
+
+// ============== ERROR MESSAGE ==============
+
+.error-message {
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  color: #c62828;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &::before {
+    content: '⚠️';
+    font-size: 16px;
+  }
+}
+
+// ============== FORM ACTIONS ==============
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+  }
+
+  button {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
+  .btn-cancel {
+    background: #f5f5f5;
+    color: #666;
+
+    &:hover:not(:disabled) {
+      background: #e0e0e0;
+      color: #333;
+    }
+  }
+
+  .btn-submit {
+    background: #1976d2;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #1565c0;
+      box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+    }
+
+    .icon {
+      font-size: 18px;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ============== INFO NOTE ==============
+
+.info-note {
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 3px solid #1976d2;
+  text-align: left;
+}
+
+// ============== DARK MODE (OPCIONAL) ==============
+
+@media (prefers-color-scheme: dark) {
+  .review-form-container {
+    background: #1e1e1e;
+  }
+
+  .review-form-title {
+    color: #f5f5f5;
+  }
+
+  .review-form-subtitle {
+    color: #b0b0b0;
+
+    strong {
+      color: #64b5f6;
+    }
+  }
+
+  .form-label {
+    color: #e0e0e0;
+  }
+
+  .form-textarea {
+    background: #2a2a2a;
+    border-color: #404040;
+    color: #e0e0e0;
+
+    &:focus {
+      border-color: #64b5f6;
+      box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.1);
+    }
+  }
+
+  .btn-cancel {
+    background: #2a2a2a;
+    color: #b0b0b0;
+
+    &:hover:not(:disabled) {
+      background: #404040;
+      color: #e0e0e0;
+    }
+  }
+
+  .info-note {
+    background: #2a2a2a;
+    color: #b0b0b0;
+    border-left-color: #64b5f6;
+  }
+}
