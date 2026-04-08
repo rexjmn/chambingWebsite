@@ -1,387 +1,363 @@
-// Importar variables centralizadas
 @use '../variables.scss' as *;
 
-// 🎨 Variables locales específicas de WorkerCard
-$text-primary: #0f1729;
-$text-secondary: #475569;
-$text-muted: #64748b;
-$white: #fff;
-$bg-light: #f8fafc;
-$border: #e2e8f0;
-$gold: #ffd700;
+// ── Tokens locales ────────────────────────────────────────────
+$card-radius:   20px;
+$cover-h:       148px;
+$avatar-size:   80px;
+$avatar-border: 3px;
 
-// Sombras profesionales
-$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-$shadow-lg: 0 8px 32px rgba(37, 64, 255, 0.18);
-$shadow-hover: 0 12px 40px rgba(37, 64, 255, 0.25);
+// ════════════════════════════════════════════════════════════════
+//  LINK WRAPPER
+// ════════════════════════════════════════════════════════════════
+.worker-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  outline-offset: 4px;
+  border-radius: $card-radius;
 
-// 🌟 Tarjeta principal - REDISEÑADA
+  &:focus-visible .worker-card {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  CARD
+// ════════════════════════════════════════════════════════════════
 .worker-card {
   position: relative;
-  background: $white;
-  border-radius: 16px;
+  background: #fff;
+  border: 1px solid #E8EBFF;
+  border-radius: $card-radius;
   overflow: hidden;
-  box-shadow: $shadow-sm;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   height: 100%;
-  border: 1px solid $border;
   cursor: pointer;
+  transition:
+    box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    transform  0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.28s ease;
 
   &:hover {
-    transform: translateY(-8px);
-    box-shadow: $shadow-hover;
-    border-color: rgba($primary, 0.3);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 56px rgba(35, 61, 255, 0.13);
+    border-color: rgba(35, 61, 255, 0.28);
 
-    .worker-card-cover img {
-      transform: scale(1.08);
-    }
-
-    .worker-avatar {
-      transform: scale(1.08);
-      box-shadow: 0 12px 28px rgba(37, 64, 255, 0.35);
-    }
-
-    .card-hover-overlay {
-      opacity: 1;
-      visibility: visible;
-    }
-  }
-
-  // 🖼️ Portada - SIN OPACIDAD
-  .worker-card-cover {
-    position: relative;
-    height: 140px;
-    overflow: hidden;
-    background: linear-gradient(135deg, $primary-light 0%, $primary 100%);
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
-      // 🔥 SIN FILTER DE OPACIDAD
-      opacity: 1 !important;
-    }
-
-    // Badge de verificado
-    .verified-badge {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 36px;
-      height: 36px;
-      background: $white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: $shadow-md;
-      z-index: 10;
-
-      span {
-        color: $success-color;
-        font-size: 1.3rem;
-        font-weight: bold;
-      }
-    }
-  }
-
-  // 📦 Contenido - BIEN ORGANIZADO
-  .worker-card-content {
-    padding: 0 1.5rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    position: relative;
-  }
-
-  // 👤 Avatar - LIMPIO Y NÍTIDO
-  .worker-avatar-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-top: -50px;
-    margin-bottom: 1rem;
-    position: relative;
-    z-index: 5;
-
-    .worker-avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 4px solid $white;
-      object-fit: cover;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-      background: $bg-light;
-      transition: all 0.3s ease;
-      // 🔥 IMAGEN CLARA, SIN OPACIDAD
-      opacity: 1 !important;
-      filter: none !important;
-    }
-  }
-
-  // 📝 Información del trabajador
-  .worker-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    text-align: center;
-
-    .worker-name {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: $text-primary;
-      line-height: 1.3;
-      margin: 0;
-    }
-
-    .worker-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: $primary;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 0;
-    }
-
-    .worker-location {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      font-size: 0.85rem;
-      color: $text-muted;
-      margin: 0.25rem 0;
-    }
-
-    .worker-description {
-      font-size: 0.875rem;
-      color: $text-secondary;
-      line-height: 1.6;
-      margin: 0.5rem 0;
-      min-height: 42px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    // ⭐ Rating y stats - ORGANIZADO
-    .worker-stats {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.8rem;
-      padding-top: 0.75rem;
-      margin-top: auto;
-      border-top: 1px solid $border;
-      flex-wrap: wrap;
-
-      .rating-section {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-
-        .stars {
-          display: flex;
-          gap: 2px;
-
-          .star {
-            font-size: 1rem;
-            transition: transform 0.2s ease;
-
-            &.filled {
-              color: $gold;
-            }
-
-            &.empty {
-              color: $border;
-            }
-          }
-        }
-
-        .rating-value {
-          font-weight: 700;
-          color: $text-primary;
-          font-size: 0.95rem;
-        }
-
-        .review-count {
-          font-size: 0.8rem;
-          color: $text-muted;
-        }
-      }
-
-      .separator {
-        color: $border;
-        font-weight: 300;
-      }
-
-      .jobs-info {
-        .jobs-count {
-          font-size: 0.85rem;
-          font-weight: 600;
-          color: $success-color;
-        }
-      }
-    }
-  }
-
-  // 💰 Etiqueta de precio - MEJORADA
-  .price-tag {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 0.4rem;
-    margin: 0.75rem auto 0.5rem;
-    padding: 0.6rem 1.3rem;
-    background: linear-gradient(135deg, rgba($primary, 0.06) 0%, rgba($primary, 0.10) 100%);
-    border-radius: 12px;
-    border: 1.5px solid rgba($primary, 0.2);
-    transition: all 0.25s ease;
-    width: fit-content;
-
-    &:hover {
-      background: linear-gradient(135deg, rgba($primary, 0.1) 0%, rgba($primary, 0.15) 100%);
-      border-color: rgba($primary, 0.35);
-      transform: translateY(-2px);
-    }
-
-    .price-amount {
-      font-size: 1.35rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.3px;
-    }
-
-    .price-period {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: $text-muted;
-    }
-
-    .price-negotiable {
-      font-size: 1.1rem;
-      margin-left: 0.2rem;
-      cursor: help;
-    }
-
-    // Skeleton
-    &.skeleton {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      animation: skeleton 1.5s ease-in-out infinite;
-      border-color: transparent;
-
-      .skeleton-text {
-        display: block;
-        width: 80px;
-        height: 18px;
-      }
-    }
-  }
-
-  // 🔵 Overlay hover - PROFESIONAL
-  .card-hover-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba($primary, 0.92);
-    backdrop-filter: blur(4px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 100;
-
-    .view-profile-btn {
-      background: $white;
-      color: $primary-dark;
-      border: none;
-      border-radius: 12px;
-      padding: 1rem 2.5rem;
-      font-weight: 700;
-      font-size: 1.05rem;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-      transition: all 0.25s ease;
-      cursor: pointer;
-
-      &:hover {
-        transform: scale(1.08);
-        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.3);
-      }
-    }
+    .wcard-cover img     { transform: scale(1.06); }
+    .wcard-avatar        { box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(35, 61, 255, 0.4); }
+    .wcard-cta           { opacity: 1; transform: translateY(0); }
+    .wcard-cover-gradient { opacity: 0.55; }
   }
 }
 
-// 🎬 Animaciones
-@keyframes skeleton {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
+// ════════════════════════════════════════════════════════════════
+//  COVER
+// ════════════════════════════════════════════════════════════════
+.wcard-cover {
+  position: relative;
+  height: $cover-h;
+  overflow: hidden;
+  background: linear-gradient(135deg, #C7D0FF 0%, #E8EBFF 100%);
+  flex-shrink: 0;
 
-// 🧱 Grid responsive
-.workers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-  gap: 1.75rem;
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-// 📱 Responsive
-@media (max-width: 1200px) {
-  .workers-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.5rem;
-    padding: 1.5rem;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-@media (max-width: 768px) {
-  .worker-card {
-    .worker-card-cover {
-      height: 120px;
-    }
+// Subtle dark gradient at bottom of cover (gives depth under avatar)
+.wcard-cover-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.32) 100%);
+  opacity: 0.38;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
 
-    .worker-avatar-wrapper .worker-avatar {
-      width: 85px;
-      height: 85px;
-    }
+// ── Verified badge ────────────────────────────────────────────
+.wcard-verified {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: rgba(16, 185, 129, 0.88);
+  border: 1px solid rgba(255,255,255,0.3);
+  backdrop-filter: blur(6px);
+  padding: 0.25rem 0.625rem;
+  border-radius: 99px;
+}
 
-    .worker-info {
-      .worker-name {
-        font-size: 1.1rem;
-      }
+// ── Price badge (top-right of cover) ─────────────────────────
+.wcard-price-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  background: rgba(255,255,255,0.95);
+  border: 1px solid rgba(35, 61, 255, 0.15);
+  border-radius: 12px;
+  padding: 0.3rem 0.625rem;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
 
-      .worker-title {
-        font-size: 0.85rem;
-      }
-    }
+.wcard-price-amount {
+  font-family: var(--font-title, 'League Spartan', sans-serif);
+  font-weight: 800;
+  font-size: 0.9375rem;
+  background: linear-gradient(135deg, #233DFF 0%, #1A2ECC 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
 
-    .price-tag {
-      padding: 0.5rem 1rem;
+.wcard-price-period {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #6B7280;
+  line-height: 1;
+}
 
-      .price-amount {
-        font-size: 1.15rem;
-      }
-    }
+.wcard-price-neg {
+  color: #233DFF;
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+
+// Skeleton del precio
+.wcard-price-skeleton {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 76px;
+  height: 30px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0.6) 75%);
+  background-size: 200% 100%;
+  animation: wcard-shimmer 1.4s ease-in-out infinite;
+}
+
+// ════════════════════════════════════════════════════════════════
+//  AVATAR
+// ════════════════════════════════════════════════════════════════
+.wcard-avatar-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: calc(-#{$avatar-size} / 2);
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
+}
+
+.wcard-avatar {
+  width: $avatar-size;
+  height: $avatar-size;
+  border-radius: 50%;
+  object-fit: cover;
+  border: $avatar-border solid #fff;
+  background: #E8EBFF;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4px #E8EBFF;
+  transition:
+    box-shadow 0.28s ease,
+    transform  0.28s ease;
+  display: block;
+}
+
+// ════════════════════════════════════════════════════════════════
+//  BODY
+// ════════════════════════════════════════════════════════════════
+.wcard-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.75rem 1.25rem 0;
+  text-align: center;
+  flex: 1;
+}
+
+.wcard-name {
+  font-family: var(--font-title, 'League Spartan', sans-serif);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: #111827;
+  margin: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wcard-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #233DFF;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wcard-desc {
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  color: #6B7280;
+  margin: 0.25rem 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.7em; // reserve 2 lines
+}
+
+.wcard-location {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  margin: 0.125rem 0 0;
+
+  svg { flex-shrink: 0; }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  FOOTER STATS
+// ════════════════════════════════════════════════════════════════
+.wcard-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  padding: 0.75rem 1.25rem 1rem;
+  border-top: 1px solid #E8EBFF;
+  margin-top: 0.875rem;
+  flex-wrap: wrap;
+}
+
+.wcard-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.wcard-stars {
+  display: flex;
+  gap: 1.5px;
+  color: #F59E0B;
+}
+
+.wcard-rating-val {
+  font-weight: 700;
+  font-size: 0.8125rem;
+  color: #111827;
+  line-height: 1;
+}
+
+.wcard-rating-count {
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  line-height: 1;
+}
+
+.wcard-jobs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #10b981;
+
+  svg { flex-shrink: 0; }
+
+  // Subtle divider
+  &::before {
+    content: '';
+    display: block;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #D1D5DB;
+    margin-right: 0.125rem;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  HOVER CTA STRIP
+// ════════════════════════════════════════════════════════════════
+.wcard-cta {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #233DFF 0%, #1A2ECC 100%);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 10;
+}
+
+// ════════════════════════════════════════════════════════════════
+//  ANIMATIONS
+// ════════════════════════════════════════════════════════════════
+@keyframes wcard-shimmer {
+  0%   { background-position:  200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  REDUCED MOTION
+// ════════════════════════════════════════════════════════════════
+@media (prefers-reduced-motion: reduce) {
+  .worker-card,
+  .wcard-cover img,
+  .wcard-avatar,
+  .wcard-cta { transition: none; }
+  .wcard-price-skeleton { animation: none; }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  RESPONSIVE
+// ════════════════════════════════════════════════════════════════
+@media (max-width: 480px) {
+  .wcard-cover { height: 128px; }
+
+  .wcard-avatar-wrap { margin-top: -36px; }
+
+  .wcard-avatar {
+    width: 72px;
+    height: 72px;
   }
 
-  .workers-grid {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-    padding: 1rem;
-  }
+  .wcard-body  { padding: 0.625rem 1rem 0; }
+  .wcard-name  { font-size: 1rem; }
 }

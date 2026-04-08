@@ -2,24 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Carrousel from '../components/home/Carrousel';
 import { useTranslations } from '../hooks/useTranslations';
-import Button from '../components/common/Button';
 import SearchInput from '../components/common/SearchInput';
 import Chip from '../components/common/Chip';
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-  Avatar,
-  Paper,
-  useTheme,
-  useMediaQuery,
-  Rating,
-  CircularProgress,
-} from '@mui/material';
+import { useTheme, useMediaQuery } from '@mui/material';
 import {
   Home as HomeIcon,
   Build,
@@ -27,204 +12,220 @@ import {
   Plumbing,
   ElectricalServices,
   Handyman,
-  Star,
-  CheckCircle,
-  Security,
-  Schedule,
-  Payment,
   Search,
-  LocationOn,
 } from '@mui/icons-material';
+import {
+  Shield, Clock, CreditCard, Star,
+  CheckCircle, Users, TrendingUp,
+  ArrowRight, ChevronRight,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { serviceService } from '../services/serviceService';
-import { workerService } from '../services/workerService'; // 👈 AGREGAR
+import { workerService } from '../services/workerService';
 import { logger } from '../utils/logger';
 import heroManImage from '../assets/images/heroman.png';
+// Gallery images — Column A (9)
+import imgWorker1  from '../assets/images/ehmitrich-fW6lwDM26o0-unsplash.jpg';
+import imgCreative from '../assets/images/ona-creative-z4S0MYNYT08-unsplash.jpg';
+import imgOutdoor1 from '../assets/images/vitaly-gariev-0rhc6d7o6T8-unsplash.jpg';
+import imgAlina    from '../assets/images/alina-belogolova-4SREHF03pn8-unsplash.jpg';
+import imgCarl     from '../assets/images/carl-campbell-ISO_zsPYWw8-unsplash.jpg';
+import imgDavid    from '../assets/images/david-suarez-Q_pPfSLqz4o-unsplash.jpg';
+import imgHector   from '../assets/images/hector-emilio-gonzalez--SYOWCWxH3Q-unsplash.jpg';
+import imgMaria    from '../assets/images/maria-ziegler-1AmEImwtnFk-unsplash.jpg';
+import imgMathias  from '../assets/images/mathias-reding-pRPiZT3zfUQ-unsplash.jpg';
+// Gallery images — Column B (8)
+import imgService1 from '../assets/images/jimmy-nilsson-masth-UovTD1dG-lA-unsplash.jpg';
+import imgWorker2  from '../assets/images/shishu-yadava-Hu_6KP4m9xA-unsplash.jpg';
+import imgOutdoor2 from '../assets/images/vitaly-gariev-QEXRd41FjZw-unsplash.jpg';
+import imgMichael  from '../assets/images/michael-kahn-xWAsrLw_1hk-unsplash.jpg';
+import imgMilin    from '../assets/images/milin-john-eROpOENKzUw-unsplash.jpg';
+import imgMitchell from '../assets/images/mitchell-luo-TtX79Vkm8gs-unsplash.jpg';
+import imgRoberto  from '../assets/images/roberto-nickson-b9dmHiTXkLk-unsplash.jpg';
+import imgSaemi    from '../assets/images/saemi-kim-4hcTkOw-EKE-unsplash.jpg';
 import '../styles/home.scss';
 import '../styles/button.scss';
 
+/* ─── Render star rating ─────────────────────────────── */
+const StarRating = ({ value = 5 }) => (
+  <div className="tcard-stars" aria-label={`${value} de 5 estrellas`}>
+    {Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        size={14}
+        strokeWidth={2}
+        fill={i < value ? 'currentColor' : 'none'}
+        style={{ opacity: i < value ? 1 : 0.3 }}
+      />
+    ))}
+  </div>
+);
+
+/* ════════════════════════════════════════════════════════
+   HOME COMPONENT
+════════════════════════════════════════════════════════ */
 const Home = () => {
-  const { t, translateService, common } = useTranslations();
+  const { t, translateService } = useTranslations();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
-  // 🔹 ESTADOS
+
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [featuredWorkers, setFeaturedWorkers] = useState([]); // 👈 NUEVO
-  const [topRatedWorkers, setTopRatedWorkers] = useState([]); // 👈 NUEVO
-  const [loadingWorkers, setLoadingWorkers] = useState(true); // 👈 NUEVO
+  const [featuredWorkers, setFeaturedWorkers] = useState([]);
+  const [topRatedWorkers, setTopRatedWorkers] = useState([]);
+  const [loadingWorkers, setLoadingWorkers] = useState(true);
 
-  // 🔄 Cargar categorías
+  /* Load categories */
   useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        logger.api('Intentando cargar categorías');
-        const data = await serviceService.getCategories();
-        setCategories(data.slice(0, 6));
-        logger.api('Categorías cargadas', { count: data.length });
-      } catch (error) {
-        logger.error('Error loading categories:', error);
-        logger.log('Usando datos mock por error de conexión');
+    serviceService.getCategories()
+      .then((data) => setCategories(data.slice(0, 6)))
+      .catch(() => {
+        logger.log('Usando categorías mock');
         setCategories([
-          { id: 1, nombre: 'domesticCleaning', descripcion: 'domesticCleaning', icono: 'cleaning' },
-          { id: 2, nombre: 'plumbing', descripcion: 'plumbing', icono: 'plumbing' },
-          { id: 3, nombre: 'electricity', descripcion: 'electricity', icono: 'electrical' },
-          { id: 4, nombre: 'carpentry', descripcion: 'carpentry', icono: 'carpenter' },
-          { id: 5, nombre: 'gardening', descripcion: 'gardening', icono: 'garden' },
-          { id: 6, nombre: 'construction', descripcion: 'construction', icono: 'build' },
+          { id: 1, nombre: 'domesticCleaning', icono: 'cleaning' },
+          { id: 2, nombre: 'plumbing',         icono: 'plumbing' },
+          { id: 3, nombre: 'electricity',      icono: 'electrical' },
+          { id: 4, nombre: 'carpentry',        icono: 'carpenter' },
+          { id: 5, nombre: 'gardening',        icono: 'garden' },
+          { id: 6, nombre: 'construction',     icono: 'build' },
         ]);
-      }
-    };
-
-    loadCategories();
-  }, []);
-
-  // 🔄 Cargar trabajadores destacados y mejor valorados
-  useEffect(() => {
-    const loadWorkers = async () => {
-      setLoadingWorkers(true);
-      try {
-        logger.api('Cargando trabajadores');
-
-        // Cargar trabajadores destacados
-        const featured = await workerService.getFeaturedWorkers(8);
-        logger.api('Trabajadores destacados cargados', { count: featured?.length });
-        setFeaturedWorkers(featured || []);
-
-        // Cargar mejor valorados
-        const topRated = await workerService.getTopRatedWorkers(8);
-        logger.api('Trabajadores mejor valorados cargados', { count: topRated?.length });
-        setTopRatedWorkers(topRated || []);
-
-      } catch (error) {
-        logger.error('Error cargando trabajadores:', error);
-        
-        // 📝 Datos mock en caso de error
-        const mockWorkers = generateMockWorkers(6);
-        setFeaturedWorkers(mockWorkers);
-        setTopRatedWorkers(mockWorkers);
-      } finally {
-        setLoadingWorkers(false);
-      }
-    };
-
-    loadWorkers();
-  }, []);
-
-  // 🎭 Generar trabajadores mock para desarrollo/fallback
-  const generateMockWorkers = (count) => {
-    const mockData = [];
-    const nombres = ['Juan', 'María', 'Carlos', 'Ana', 'Luis', 'Sofia', 'Pedro', 'Carmen'];
-    const apellidos = ['García', 'Rodríguez', 'Martínez', 'López', 'González', 'Pérez', 'Sánchez', 'Ramírez'];
-    const titulos = ['Electricista', 'Plomero', 'Carpintero', 'Jardinero', 'Pintor', 'Albañil'];
-    const departamentos = ['San Salvador', 'La Libertad', 'Santa Ana', 'San Miguel'];
-    const municipios = ['San Salvador', 'Santa Tecla', 'Antiguo Cuscatlán', 'Soyapango'];
-
-    for (let i = 0; i < count; i++) {
-      mockData.push({
-        id: `mock-${i + 1}`,
-        nombre: nombres[Math.floor(Math.random() * nombres.length)],
-        apellido: apellidos[Math.floor(Math.random() * apellidos.length)],
-        titulo_profesional: titulos[Math.floor(Math.random() * titulos.length)],
-        foto_perfil: `https://i.pravatar.cc/300?img=${i + 1}`,
-        foto_portada: `https://picsum.photos/seed/${i}/800/400`,
-        verificado: Math.random() > 0.5,
-        biografia: 'Profesional con amplia experiencia en el rubro. Trabajo garantizado y precios competitivos.',
-        departamento: departamentos[Math.floor(Math.random() * departamentos.length)],
-        municipio: municipios[Math.floor(Math.random() * municipios.length)],
-        stats: {
-          rating: 4 + Math.random(),
-          total_reviews: Math.floor(Math.random() * 100) + 10,
-          trabajos_completados: Math.floor(Math.random() * 200) + 20,
-        },
-        habilidades: ['Reparaciones', 'Instalaciones', 'Mantenimiento'],
-        categorias: [{ nombre: titulos[Math.floor(Math.random() * titulos.length)] }],
       });
-    }
-    return mockData;
+  }, []);
+
+  /* Load workers */
+  useEffect(() => {
+    setLoadingWorkers(true);
+    Promise.all([
+      workerService.getFeaturedWorkers(8).catch(() => []),
+      workerService.getTopRatedWorkers(8).catch(() => []),
+    ]).then(([featured, topRated]) => {
+      if (!featured?.length && !topRated?.length) {
+        const mock = generateMockWorkers(6);
+        setFeaturedWorkers(mock);
+        setTopRatedWorkers(mock);
+      } else {
+        setFeaturedWorkers(featured || []);
+        setTopRatedWorkers(topRated || []);
+      }
+    }).finally(() => setLoadingWorkers(false));
+  }, []);
+
+  const generateMockWorkers = (count) => {
+    const names  = ['Juan','María','Carlos','Ana','Luis','Sofía'];
+    const surns  = ['García','Rodríguez','Martínez','López','González','Pérez'];
+    const titles = ['Electricista','Plomero','Carpintero','Jardinero','Pintor','Albañil'];
+    const depts  = ['San Salvador','La Libertad','Santa Ana','San Miguel'];
+    const munis  = ['San Salvador','Santa Tecla','Antiguo Cuscatlán','Soyapango'];
+    return Array.from({ length: count }, (_, i) => ({
+      id: `mock-${i + 1}`,
+      nombre: names[i % names.length],
+      apellido: surns[i % surns.length],
+      titulo_profesional: titles[i % titles.length],
+      foto_perfil: `https://i.pravatar.cc/300?img=${i + 1}`,
+      foto_portada: `https://picsum.photos/seed/${i}/800/400`,
+      verificado: i % 2 === 0,
+      biografia: 'Profesional con amplia experiencia. Trabajo garantizado.',
+      departamento: depts[i % depts.length],
+      municipio: munis[i % munis.length],
+      stats: {
+        rating: 4 + (i % 10) / 10,
+        total_reviews: 10 + i * 7,
+        trabajos_completados: 20 + i * 15,
+      },
+      habilidades: ['Reparaciones','Instalaciones'],
+      categorias: [{ nombre: titles[i % titles.length] }],
+    }));
   };
 
   const getServiceIcon = (iconName) => {
-    const icons = {
-      cleaning: <CleaningServices />,
-      plumbing: <Plumbing />,
-      electrical: <ElectricalServices />,
+    const map = {
+      cleaning:  <CleaningServices />,
+      plumbing:  <Plumbing />,
+      electrical:<ElectricalServices />,
       carpenter: <Handyman />,
-      garden: <HomeIcon />,
-      build: <Build />,
+      garden:    <HomeIcon />,
+      build:     <Build />,
     };
-    return icons[iconName] || <Build />;
+    return map[iconName] ?? <Build />;
   };
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-    }
+    e?.preventDefault();
+    if (searchQuery.trim()) navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
   };
 
-  // Características traducidas dinámicamente
   const features = [
     {
-      icon: <Security color="primary" />,
+      icon: <Shield size={28} strokeWidth={1.75} />,
       title: t('home.features.verifiedWorkers.title'),
       description: t('home.features.verifiedWorkers.description'),
     },
     {
-      icon: <Schedule color="primary" />,
+      icon: <Clock size={28} strokeWidth={1.75} />,
       title: t('home.features.availability.title'),
       description: t('home.features.availability.description'),
     },
     {
-      icon: <Payment color="primary" />,
+      icon: <CreditCard size={28} strokeWidth={1.75} />,
       title: t('home.features.securePayments.title'),
       description: t('home.features.securePayments.description'),
     },
   ];
 
-  // Testimonios traducidos dinámicamente
   const testimonials = [
     {
       name: 'María González',
       rating: 5,
       comment: t('testimonials.maria'),
       service: translateService('domesticCleaning'),
+      location: 'San Salvador',
+      featured: false,
     },
     {
       name: 'Carlos Martínez',
       rating: 5,
       comment: t('testimonials.carlos'),
       service: translateService('plumbing'),
+      location: 'Santa Tecla',
+      featured: true,
     },
     {
       name: 'Ana Rodríguez',
       rating: 4,
       comment: t('testimonials.ana'),
       service: translateService('gardening'),
+      location: 'Antiguo Cuscatlán',
+      featured: false,
     },
   ];
 
+  const SEARCH_TAGS = [
+    { labelKey: 'home.search.popularTags.domesticCleaning', query: 'Limpieza doméstica', variant: 'trending' },
+    { labelKey: 'home.search.popularTags.plumbing247',      query: 'Plomería',           variant: 'urgent' },
+    { labelKey: 'home.search.popularTags.electrician',      query: 'Electricista',       variant: 'popular' },
+    { labelKey: 'home.search.popularTags.gardening',        query: 'Jardinería',         variant: 'seasonal' },
+    { labelKey: 'home.search.popularTags.carpentry',        query: 'Carpintería',        variant: 'default' },
+    { labelKey: 'home.search.popularTags.construction',     query: 'Construcción',       variant: 'default' },
+  ];
+
   return (
-    <div>
-      {/* Hero Section - Sin Material-UI */}
-      <section className="hero-section">
+    <div className="home-page" itemScope itemType="https://schema.org/LocalBusiness">
+      <meta itemProp="name" content="Chambing" />
+      <meta itemProp="description" content="Marketplace de servicios domésticos en El Salvador" />
+
+      {/* ══════ HERO ══════ */}
+      <section className="hero-section" aria-label={t('home.hero.title')}>
         <div className="hero-container">
           <div className="hero-content">
-            {/* Contenido de texto - Izquierda */}
+
+            {/* Text — left */}
             <div className="hero-positioning">
               <div className="hero-left">
-                <h1 className="hero-title">
-                  {t('home.hero.title')}
-                </h1>
-
-                <div className="hero-divider" />
-
-                <p className="hero-subtitle">
-                  {t('home.hero.subtitle')}
-                </p>
+                <h1 className="hero-title">{t('home.hero.title')}</h1>
+                <div className="hero-divider" aria-hidden="true" />
+                <p className="hero-subtitle">{t('home.hero.subtitle')}</p>
 
                 <div className="hero-actions">
                   {isAuthenticated ? (
@@ -254,78 +255,66 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Imagen - Derecha */}
+            {/* Image — right */}
             <div className="hero-image-container">
               <img
                 src={heroManImage}
-                alt="Professional worker"
+                alt="Profesional de servicios del hogar"
                 className="hero-image"
                 fetchpriority="high"
                 decoding="async"
               />
-              <div className="hero-image-glow"></div>
-              <div className="hero-image-glow-rings"></div>
-              <div className="hero-energy-particles"></div>
-              <div className="hero-extra-particles"></div>
-              <div className="hero-light-rays"></div>
-              <div className="hero-image-dots"></div>
+              <div className="hero-image-glow" aria-hidden="true" />
+              <div className="hero-image-glow-rings" aria-hidden="true" />
+              <div className="hero-energy-particles" aria-hidden="true" />
+              <div className="hero-extra-particles" aria-hidden="true" />
+              <div className="hero-light-rays" aria-hidden="true" />
+              <div className="hero-image-dots" aria-hidden="true" />
             </div>
           </div>
 
-          {/* Barra de Búsqueda */}
+          {/* Search bar — keeps original position */}
           <div className="hero-search-section">
             <div className="hero-search-container">
-              <SearchInput
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={window.innerWidth < 768 ? t('home.search.placeholder') : t('home.search.placeholderLong')}
-                onSubmit={handleSearch}
-                fullWidth
-                className="hero-search-input"
-                startIcon={<Search className="search-icon" />}
-                endButton={window.innerWidth >= 768 && (
+              <form onSubmit={handleSearch} role="search" aria-label={t('home.search.placeholder')}>
+                <SearchInput
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={isMobile ? t('home.search.placeholder') : t('home.search.placeholderLong')}
+                  onSubmit={handleSearch}
+                  fullWidth
+                  className="hero-search-input"
+                  startIcon={<Search className="search-icon" />}
+                  endButton={!isMobile && (
+                    <button
+                      type="submit"
+                      className="custom-btn custom-btn-primary search-btn"
+                      disabled={!searchQuery.trim()}
+                    >
+                      {t('home.search.searchNow')}
+                    </button>
+                  )}
+                />
+                {isMobile && (
                   <button
                     type="submit"
-                    className="custom-btn custom-btn-primary search-btn"
+                    className="custom-btn custom-btn-primary custom-btn-fullwidth search-btn-mobile"
                     disabled={!searchQuery.trim()}
-                    onClick={handleSearch}
                   >
                     {t('home.search.searchNow')}
                   </button>
                 )}
-              />
-              {window.innerWidth < 768 && (
-                <button
-                  type="submit"
-                  className="custom-btn custom-btn-primary custom-btn-fullwidth"
-                  disabled={!searchQuery.trim()}
-                  onClick={handleSearch}
-                  style={{ marginTop: '16px' }}
-                >
-                  {t('home.search.searchNow')}
-                </button>
-              )}
+              </form>
 
               <div className="popular-searches">
                 <div className="popular-searches-header">
-                  <span className="popular-label">
-                    {t('home.search.mostRequested')}
-                  </span>
-                  <span className="popular-stats">
-                    {t('home.search.servicesCompleted')}
-                  </span>
+                  <span className="popular-label">{t('home.search.mostRequested')}</span>
+                  <span className="popular-stats">{t('home.search.servicesCompleted')}</span>
                 </div>
                 <div className="popular-tags">
-                  {[
-                    { labelKey: 'home.search.popularTags.domesticCleaning', variant: 'trending', query: 'Limpieza doméstica' },
-                    { labelKey: 'home.search.popularTags.plumbing247', variant: 'urgent', query: 'Plomería' },
-                    { labelKey: 'home.search.popularTags.electrician', variant: 'popular', query: 'Electricista' },
-                    { labelKey: 'home.search.popularTags.gardening', variant: 'seasonal', query: 'Jardinería' },
-                    { labelKey: 'home.search.popularTags.carpentry', variant: 'default', query: 'Carpintería' },
-                    { labelKey: 'home.search.popularTags.construction', variant: 'default', query: 'Construcción' }
-                  ].map((tag, index) => (
+                  {SEARCH_TAGS.map((tag, i) => (
                     <Chip
-                      key={index}
+                      key={i}
                       label={t(tag.labelKey)}
                       size="medium"
                       className="popular-tag"
@@ -340,82 +329,151 @@ const Home = () => {
         </div>
       </section>
 
-      {/* More Details Section - Sobre Chambing */}
-      <Box className="more-details-section" sx={{ bgcolor: 'grey.50', py: { xs: 6, sm: 7, md: 8 } }}>
-        <Container maxWidth="lg">
-          <Grid container spacing={{ xs: 4, md: 6 }} alignItems="center">
-            {/* Contenido de texto */}
-            <Grid item xs={12} lg={7}>
-              <Box textAlign={{ xs: 'center', lg: 'left' }}>
-                <Typography
-                  variant="h3"
-                  className="section-title"
-                  sx={{
-                    fontWeight: 700,
-                    fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem', lg: '2.5rem' },
-                    mb: 2
-                  }}
-                >
-                  {t('MoreDetails.moreDetailsTitle')}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
-                    lineHeight: 1.7,
-                    color: 'text.secondary',
-                    maxWidth: { lg: '650px' },
-                    mx: { xs: 'auto', lg: 0 }
-                  }}
-                >
-                  {t('MoreDetails.moreDetailsDescription')}
-                </Typography>
-              </Box>
-            </Grid>
+      {/* ══════ ABOUT ══════ */}
+      <section
+        className="about-section"
+        aria-labelledby="about-title"
+        itemScope
+        itemType="https://schema.org/LocalBusiness"
+      >
+        <meta itemProp="name" content="Chambing" />
+        <meta itemProp="areaServed" content="El Salvador" />
+        <div className="sec-wrap">
+          <div className="about-grid">
 
-            {/* Keywords/Tags para SEO visual */}
-            <Grid item xs={12} lg={5}>
-              <Box sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 1.5,
-                justifyContent: { xs: 'center', lg: 'flex-start' }
-              }}>
-                {t('MoreDetails.moreDetailsKeywords').split(', ').slice(0, 8).map((keyword, index) => (
-                  <Chip
-                    key={index}
-                    label={keyword}
-                    variant="outlined"
-                    sx={{
-                      borderColor: 'primary.main',
-                      color: 'primary.main',
-                      fontSize: { xs: '0.8rem', md: '0.85rem' },
-                      fontWeight: 500,
-                      '&:hover': {
-                        bgcolor: 'primary.main',
-                        color: 'white',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 4px 12px rgba(35, 61, 255, 0.2)',
-                      },
-                      transition: 'all 0.3s ease'
-                    }}
-                  />
+            {/* Left — text + pills */}
+            <div className="about-text">
+              <span className="about-badge" aria-hidden="true">
+                <Shield size={12} strokeWidth={2.5} />
+                {t('home.about.badge')}
+              </span>
+              <h2 id="about-title" className="about-headline" itemProp="description">
+                {t('MoreDetails.moreDetailsTitle')}
+              </h2>
+              <p className="about-lead">{t('MoreDetails.moreDetailsDescription')}</p>
+
+              <ul className="about-values" aria-label="Por qué elegirnos">
+                {[
+                  { icon: <Shield size={16} strokeWidth={2} />, text: t('home.about.value1') },
+                  { icon: <Star   size={16} strokeWidth={2} />, text: t('home.about.value2') },
+                  { icon: <Clock  size={16} strokeWidth={2} />, text: t('home.about.value3') },
+                ].map((v, i) => (
+                  <li key={i} className="about-value-item">
+                    <span className="about-value-icon" aria-hidden="true">{v.icon}</span>
+                    <span>{v.text}</span>
+                  </li>
                 ))}
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
+              </ul>
 
+              <div className="about-pills" aria-label="Servicios disponibles">
+                {t('MoreDetails.moreDetailsKeywords').split(', ').slice(0, 8).map((kw, i) => (
+                  <span key={i} className="kw-pill">{kw}</span>
+                ))}
+              </div>
+            </div>
 
-      {/* 🎠 CARROUSEL DE DESTACADOS */}
+            {/* Right — gallery carousel */}
+            <div className="about-visual" aria-hidden="true">
+              <div className="gallery-frame">
+                <div className="gallery-viewport">
+                  {/* Column A — 9 images duplicated for infinite loop */}
+                  <div className="gallery-col gallery-col--a">
+                    {(() => {
+                      const colA = [imgWorker1, imgCreative, imgOutdoor1, imgAlina, imgCarl, imgDavid, imgHector, imgMaria, imgMathias];
+                      return [...colA, ...colA].map((src, i) => (
+                        <img key={i} src={src} alt="" className="gallery-img" loading={i < 9 ? 'eager' : 'lazy'} decoding="async" />
+                      ));
+                    })()}
+                  </div>
+                  {/* Column B — 8 images duplicated for infinite loop */}
+                  <div className="gallery-col gallery-col--b">
+                    {(() => {
+                      const colB = [imgService1, imgWorker2, imgOutdoor2, imgMichael, imgMilin, imgMitchell, imgRoberto, imgSaemi];
+                      return [...colB, ...colB].map((src, i) => (
+                        <img key={i} src={src} alt="" className="gallery-img" loading={i < 8 ? 'eager' : 'lazy'} decoding="async" />
+                      ));
+                    })()}
+                  </div>
+                </div>
+                <div className="gallery-fade-top"    aria-hidden="true" />
+                <div className="gallery-fade-bottom" aria-hidden="true" />
+                <div className="gallery-label"       aria-hidden="true">
+                  <span className="gallery-dot" />
+                  <span>Chambing</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ══════ HOW IT WORKS ══════ */}
+      <section
+        className="how-section"
+        aria-labelledby="how-title"
+        itemScope
+        itemType="https://schema.org/HowTo"
+      >
+        <meta itemProp="name" content={t('home.howItWorks.title')} />
+        <div className="sec-wrap">
+          <header className="sec-head sec-head--center">
+            <span className="how-badge" aria-hidden="true">{t('home.howItWorks.badge')}</span>
+            <h2 id="how-title" className="sec-title">{t('home.howItWorks.title')}</h2>
+            <p className="sec-sub">{t('home.howItWorks.subtitle')}</p>
+          </header>
+
+          <div className="steps-grid">
+            {[
+              {
+                n: '01',
+                icon: <Search size={24} strokeWidth={1.75} />,
+                title: t('home.howItWorks.step1.title'),
+                desc:  t('home.howItWorks.step1.desc'),
+                color: '#233DFF',
+              },
+              {
+                n: '02',
+                icon: <Users size={24} strokeWidth={1.75} />,
+                title: t('home.howItWorks.step2.title'),
+                desc:  t('home.howItWorks.step2.desc'),
+                color: '#7C3AED',
+              },
+              {
+                n: '03',
+                icon: <CheckCircle size={24} strokeWidth={1.75} />,
+                title: t('home.howItWorks.step3.title'),
+                desc:  t('home.howItWorks.step3.desc'),
+                color: '#059669',
+              },
+            ].map((step, i) => (
+              <article
+                key={i}
+                className="step-card"
+                itemScope
+                itemType="https://schema.org/HowToStep"
+                itemProp="step"
+              >
+                <div className="step-icon-wrap" aria-hidden="true" style={{ '--step-color': step.color }}>
+                  {step.icon}
+                </div>
+                <div className="step-content">
+                  <span className="step-num" aria-hidden="true">{step.n}</span>
+                  <h3 className="step-title" itemProp="name">{step.title}</h3>
+                  <p className="step-desc"  itemProp="text">{step.desc}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════ CAROUSELS ══════ */}
       {loadingWorkers ? (
-        <Box sx={{ py: 8, textAlign: 'center' }}>
-          <CircularProgress size={60} />
-          <Typography variant="h6" sx={{ mt: 2, color: 'text.secondary' }}>
-            {t('home.workers.loading')}
-          </Typography>
-        </Box>
+        <div className="workers-loading" role="status" aria-live="polite">
+          <div className="spinner" aria-hidden="true" />
+          <p>{t('home.workers.loading')}</p>
+        </div>
       ) : (
         <>
           {featuredWorkers.length > 0 && (
@@ -425,7 +483,6 @@ const Home = () => {
               subtitle={t('home.workers.featuredSubtitle')}
             />
           )}
-
           {topRatedWorkers.length > 0 && (
             <Carrousel
               workers={topRatedWorkers}
@@ -436,339 +493,146 @@ const Home = () => {
         </>
       )}
 
-      
-
-      {/* Stats Section - Nueva sección de estadísticas */}
-      <Box className="stats-section" sx={{ py: { xs: 6, sm: 8, md: 10 }, bgcolor: 'grey.50' }}>
-        <Container maxWidth="lg">
-          <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
+      {/* ══════ STATS ══════ */}
+      <section className="stats-section" aria-label="Estadísticas de Chambing">
+        <div className="sec-wrap">
+          <div className="stats-grid">
             {[
-              { number: '5,000+', label: t('home.stats.verifiedProfessionals'), icon: <CheckCircle /> },
-              { number: '15,000+', label: t('home.stats.completedServices'), icon: <Build /> },
-              { number: '4.8/5', label: t('home.stats.averageRating'), icon: <Star /> },
-              { number: '98%', label: t('home.stats.satisfiedClients'), icon: <Security /> },
-            ].map((stat, index) => (
-              <Grid key={index} item xs={12} sm={6} md={3}>
-                <Box 
-                  className="stat-card" 
-                  sx={{ 
-                    textAlign: 'center',
-                    p: { xs: 2.5, sm: 3, md: 3.5 },
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '100%',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                    }
-                  }}
-                >
-                  <Box
-                    sx={{
-                      fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' },
-                      mb: 1.5,
-                      color: 'primary.main',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    {stat.icon}
-                  </Box>
-                  <Typography
-                    variant="h4"
-                    sx={{
-                      fontWeight: 800,
-                      color: 'primary.main',
-                      mb: 1,
-                      fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' }
-                    }}
-                  >
-                    {stat.number}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ 
-                      fontSize: { xs: '0.85rem', sm: '0.9rem', md: '0.95rem' }, 
-                      fontWeight: 500,
-                      lineHeight: 1.4
-                    }}
-                  >
-                    {stat.label}
-                  </Typography>
-                </Box>
-              </Grid>
+              { n: '5,000+',  label: t('home.stats.verifiedProfessionals'), icon: <Users size={24} strokeWidth={1.75} /> },
+              { n: '15,000+', label: t('home.stats.completedServices'),     icon: <TrendingUp size={24} strokeWidth={1.75} /> },
+              { n: '4.8/5',   label: t('home.stats.averageRating'),         icon: <Star size={24} strokeWidth={1.75} /> },
+              { n: '98%',     label: t('home.stats.satisfiedClients'),      icon: <CheckCircle size={24} strokeWidth={1.75} /> },
+            ].map((s, i) => (
+              <div key={i} className="stat-item">
+                <span className="stat-icon" aria-hidden="true">{s.icon}</span>
+                <span className="stat-number">{s.n}</span>
+                <span className="stat-label">{s.label}</span>
+              </div>
             ))}
-          </Grid>
-        </Container>
-      </Box>
+          </div>
+        </div>
+      </section>
 
-      {/* Features Section */}
-      <Box className="features-section" sx={{ bgcolor: 'grey.50', py: { xs: 5, sm: 6, md: 6 } }}>
-        <Container maxWidth="lg">
-          <Box
-            textAlign={{ xs: 'center', lg: 'left' }}
-            sx={{ mb: { xs: 4, md: 5 } }}
-          >
-            <Typography
-              variant="h3"
-              className="section-title"
-              sx={{
-                fontWeight: 700,
-                fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem', lg: '2.5rem' },
-                mb: 2
-              }}
-            >
-              {t('home.features.title')}
-            </Typography>
-            <Typography
-              variant="h6"
-              className="section-subtitle"
-              sx={{
-                fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
-                maxWidth: { lg: '600px' }
-              }}
-            >
-              {t('home.features.subtitle')}
-            </Typography>
-          </Box>
-          <Grid container spacing={{ xs: 2.5, sm: 3, md: 3.5, lg: 4 }} sx={{ mt: 1 }}>
-            {features.map((feature, index) => (
-              <Grid key={index} item xs={12} sm={6} md={4}>
-                <Box
-                  textAlign="center"
-                  sx={{
-                    p: { xs: 2.5, sm: 3, md: 3.5, lg: 4 },
-                    borderRadius: 3,
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    border: '1px solid',
-                    borderColor: 'transparent',
-                    bgcolor: 'white',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: '0 20px 40px rgba(35, 61, 255, 0.12)',
-                      borderColor: 'primary.light',
-                    }
-                  }}
-                >
-                  <Avatar
-                    sx={{
-                      bgcolor: 'primary.light',
-                      width: { xs: 55, sm: 65, md: 70, lg: 75 },
-                      height: { xs: 55, sm: 65, md: 70, lg: 75 },
-                      mb: { xs: 2, sm: 2.5, md: 3 },
-                      boxShadow: '0 8px 24px rgba(35, 61, 255, 0.2)',
-                    }}
-                  >
-                    {feature.icon}
-                  </Avatar>
-                  <Typography
-                    variant="h5"
-                    gutterBottom
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.25rem', lg: '1.35rem' },
-                      mb: { xs: 1, md: 1.5 }
-                    }}
-                  >
-                    {feature.title}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      fontSize: { xs: '0.85rem', sm: '0.9rem', md: '0.95rem', lg: '1rem' },
-                      lineHeight: 1.6
-                    }}
-                  >
-                    {feature.description}
-                  </Typography>
-                </Box>
-              </Grid>
+      {/* ══════ FEATURES ══════ */}
+      <section className="features-section" aria-labelledby="features-title">
+        <div className="sec-wrap">
+          <header className="sec-head">
+            <h2 id="features-title" className="sec-title">{t('home.features.title')}</h2>
+            <p className="sec-sub">{t('home.features.subtitle')}</p>
+          </header>
+
+          <div className="features-grid">
+            {features.map((f, i) => (
+              <article key={i} className="feature-card">
+                <span className="feature-num" aria-hidden="true">0{i + 1}</span>
+                <div className="feature-icon-wrap" aria-hidden="true">{f.icon}</div>
+                <h3 className="feature-title">{f.title}</h3>
+                <p className="feature-desc">{f.description}</p>
+              </article>
             ))}
-          </Grid>
-        </Container>
-      </Box>
+          </div>
+        </div>
+      </section>
 
-      {/* Testimonials Section */}
-      <Container maxWidth="lg" className="testimonials-section" sx={{ py: { xs: 5, sm: 6, md: 6 } }}>
-        <Box
-          textAlign={{ xs: 'center', lg: 'left' }}
-          sx={{ mb: { xs: 4, md: 5 } }}
-        >
-          <Typography
-            variant="h3"
-            className="section-title"
-            sx={{
-              fontWeight: 700,
-              fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem', lg: '2.5rem' },
-              mb: 2
-            }}
-          >
-            {t('home.testimonials.title')}
-          </Typography>
-          <Typography
-            variant="h6"
-            className="section-subtitle"
-            sx={{
-              fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
-              maxWidth: { lg: '600px' }
-            }}
-          >
-            {t('home.testimonials.subtitle')}
-          </Typography>
-        </Box>
-        <Grid container spacing={{ xs: 3, md: 4 }} sx={{ mt: 1 }}>
-          {testimonials.map((testimonial, index) => (
-            <Grid key={index} item xs={12} sm={6} md={4}>
-              <Card
-                sx={{
-                  height: '100%',
-                  borderRadius: 3,
-                  border: '1px solid',
-                  borderColor: 'grey.200',
-                  bgcolor: 'white',
-                }}
+      {/* ══════ TESTIMONIALS ══════ */}
+      <section className="testimonials-section" aria-labelledby="testi-title">
+        <div className="sec-wrap">
+          <header className="sec-head sec-head--center">
+            <span className="testi-badge" aria-hidden="true">
+              <Star size={12} strokeWidth={2.5} fill="currentColor" />
+              {t('home.testimonials.badge')}
+            </span>
+            <h2 id="testi-title" className="sec-title">{t('home.testimonials.title')}</h2>
+            <p className="sec-sub">{t('home.testimonials.subtitle')}</p>
+          </header>
+
+          <div className="testimonials-grid">
+            {testimonials.map((item, i) => (
+              <article
+                key={i}
+                className={`testimonial-card${item.featured ? ' testimonial-card--featured' : ''}`}
+                itemScope
+                itemType="https://schema.org/Review"
               >
-                <CardContent sx={{ p: { xs: 2.5, sm: 3, md: 4 } }}>
-                  <Box display="flex" alignItems="center" mb={2.5}>
-                    <Avatar
-                      sx={{
-                        mr: 2,
-                        width: { xs: 44, sm: 48, md: 52 },
-                        height: { xs: 44, sm: 48, md: 52 },
-                        bgcolor: 'primary.main',
-                        fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.35rem' },
-                        fontWeight: 600
-                      }}
-                    >
-                      {testimonial.name.charAt(0)}
-                    </Avatar>
-                    <Box>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontWeight: 600,
-                          fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' }
-                        }}
-                      >
-                        {testimonial.name}
-                      </Typography>
-                      <Chip
-                        label={testimonial.service}
-                        size="small"
-                        className="testimonial-chip"
-                        variant="popular"
-                      />
-                    </Box>
-                  </Box>
-                  <Rating
-                    value={testimonial.rating}
-                    readOnly
-                    size="small"
-                    sx={{ mb: 2 }}
-                  />
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' },
-                      lineHeight: 1.7,
-                      fontStyle: 'italic'
-                    }}
-                  >
-                    "{testimonial.comment}"
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
+                {/* Quote SVG icon */}
+                <svg className="tcard-quote-icon" aria-hidden="true" width="32" height="24" viewBox="0 0 32 24" fill="none">
+                  <path d="M0 24V14.4C0 10.08 1.12 6.6 3.36 3.96C5.68 1.32 8.88 0 12.96 0V4.56C10.72 4.56 9.04 5.28 7.92 6.72C6.88 8.08 6.36 9.92 6.36 12.24H12.96V24H0ZM19.04 24V14.4C19.04 10.08 20.16 6.6 22.4 3.96C24.72 1.32 27.92 0 32 0V4.56C29.76 4.56 28.08 5.28 26.96 6.72C25.92 8.08 25.4 9.92 25.4 12.24H32V24H19.04Z" fill="currentColor"/>
+                </svg>
 
-      
-      {/* CTA Section */}
-      <Box
-        className="cta-section"
-        sx={{
-          background: 'linear-gradient(135deg, #233DFF 0%, #4F63FF 100%)',
-          color: 'white',
-          py: { xs: 6, sm: 7, md: 8 },
-          textAlign: 'center',
-        }}
-      >
-        <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
-          <Typography
-            variant="h3"
-            gutterBottom
-            sx={{
-              fontWeight: 700,
-              fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem', lg: '2.5rem' },
-              mb: 2
-            }}
-          >
-            {t('home.cta.title')}
-          </Typography>
-          <Typography
-            variant="h6"
-            sx={{
-              mb: { xs: 4, md: 4 },
-              opacity: 0.95,
-              fontSize: { xs: '1rem', sm: '1.05rem', md: '1.1rem' },
-              fontWeight: 400,
-              maxWidth: '650px',
-              mx: 'auto',
-              px: { xs: 2, sm: 0 }
-            }}
-          >
-            {t('home.cta.subtitle')}
-          </Typography>
+                {/* Stars + service tag row */}
+                <div className="tcard-top">
+                  <StarRating value={item.rating} />
+                  <span className="tcard-service-tag">{item.service}</span>
+                </div>
+
+                <blockquote className="tcard-comment" itemProp="reviewBody">
+                  {item.comment}
+                </blockquote>
+
+                <footer className="tcard-footer">
+                  <div className="tcard-avatar" aria-hidden="true">
+                    {item.name.charAt(0)}
+                  </div>
+                  <div className="tcard-info">
+                    <span className="tcard-name" itemProp="author">{item.name}</span>
+                    <span className="tcard-location">{item.location}</span>
+                  </div>
+                </footer>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════ DUAL CTA ══════ */}
+      <section className="cta-section" aria-labelledby="cta-title">
+        <div className="sec-wrap">
+          <h2 id="cta-title" className="cta-title">{t('home.cta.title')}</h2>
+          <p className="cta-subtitle">{t('home.cta.subtitle')}</p>
+
           {!isAuthenticated && (
-            <Box sx={{
-              display: 'flex',
-              gap: 2,
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              px: { xs: 2, sm: 0 }
-            }}>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={() => navigate('/register')}
-                className="cta-btn-primary"
-                sx={{
-                  minWidth: { xs: '100%', sm: 'auto' },
-                  fontSize: { xs: '1rem', md: '1.05rem' },
-                  py: { xs: 1.5, md: 1.75 }
-                }}
-              >
-                {t('home.cta.createAccount')}
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                onClick={() => navigate('/login')}
-                className="cta-btn-secondary"
-                sx={{
-                  minWidth: { xs: '100%', sm: 'auto' },
-                  fontSize: { xs: '1rem', md: '1.05rem' },
-                  py: { xs: 1.5, md: 1.75 }
-                }}
-              >
-                {t('home.hero.login')}
-              </Button>
-            </Box>
+            <div className="cta-cards">
+              <div className="cta-card cta-card--light">
+                <h3 className="cta-card-title">{t('home.cta.familyTitle')}</h3>
+                <p className="cta-card-desc">{t('home.cta.familyDesc')}</p>
+                <button
+                  className="custom-btn custom-btn-primary"
+                  onClick={() => navigate('/search')}
+                  type="button"
+                >
+                  {t('home.cta.findProfessional')}
+                  <ArrowRight size={16} strokeWidth={2} style={{ marginLeft: 6 }} />
+                </button>
+              </div>
+              <div className="cta-card cta-card--blue">
+                <h3 className="cta-card-title">{t('home.cta.workerTitle')}</h3>
+                <p className="cta-card-desc">{t('home.cta.workerDesc')}</p>
+                <button
+                  className="custom-btn cta-btn-outline-white"
+                  onClick={() => navigate('/register')}
+                  type="button"
+                >
+                  {t('home.cta.createAccount')}
+                  <ArrowRight size={16} strokeWidth={2} style={{ marginLeft: 6 }} />
+                </button>
+              </div>
+            </div>
           )}
-        </Container>
-      </Box>
+
+          {isAuthenticated && (
+            <div className="cta-actions-single">
+              <button
+                className="custom-btn custom-btn-primary custom-btn-large"
+                onClick={() => navigate('/dashboard')}
+                type="button"
+              >
+                {t('home.hero.dashboard')}
+                <ArrowRight size={16} strokeWidth={2} style={{ marginLeft: 6 }} />
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 };

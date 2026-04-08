@@ -425,13 +425,44 @@
       }
     },
     "testimonials": {
+      "badge": "Témoignages",
       "title": "Ce que disent nos utilisateurs",
       "subtitle": "Histoires réelles de nos utilisateurs"
     },
     "cta": {
       "title": "Prêt à commencer ?",
       "subtitle": "Rejoignez des milliers d'utilisateurs satisfaits au Salvador",
-      "createAccount": "Créer un Compte Gratuit"
+      "createAccount": "Créer un Compte Gratuit",
+      "familyTitle": "Je cherche un professionnel",
+      "familyDesc": "Trouvez l expert ideal pour votre domicile, verifie et bien note.",
+      "workerTitle": "Je propose mes services",
+      "workerDesc": "Inscrivez-vous gratuitement et accedez aux clients de votre zone. Plus de revenus, plus de liberte.",
+      "findProfessional": "Rechercher maintenant"
+    },
+    "about": {
+      "badge": "À propos de Chambing",
+      "value1": "Uniquement des professionnels vérifiés et évalués",
+      "value2": "Note moyenne de 4,8 / 5 sur tous les services",
+      "value3": "Réponse rapide — les professionnels répondent en moins de 24h",
+      "trustSub": "La plateforme #1 de services au Salvador",
+      "verified": "Profils 100% vérifiés et paiements sécurisés"
+    },
+    "howItWorks": {
+      "badge": "Comment ça marche",
+      "title": "Simple, rapide et fiable",
+      "subtitle": "Trouvez le professionnel ideal en quelques minutes, sans complications.",
+      "step1": {
+        "title": "Decrivez votre besoin",
+        "desc": "Recherchez le service, indiquez votre localisation et quand vous en avez besoin. Moins d une minute."
+      },
+      "step2": {
+        "title": "Choisissez votre professionnel",
+        "desc": "Comparez les profils verifies, les notes et les prix. Sans mauvaises surprises."
+      },
+      "step3": {
+        "title": "Travail accompli",
+        "desc": "Le professionnel arrive, effectue le travail et vous evaluez l experience."
+      }
     }
   },
   "dashboard": {
@@ -599,135 +630,134 @@
     "carlos": "Ils ont résolu mon problème de plomberie rapidement.",
     "ana": "Très contents du travail de jardinage effectué."
   },
-
-"publicProfile": {
-  "loading": "Chargement du profil...",
-  "notFound": "Profil non trouvé",
-  "reviews": "avis",
-  "jobsCompleted": "travaux terminés",
-  "aboutMe": "À propos de moi",
-  "noBio": "Aucune biographie",
-  "memberSince": "Membre depuis",
-  "mySkills": "Mes compétences",
-  "clientReviews": "Avis des clients",
-  "contact": "Contacter",
-  "hire": "Embaucher",
-  "contactInfo": "Informations de contact",
-  "phone": "Téléphone",
-  "rates": "Tarifs",
-  "createContract": "Créer un Contrat",
-  "back": "Retour",
-  "professionalTitle": "Titre professionnel",
-  "location": "Localisation",
-  "rating": "Note",
-  "noReviews": "Aucun avis pour l'instant",
-  "sendMessage": "Envoyer un message",
-  "workExperience": "Expérience professionnelle",
-  "education": "Formation",
-  "availability": "Disponibilité & Horaires",
-  "verifiedWorker": "Travailleur Vérifié",
-  "worker": "Travailleur",
-  "client": "Client",
-  "verified": "Vérifié",
-  "verificationPending": "Vérification en attente",
-  "hourlyRate": "Par heure",
-  "dailyRate": "Par jour",
-  "weeklyRate": "Par semaine",
-  "monthlyRate": "Par mois",
-  "email": "Adresse e-mail"
-},
-"createContract": {
-  "loading": "Chargement...",
-  "back": "Retour",
-  "title": "Créer un Nouveau Contrat",
-  "subtitle": "Complétez les informations pour générer un contrat de service",
-  "selectedWorker": "Travailleur Sélectionné",
-  "form": {
-    "category": "Catégorie de Service",
-    "selectCategory": "Sélectionnez une catégorie",
-    "description": "Description du Service",
-    "descriptionPlaceholder": "Décrivez le travail à réaliser...",
-    "address": "Adresse du Service",
-    "addressPlaceholder": "Entrez l'adresse où le service sera effectué...",
-    "amount": "Montant Total (USD)",
-    "startDate": "Date de Début",
-    "endDate": "Date de Fin",
-    "notes": "Notes Supplémentaires",
-    "notesPlaceholder": "Informations supplémentaires, exigences spéciales, etc...",
-    "cancel": "Annuler",
-    "create": "Créer un Contrat",
-    "creating": "Création du Contrat..."
-  },
-  "success": {
-    "title": "Contrat Créé avec Succès !",
-    "contractCode": "Code du Contrat",
-    "activationPin": "Code PIN d'Activation",
-    "pinInfo": "Le travailleur devra entrer ce code PIN pour activer le contrat.",
-    "goToDashboard": "Aller au Tableau de Bord"
-  },
-  "errors": {
-    "loadError": "Erreur lors du chargement des données nécessaires",
-    "requiredFields": "Veuillez remplir tous les champs requis",
-    "createError": "Erreur lors de la création du contrat"
-  },
-  "info": {
-    "title": "Informations Importantes",
-    "pinGeneration": "Une fois le contrat créé, un code PIN d'activation sera généré",
-    "workerPin": "Le travailleur devra entrer le code PIN pour confirmer le contrat",
-    "pendingStatus": "Le contrat sera en état \"En attente d'activation\" jusqu'à ce que le travailleur l'active",
-    "dashboard": "Vous pouvez consulter et gérer vos contrats depuis le Tableau de Bord"
-  }
-},
-"contractDetails": {
-  "loading": "Chargement du contrat...",
-  "title": "Détails du Contrat",
-  "contractNumber": "Numéro de contrat",
-  "creationDate": "Date de création",
-  "back": "Retour",
-  "backToDashboard": "Retour au Tableau de Bord",
-  "notSpecified": "Non spécifié",
-  "status": {
-    "pending": "En Attente d'Activation",
-    "active": "Actif",
-    "completed": "Terminé",
-    "cancelled": "Annulé",
-    "closed": "Fermé"
-  },
-  "parties": {
-    "title": "1. Informations sur les Parties",
+  "publicProfile": {
+    "loading": "Chargement du profil...",
+    "notFound": "Profil non trouvé",
+    "reviews": "avis",
+    "jobsCompleted": "travaux terminés",
+    "aboutMe": "À propos de moi",
+    "noBio": "Aucune biographie",
+    "memberSince": "Membre depuis",
+    "mySkills": "Mes compétences",
+    "clientReviews": "Avis des clients",
+    "contact": "Contacter",
+    "hire": "Embaucher",
+    "contactInfo": "Informations de contact",
+    "phone": "Téléphone",
+    "rates": "Tarifs",
+    "createContract": "Créer un Contrat",
+    "back": "Retour",
+    "professionalTitle": "Titre professionnel",
+    "location": "Localisation",
+    "rating": "Note",
+    "noReviews": "Aucun avis pour l'instant",
+    "sendMessage": "Envoyer un message",
+    "workExperience": "Expérience professionnelle",
+    "education": "Formation",
+    "availability": "Disponibilité & Horaires",
+    "verifiedWorker": "Travailleur Vérifié",
+    "worker": "Travailleur",
     "client": "Client",
-    "provider": "Prestataire de Service"
+    "verified": "Vérifié",
+    "verificationPending": "Vérification en attente",
+    "hourlyRate": "Par heure",
+    "dailyRate": "Par jour",
+    "weeklyRate": "Par semaine",
+    "monthlyRate": "Par mois",
+    "email": "Adresse e-mail"
   },
-  "service": {
-    "title": "2. Détails du Service",
-    "category": "Catégorie de service",
-    "address": "Adresse du service",
-    "description": "Description du service",
-    "startDate": "Date de début",
-    "endDate": "Date de fin",
-    "notes": "Notes supplémentaires"
+  "createContract": {
+    "loading": "Chargement...",
+    "back": "Retour",
+    "title": "Créer un Nouveau Contrat",
+    "subtitle": "Complétez les informations pour générer un contrat de service",
+    "selectedWorker": "Travailleur Sélectionné",
+    "form": {
+      "category": "Catégorie de Service",
+      "selectCategory": "Sélectionnez une catégorie",
+      "description": "Description du Service",
+      "descriptionPlaceholder": "Décrivez le travail à réaliser...",
+      "address": "Adresse du Service",
+      "addressPlaceholder": "Entrez l'adresse où le service sera effectué...",
+      "amount": "Montant Total (USD)",
+      "startDate": "Date de Début",
+      "endDate": "Date de Fin",
+      "notes": "Notes Supplémentaires",
+      "notesPlaceholder": "Informations supplémentaires, exigences spéciales, etc...",
+      "cancel": "Annuler",
+      "create": "Créer un Contrat",
+      "creating": "Création du Contrat..."
+    },
+    "success": {
+      "title": "Contrat Créé avec Succès !",
+      "contractCode": "Code du Contrat",
+      "activationPin": "Code PIN d'Activation",
+      "pinInfo": "Le travailleur devra entrer ce code PIN pour activer le contrat.",
+      "goToDashboard": "Aller au Tableau de Bord"
+    },
+    "errors": {
+      "loadError": "Erreur lors du chargement des données nécessaires",
+      "requiredFields": "Veuillez remplir tous les champs requis",
+      "createError": "Erreur lors de la création du contrat"
+    },
+    "info": {
+      "title": "Informations Importantes",
+      "pinGeneration": "Une fois le contrat créé, un code PIN d'activation sera généré",
+      "workerPin": "Le travailleur devra entrer le code PIN pour confirmer le contrat",
+      "pendingStatus": "Le contrat sera en état \"En attente d'activation\" jusqu'à ce que le travailleur l'active",
+      "dashboard": "Vous pouvez consulter et gérer vos contrats depuis le Tableau de Bord"
+    }
   },
-  "payment": {
-    "title": "3. Conditions Économiques",
-    "totalAmount": "Montant total",
-    "workerAmount": "Montant travailleur",
-    "platformFee": "Frais de plateforme"
+  "contractDetails": {
+    "loading": "Chargement du contrat...",
+    "title": "Détails du Contrat",
+    "contractNumber": "Numéro de contrat",
+    "creationDate": "Date de création",
+    "back": "Retour",
+    "backToDashboard": "Retour au Tableau de Bord",
+    "notSpecified": "Non spécifié",
+    "status": {
+      "pending": "En Attente d'Activation",
+      "active": "Actif",
+      "completed": "Terminé",
+      "cancelled": "Annulé",
+      "closed": "Fermé"
+    },
+    "parties": {
+      "title": "1. Informations sur les Parties",
+      "client": "Client",
+      "provider": "Prestataire de Service"
+    },
+    "service": {
+      "title": "2. Détails du Service",
+      "category": "Catégorie de service",
+      "address": "Adresse du service",
+      "description": "Description du service",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "notes": "Notes supplémentaires"
+    },
+    "payment": {
+      "title": "3. Conditions Économiques",
+      "totalAmount": "Montant total",
+      "workerAmount": "Montant travailleur",
+      "platformFee": "Frais de plateforme"
+    },
+    "activation": {
+      "title": "⚠️ En Attente d'Activation",
+      "message": "Ce contrat nécessite l'activation par le travailleur.",
+      "pin": "PIN d'Activation"
+    },
+    "errors": {
+      "notFound": "Contrat non trouvé",
+      "loadError": "Erreur lors du chargement du contrat"
+    }
   },
-  "activation": {
-    "title": "⚠️ En Attente d'Activation",
-    "message": "Ce contrat nécessite l'activation par le travailleur.",
-    "pin": "PIN d'Activation"
+  "MoreDetails": {
+    "moreDetailsTitle": "Chambing : Votre Plateforme de Confiance pour les Services Domestiques Freelance au Salvador",
+    "moreDetailsDescription": "Chambing met en relation les particuliers avec des professionnels freelance vérifiés pour un large éventail de services domestiques au Salvador. Que vous ayez besoin d'un ménage expert, d'une plomberie fiable, d'un jardinage professionnel ou d'autres services à domicile, trouvez des travailleurs qualifiés rapidement et en toute sécurité. Autonomisant les travailleurs indépendants et simplifiant votre quotidien.",
+    "moreDetailsKeywords": "services domestiques Salvador, services freelance, services à domicile, ménage, plomberie, jardinage, travailleurs indépendants, services locaux, trouver des professionnels, embaucher des services, emplois Salvador"
   },
-  "errors": {
-    "notFound": "Contrat non trouvé",
-    "loadError": "Erreur lors du chargement du contrat"
-  }
-},
-"MoreDetails": {
-        "moreDetailsTitle": "Chambing : Votre Plateforme de Confiance pour les Services Domestiques Freelance au Salvador",
-        "moreDetailsDescription": "Chambing met en relation les particuliers avec des professionnels freelance vérifiés pour un large éventail de services domestiques au Salvador. Que vous ayez besoin d'un ménage expert, d'une plomberie fiable, d'un jardinage professionnel ou d'autres services à domicile, trouvez des travailleurs qualifiés rapidement et en toute sécurité. Autonomisant les travailleurs indépendants et simplifiant votre quotidien.",
-        "moreDetailsKeywords": "services domestiques Salvador, services freelance, services à domicile, ménage, plomberie, jardinage, travailleurs indépendants, services locaux, trouver des professionnels, embaucher des services, emplois Salvador"
-      },
   "workerCalendar": {
     "loading": "Chargement de la disponibilité...",
     "notConfigured": "Ce travailleur n'a actuellement pas de disponibilité configurée",
@@ -774,5 +804,4 @@
       "proyecto": "Projet"
     }
   }
-
 }

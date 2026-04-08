@@ -425,13 +425,44 @@
       }
     },
     "testimonials": {
+      "badge": "Testimonials",
       "title": "What our users say",
       "subtitle": "Real stories from our users"
     },
     "cta": {
       "title": "Ready to get started?",
       "subtitle": "Join thousands of satisfied users in El Salvador",
-      "createAccount": "Create Free Account"
+      "createAccount": "Create Free Account",
+      "familyTitle": "I need a professional",
+      "familyDesc": "Find the right expert for your home — verified and highly rated.",
+      "workerTitle": "I offer my services",
+      "workerDesc": "Sign up free and get access to clients in your area. More income, more freedom.",
+      "findProfessional": "Search now"
+    },
+    "about": {
+      "badge": "About Chambing",
+      "value1": "Verified and rated professionals only",
+      "value2": "Average rating of 4.8 / 5 across all services",
+      "value3": "Fast response — professionals reply in under 24h",
+      "trustSub": "El Salvador's #1 service platform",
+      "verified": "100% verified profiles and secure payments"
+    },
+    "howItWorks": {
+      "badge": "How it works",
+      "title": "Simple, fast and reliable",
+      "subtitle": "Find the perfect professional in minutes, no hassle.",
+      "step1": {
+        "title": "Describe what you need",
+        "desc": "Search for the service, enter your location and when you need it. Under a minute."
+      },
+      "step2": {
+        "title": "Choose your professional",
+        "desc": "Compare verified profiles, ratings and prices. No surprises."
+      },
+      "step3": {
+        "title": "Job done",
+        "desc": "The professional arrives, completes the work, and you rate the experience."
+      }
     }
   },
   "dashboard": {
@@ -600,133 +631,133 @@
     "ana": "Very happy with the gardening work done."
   },
   "publicProfile": {
-  "loading": "Loading profile...",
-  "notFound": "Profile not found",
-  "reviews": "reviews",
-  "jobsCompleted": "jobs completed",
-  "aboutMe": "About me",
-  "noBio": "No biography",
-  "memberSince": "Member since",
-  "mySkills": "My skills",
-  "clientReviews": "Client reviews",
-  "contact": "Contact",
-  "hire": "Hire",
-  "contactInfo": "Contact information",
-  "phone": "Phone",
-  "rates": "Rates",
-  "createContract": "Create Contract",
-  "back": "Back",
-  "professionalTitle": "Professional Title",
-  "location": "Location",
-  "rating": "Rating",
-  "noReviews": "No reviews yet",
-  "sendMessage": "Send message",
-  "workExperience": "Work experience",
-  "education": "Education",
-  "availability": "Availability & Schedule",
-  "verifiedWorker": "Verified Worker",
-  "worker": "Worker",
-  "client": "Client",
-  "verified": "Verified",
-  "verificationPending": "Verification Pending",
-  "hourlyRate": "Per Hour",
-  "dailyRate": "Per Day",
-  "weeklyRate": "Per Week",
-  "monthlyRate": "Per Month",
-  "email": "Email"
-},
-"createContract": {
-  "loading": "Loading...",
-  "back": "Back",
-  "title": "Create New Contract",
-  "subtitle": "Complete the information to generate a service contract",
-  "selectedWorker": "Selected Worker",
-  "form": {
-    "category": "Service Category",
-    "selectCategory": "Select a category",
-    "description": "Service Description",
-    "descriptionPlaceholder": "Describe the work to be done...",
-    "address": "Service Address",
-    "addressPlaceholder": "Enter the address where the service will be performed...",
-    "amount": "Total Amount (USD)",
-    "startDate": "Start Date",
-    "endDate": "End Date",
-    "notes": "Additional Notes",
-    "notesPlaceholder": "Additional information, special requirements, etc...",
-    "cancel": "Cancel",
-    "create": "Create Contract",
-    "creating": "Creating Contract..."
-  },
-  "success": {
-    "title": "Contract Created Successfully!",
-    "contractCode": "Contract Code",
-    "activationPin": "Activation PIN",
-    "pinInfo": "The worker must enter this PIN to activate the contract.",
-    "goToDashboard": "Go to Dashboard"
-  },
-  "errors": {
-    "loadError": "Error loading required data",
-    "requiredFields": "Please complete all required fields",
-    "createError": "Error creating contract"
-  },
-  "info": {
-    "title": "Important Information",
-    "pinGeneration": "Once the contract is created, an activation PIN will be generated",
-    "workerPin": "The worker must enter the PIN to confirm the contract",
-    "pendingStatus": "The contract will be in \"Pending Activation\" status until the worker activates it",
-    "dashboard": "You can view and manage your contracts from the Dashboard"
-  }
-},
-"contractDetails": {
-  "loading": "Loading contract...",
-  "title": "Contract Details",
-  "contractNumber": "Contract number",
-  "creationDate": "Creation date",
-  "back": "Back",
-  "backToDashboard": "Back to Dashboard",
-  "notSpecified": "Not specified",
-  "status": {
-    "pending": "Pending Activation",
-    "active": "Active",
-    "completed": "Completed",
-    "cancelled": "Cancelled",
-    "closed": "Closed"
-  },
-  "parties": {
-    "title": "1. Party Information",
+    "loading": "Loading profile...",
+    "notFound": "Profile not found",
+    "reviews": "reviews",
+    "jobsCompleted": "jobs completed",
+    "aboutMe": "About me",
+    "noBio": "No biography",
+    "memberSince": "Member since",
+    "mySkills": "My skills",
+    "clientReviews": "Client reviews",
+    "contact": "Contact",
+    "hire": "Hire",
+    "contactInfo": "Contact information",
+    "phone": "Phone",
+    "rates": "Rates",
+    "createContract": "Create Contract",
+    "back": "Back",
+    "professionalTitle": "Professional Title",
+    "location": "Location",
+    "rating": "Rating",
+    "noReviews": "No reviews yet",
+    "sendMessage": "Send message",
+    "workExperience": "Work experience",
+    "education": "Education",
+    "availability": "Availability & Schedule",
+    "verifiedWorker": "Verified Worker",
+    "worker": "Worker",
     "client": "Client",
-    "provider": "Service Provider"
+    "verified": "Verified",
+    "verificationPending": "Verification Pending",
+    "hourlyRate": "Per Hour",
+    "dailyRate": "Per Day",
+    "weeklyRate": "Per Week",
+    "monthlyRate": "Per Month",
+    "email": "Email"
   },
-  "service": {
-    "title": "2. Service Details",
-    "category": "Service category",
-    "address": "Service address",
-    "description": "Service description",
-    "startDate": "Start date",
-    "endDate": "End date",
-    "notes": "Additional notes"
+  "createContract": {
+    "loading": "Loading...",
+    "back": "Back",
+    "title": "Create New Contract",
+    "subtitle": "Complete the information to generate a service contract",
+    "selectedWorker": "Selected Worker",
+    "form": {
+      "category": "Service Category",
+      "selectCategory": "Select a category",
+      "description": "Service Description",
+      "descriptionPlaceholder": "Describe the work to be done...",
+      "address": "Service Address",
+      "addressPlaceholder": "Enter the address where the service will be performed...",
+      "amount": "Total Amount (USD)",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "notes": "Additional Notes",
+      "notesPlaceholder": "Additional information, special requirements, etc...",
+      "cancel": "Cancel",
+      "create": "Create Contract",
+      "creating": "Creating Contract..."
+    },
+    "success": {
+      "title": "Contract Created Successfully!",
+      "contractCode": "Contract Code",
+      "activationPin": "Activation PIN",
+      "pinInfo": "The worker must enter this PIN to activate the contract.",
+      "goToDashboard": "Go to Dashboard"
+    },
+    "errors": {
+      "loadError": "Error loading required data",
+      "requiredFields": "Please complete all required fields",
+      "createError": "Error creating contract"
+    },
+    "info": {
+      "title": "Important Information",
+      "pinGeneration": "Once the contract is created, an activation PIN will be generated",
+      "workerPin": "The worker must enter the PIN to confirm the contract",
+      "pendingStatus": "The contract will be in \"Pending Activation\" status until the worker activates it",
+      "dashboard": "You can view and manage your contracts from the Dashboard"
+    }
   },
-  "payment": {
-    "title": "3. Economic Conditions",
-    "totalAmount": "Total amount",
-    "workerAmount": "Worker amount",
-    "platformFee": "Platform fee"
+  "contractDetails": {
+    "loading": "Loading contract...",
+    "title": "Contract Details",
+    "contractNumber": "Contract number",
+    "creationDate": "Creation date",
+    "back": "Back",
+    "backToDashboard": "Back to Dashboard",
+    "notSpecified": "Not specified",
+    "status": {
+      "pending": "Pending Activation",
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "closed": "Closed"
+    },
+    "parties": {
+      "title": "1. Party Information",
+      "client": "Client",
+      "provider": "Service Provider"
+    },
+    "service": {
+      "title": "2. Service Details",
+      "category": "Service category",
+      "address": "Service address",
+      "description": "Service description",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "notes": "Additional notes"
+    },
+    "payment": {
+      "title": "3. Economic Conditions",
+      "totalAmount": "Total amount",
+      "workerAmount": "Worker amount",
+      "platformFee": "Platform fee"
+    },
+    "activation": {
+      "title": "⚠️ Pending Activation",
+      "message": "This contract requires activation by the worker.",
+      "pin": "Activation PIN"
+    },
+    "errors": {
+      "notFound": "Contract not found",
+      "loadError": "Error loading contract"
+    }
   },
-  "activation": {
-    "title": "⚠️ Pending Activation",
-    "message": "This contract requires activation by the worker.",
-    "pin": "Activation PIN"
+  "MoreDetails": {
+    "moreDetailsTitle": "Chambing: Your Trusted Platform for Freelance Domestic Services in El Salvador",
+    "moreDetailsDescription": "Chambing connects individuals with verified freelance professionals for a wide range of domestic services in El Salvador. Whether you need expert cleaning, reliable plumbing, professional gardening, or other home services, find skilled workers quickly and securely. Empowering independent workers and simplifying your daily life.",
+    "moreDetailsKeywords": "domestic services El Salvador, freelance services, home services, cleaning, plumbing, gardening, independent workers, local services, find professionals, hire services, El Salvador jobs"
   },
-  "errors": {
-    "notFound": "Contract not found",
-    "loadError": "Error loading contract"
-  }
-},
-"MoreDetails": {
-        "moreDetailsTitle": "Chambing: Your Trusted Platform for Freelance Domestic Services in El Salvador",
-        "moreDetailsDescription": "Chambing connects individuals with verified freelance professionals for a wide range of domestic services in El Salvador. Whether you need expert cleaning, reliable plumbing, professional gardening, or other home services, find skilled workers quickly and securely. Empowering independent workers and simplifying your daily life.",
-        "moreDetailsKeywords": "domestic services El Salvador, freelance services, home services, cleaning, plumbing, gardening, independent workers, local services, find professionals, hire services, El Salvador jobs"
-      },
   "workerCalendar": {
     "loading": "Loading availability...",
     "notConfigured": "This worker currently has no configured availability",

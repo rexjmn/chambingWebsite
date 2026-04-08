@@ -425,13 +425,44 @@
       }
     },
     "testimonials": {
+      "badge": "Testimonios",
       "title": "Lo que dicen nuestros usuarios",
       "subtitle": "Historias reales de nuestros usuarios"
     },
     "cta": {
       "title": "¿Listo para comenzar?",
       "subtitle": "Únete a miles de usuarios satisfechos en El Salvador",
-      "createAccount": "Crear Cuenta Gratis"
+      "createAccount": "Crear Cuenta Gratis",
+      "familyTitle": "Busco un profesional",
+      "familyDesc": "Encuentra el experto que necesitas para tu hogar, verificado y con buenas calificaciones.",
+      "workerTitle": "Ofrezco mis servicios",
+      "workerDesc": "Regístrate gratis y accede a clientes en toda tu zona. Más ingresos, más libertad.",
+      "findProfessional": "Buscar ahora"
+    },
+    "about": {
+      "badge": "Sobre Chambing",
+      "value1": "Solo profesionales verificados y calificados",
+      "value2": "Calificación promedio de 4.8 / 5 en todos los servicios",
+      "value3": "Respuesta rápida — profesionales responden en menos de 24h",
+      "trustSub": "La plataforma #1 de servicios en El Salvador",
+      "verified": "Perfiles 100% verificados y pagos seguros"
+    },
+    "howItWorks": {
+      "badge": "Cómo funciona",
+      "title": "Simple, rápido y confiable",
+      "subtitle": "Encuentra el profesional ideal en minutos, sin complicaciones.",
+      "step1": {
+        "title": "Describe lo que necesitas",
+        "desc": "Busca el servicio, indica tu ubicación y cuándo lo necesitas. Menos de un minuto."
+      },
+      "step2": {
+        "title": "Elige tu profesional",
+        "desc": "Compara perfiles verificados, calificaciones y precios. Sin sorpresas."
+      },
+      "step3": {
+        "title": "Trabajo hecho",
+        "desc": "El profesional llega, realiza el trabajo y tú calificas la experiencia."
+      }
     }
   },
   "dashboard": {
@@ -600,7 +631,7 @@
     "carlos": "Resolvieron mi problema de plomería rápidamente.",
     "ana": "Muy contentos con el trabajo de jardinería realizado."
   },
-   "publicProfile": {
+  "publicProfile": {
     "loading": "Cargando perfil...",
     "notFound": "Perfil no encontrado",
     "reviews": "reseñas",
@@ -829,8 +860,8 @@
     }
   },
   "MoreDetails": {
-        "moreDetailsTitle": "Chambing: Tu Plataforma de Confianza para Servicios Domésticos Freelance en El Salvador",
-        "moreDetailsDescription": "Chambing conecta a particulares con profesionales freelance verificados para una amplia gama de servicios domésticos en El Salvador. Ya sea que necesites limpieza experta, fontanería fiable, jardinería profesional u otros servicios para el hogar, encuentra trabajadores cualificados de forma rápida y segura. Empoderando a los trabajadores independientes y simplificando tu vida diaria.",
-        "moreDetailsKeywords": "servicios domésticos El Salvador, servicios freelance, servicios a domicilio, limpieza, fontanería, jardinería, trabajadores independientes, servicios locales, encontrar profesionales, contratar servicios, empleos El Salvador"
-      }
+    "moreDetailsTitle": "Chambing: Tu Plataforma de Confianza para Servicios Domésticos Freelance en El Salvador",
+    "moreDetailsDescription": "Chambing conecta a particulares con profesionales freelance verificados para una amplia gama de servicios domésticos en El Salvador. Ya sea que necesites limpieza experta, fontanería fiable, jardinería profesional u otros servicios para el hogar, encuentra trabajadores cualificados de forma rápida y segura. Empoderando a los trabajadores independientes y simplificando tu vida diaria.",
+    "moreDetailsKeywords": "servicios domésticos El Salvador, servicios freelance, servicios a domicilio, limpieza, fontanería, jardinería, trabajadores independientes, servicios locales, encontrar profesionales, contratar servicios, empleos El Salvador"
+  }
 }

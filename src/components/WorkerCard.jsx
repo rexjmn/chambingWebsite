@@ -1,281 +1,221 @@
 // src/components/WorkerCard.jsx
-
-import React, { useEffect, useState, memo } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Star, MapPin, Briefcase, MessageCircle, BadgeCheck } from 'lucide-react';
 import { serviceService } from '../services/serviceService';
 import { logger } from '../utils/logger';
 import '../styles/components/WorkerCard.scss';
 
-/**
- * ✅ Memoized Worker Card Component
- * Optimizado para prevenir re-renders innecesarios en listas grandes
- * Solo se re-renderiza si worker.id cambia
- */
+/* ─── Render star rating ─────────────────────────────────────── */
+const StarRating = ({ value = 0 }) => (
+  <div className="wcard-stars" aria-label={`${value.toFixed(1)} de 5 estrellas`}>
+    {Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        size={13}
+        strokeWidth={2}
+        fill={i < Math.floor(value) ? 'currentColor' : 'none'}
+        style={{ opacity: i < Math.floor(value) ? 1 : 0.28 }}
+      />
+    ))}
+  </div>
+);
+
+/* ════════════════════════════════════════════════════════════════
+   WORKER CARD
+════════════════════════════════════════════════════════════════ */
 const WorkerCard = memo(({ worker }) => {
-  const [tarifas, setTarifas] = useState(null);
+  const [tarifas, setTarifas]           = useState(null);
   const [loadingTarifas, setLoadingTarifas] = useState(true);
 
-  // 💰 Cargar tarifas al montar
   useEffect(() => {
     const fetchTarifas = async () => {
-      if (!worker?.id) {
-        setLoadingTarifas(false);
-        return;
-      }
-
+      if (!worker?.id) { setLoadingTarifas(false); return; }
       try {
-        const tarifasData = await serviceService.getTarifasByWorker(worker.id);
-        setTarifas(tarifasData);
-      } catch (error) {
-        logger.error('Error cargando tarifas:', error);
-        setTarifas(null);
+        const data = await serviceService.getTarifasByWorker(worker.id);
+        setTarifas(data);
+      } catch (err) {
+        logger.error('Error cargando tarifas:', err);
       } finally {
         setLoadingTarifas(false);
       }
     };
-
     fetchTarifas();
   }, [worker?.id]);
 
-  // Stats
-  const rating = worker?.stats?.rating || worker?.rating || 0;
-  const reviewCount = worker?.stats?.total_reviews || worker?.reviewCount || 0;
-  const jobsCompleted = worker?.stats?.trabajos_completados || worker?.jobsCompleted || 0;
+  /* ── helpers ─────────────────────────────────────────────── */
+  const rating        = worker?.stats?.rating               || worker?.rating       || 0;
+  const reviewCount   = worker?.stats?.total_reviews        || worker?.reviewCount  || 0;
+  const jobsCompleted = worker?.stats?.trabajos_completados || worker?.jobsCompleted|| 0;
 
-  // 🎯 FUNCIÓN SEGURA para obtener el título
-  const getWorkerTitle = () => {
-    if (worker?.titulo_profesional && typeof worker.titulo_profesional === 'string') {
+  const getTitle = () => {
+    if (worker?.titulo_profesional && typeof worker.titulo_profesional === 'string')
       return worker.titulo_profesional;
-    }
-
-    if (worker?.titulo && typeof worker.titulo === 'string') {
+    if (worker?.titulo && typeof worker.titulo === 'string')
       return worker.titulo;
-    }
-
     if (Array.isArray(worker?.categorias) && worker.categorias.length > 0) {
-      const firstCategory = worker.categorias[0];
-
-      if (typeof firstCategory === 'object' && firstCategory !== null) {
-        return firstCategory.nombre || firstCategory.categoria || 'Profesional';
-      }
-
-      if (typeof firstCategory === 'string') {
-        return firstCategory;
-      }
+      const c = worker.categorias[0];
+      if (typeof c === 'object' && c) return c.nombre || c.categoria || 'Profesional';
+      if (typeof c === 'string')     return c;
     }
-
     if (Array.isArray(worker?.habilidades) && worker.habilidades.length > 0) {
-      const firstSkill = worker.habilidades[0];
-
-      if (typeof firstSkill === 'string') {
-        return firstSkill;
-      }
-
-      if (typeof firstSkill === 'object' && firstSkill !== null) {
-        return firstSkill.nombre || 'Profesional';
-      }
+      const h = worker.habilidades[0];
+      if (typeof h === 'string')     return h;
+      if (typeof h === 'object' && h) return h.nombre || 'Profesional';
     }
-
     return 'Profesional de servicios';
   };
 
-  // Renderizar estrellas
-  const renderStars = (rating) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <span 
-        key={i} 
-        className={`star ${i < Math.floor(rating) ? 'filled' : 'empty'}`}
-      >
-        ★
-      </span>
-    ));
-  };
-
-  // 💰 Formatear precio
   const formatPrice = (amount) => {
     if (!amount && amount !== 0) return null;
-
-    const currency = tarifas?.moneda || 'USD';
-
     try {
       return new Intl.NumberFormat('es-SV', {
-        style: 'currency',
-        currency: currency,
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        style: 'currency', currency: tarifas?.moneda || 'USD',
+        minimumFractionDigits: 2, maximumFractionDigits: 2,
       }).format(amount);
-    } catch (error) {
+    } catch {
       return `$${Number(amount).toFixed(2)}`;
     }
   };
 
-  // 🎯 Obtener tarifa más relevante
-  const getMostRelevantRate = () => {
-    if (!tarifas || !tarifas.activo) return null;
-
+  const getMainRate = () => {
+    if (!tarifas?.activo) return null;
     const rates = [
-      { amount: tarifas.tarifa_hora, period: '/hora', priority: 1 },
-      { amount: tarifas.tarifa_dia, period: '/día', priority: 2 },
-      { amount: tarifas.tarifa_semana, period: '/semana', priority: 3 },
-      { amount: tarifas.tarifa_mes, period: '/mes', priority: 4 }
+      { amount: tarifas.tarifa_hora,   period: '/hr',  priority: 1 },
+      { amount: tarifas.tarifa_dia,    period: '/día',  priority: 2 },
+      { amount: tarifas.tarifa_semana, period: '/sem',  priority: 3 },
+      { amount: tarifas.tarifa_mes,    period: '/mes',  priority: 4 },
     ];
-
-    const validRate = rates.find(r => r.amount && Number(r.amount) > 0);
-
-    return validRate ? { 
-      amount: Number(validRate.amount), 
-      period: validRate.period 
-    } : null;
+    const valid = rates.find(r => r.amount && Number(r.amount) > 0);
+    return valid ? { amount: Number(valid.amount), period: valid.period } : null;
   };
 
-  const mainRate = getMostRelevantRate();
+  const mainRate = getMainRate();
 
-  // Truncar texto largo
-  const truncateText = (text, maxLength = 80) => {
+  const truncate = (text, max = 78) => {
     if (!text || typeof text !== 'string') return 'Sin descripción disponible';
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+    return text.length <= max ? text : text.substring(0, max) + '…';
   };
 
-  // 🛡️ Guard clause - Validar que worker existe y tiene ID
-  if (!worker || !worker.id) {
-    logger.error('Worker sin ID:', worker);
-    return <div className="worker-card-error">Trabajador no disponible</div>;
+  /* ── guard ───────────────────────────────────────────────── */
+  if (!worker?.id) {
+    logger.error('WorkerCard sin ID:', worker);
+    return null;
   }
 
-  // 🔍 DEBUG: Ver el ID antes de renderizar
-  logger.debug('Rendering WorkerCard for ID:', worker.id);
+  logger.debug('Rendering WorkerCard:', worker.id);
 
   return (
-    <Link 
-      to={`/profile/${worker.id}`}  // ✅ Solo el ID (string UUID)
-      className="worker-card-link"
-      style={{ textDecoration: 'none', color: 'inherit' }}
-    >
-      <div className="worker-card">
-        {/* Imagen de portada */}
-        <div className="worker-card-cover">
+    <Link to={`/profile/${worker.id}`} className="worker-card-link">
+      <article className="worker-card">
+
+        {/* ── Cover ──────────────────────────────────────────── */}
+        <div className="wcard-cover">
           <img
             src={worker.foto_portada || '/default-cover.jpg'}
-            alt={`Portada de ${worker.nombre || 'trabajador'}`}
+            alt=""
+            aria-hidden="true"
             onError={(e) => { e.target.src = '/default-cover.jpg'; }}
           />
+          <div className="wcard-cover-gradient" aria-hidden="true" />
+
           {worker.verificado && (
-            <div className="verified-badge" title="Perfil Verificado">
-              <span>✓</span>
-            </div>
+            <span className="wcard-verified" title="Perfil Verificado" aria-label="Verificado">
+              <BadgeCheck size={14} strokeWidth={2.5} />
+              Verificado
+            </span>
           )}
-        </div>
 
-        {/* Contenido principal */}
-        <div className="worker-card-content">
-          {/* Avatar */}
-          <div className="worker-avatar-wrapper">
-            <img
-              className="worker-avatar"
-              src={worker.foto_perfil || '/default-avatar.jpg'}
-              alt={`${worker.nombre || ''} ${worker.apellido || ''}`}
-              loading="lazy"
-              onError={(e) => { e.target.src = '/default-avatar.jpg'; }}
-            />
-          </div>
-
-          {/* Info básica */}
-          <div className="worker-info">
-            <h3 className="worker-name">
-              {worker.nombre || 'Nombre'} {worker.apellido || 'Apellido'}
-            </h3>
-
-            <p className="worker-title">
-              {getWorkerTitle()}
-            </p>
-
-            {/* 💰 TARIFA PRINCIPAL */}
-            {!loadingTarifas && mainRate && (
-              <div className="price-tag">
-                <span className="price-amount">{formatPrice(mainRate.amount)}</span>
-                <span className="price-period">{mainRate.period}</span>
-                {tarifas?.negociable && (
-                  <span className="price-negotiable" title="Precio negociable">
-                    💬
-                  </span>
-                )}
-              </div>
-            )}
-
-            {loadingTarifas && (
-              <div className="price-tag skeleton">
-                <span className="skeleton-text"></span>
-              </div>
-            )}
-
-            {/* Ubicación */}
-            <p className="worker-location">
-              📍 {worker.municipio || 'Ubicación'}, {worker.departamento || 'Departamento'}
-            </p>
-
-            {/* Descripción */}
-            <p className="worker-description">
-              {truncateText(worker.biografia)}
-            </p>
-
-            {/* Rating y stats */}
-            <div className="worker-stats">
-              <div className="rating-section">
-                <div className="stars">{renderStars(rating)}</div>
-                <span className="rating-value">{rating.toFixed(1)}</span>
-                <span className="review-count">({reviewCount})</span>
-              </div>
-
-              {jobsCompleted > 0 && (
-                <>
-                  <span className="separator">•</span>
-                  <div className="jobs-info">
-                    <span className="jobs-count">{jobsCompleted} trabajos</span>
-                  </div>
-                </>
+          {/* Price badge floated on cover */}
+          {!loadingTarifas && mainRate && (
+            <div className="wcard-price-badge">
+              <span className="wcard-price-amount">{formatPrice(mainRate.amount)}</span>
+              <span className="wcard-price-period">{mainRate.period}</span>
+              {tarifas?.negociable && (
+                <MessageCircle size={12} strokeWidth={2} className="wcard-price-neg" aria-label="Negociable" />
               )}
             </div>
-          </div>
+          )}
+          {loadingTarifas && <div className="wcard-price-skeleton" aria-hidden="true" />}
         </div>
 
-        {/* Hover overlay */}
-        <div className="card-hover-overlay">
-          <button className="view-profile-btn" type="button">
-            Ver Perfil Completo
-          </button>
+        {/* ── Avatar ─────────────────────────────────────────── */}
+        <div className="wcard-avatar-wrap">
+          <img
+            className="wcard-avatar"
+            src={worker.foto_perfil || '/default-avatar.jpg'}
+            alt={`${worker.nombre || ''} ${worker.apellido || ''}`}
+            loading="lazy"
+            onError={(e) => { e.target.src = '/default-avatar.jpg'; }}
+          />
         </div>
-      </div>
+
+        {/* ── Body ───────────────────────────────────────────── */}
+        <div className="wcard-body">
+          <h3 className="wcard-name">
+            {worker.nombre || 'Nombre'} {worker.apellido || 'Apellido'}
+          </h3>
+
+          <p className="wcard-title">{getTitle()}</p>
+
+          <p className="wcard-desc">{truncate(worker.biografia)}</p>
+
+          <p className="wcard-location">
+            <MapPin size={13} strokeWidth={2} aria-hidden="true" />
+            {worker.municipio || 'Ubicación'}, {worker.departamento || 'Departamento'}
+          </p>
+        </div>
+
+        {/* ── Footer stats ───────────────────────────────────── */}
+        <footer className="wcard-footer">
+          <div className="wcard-rating">
+            <StarRating value={rating} />
+            <span className="wcard-rating-val">{rating.toFixed(1)}</span>
+            <span className="wcard-rating-count">({reviewCount})</span>
+          </div>
+
+          {jobsCompleted > 0 && (
+            <div className="wcard-jobs">
+              <Briefcase size={12} strokeWidth={2} aria-hidden="true" />
+              <span>{jobsCompleted} trabajos</span>
+            </div>
+          )}
+        </footer>
+
+        {/* ── Hover CTA strip ────────────────────────────────── */}
+        <div className="wcard-cta" aria-hidden="true">
+          <span>Ver perfil completo</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+
+      </article>
     </Link>
   );
-}, (prevProps, nextProps) => {
-  // Custom comparison: only re-render if worker.id changes
-  // This prevents unnecessary re-renders when parent components update
-  return prevProps.worker.id === nextProps.worker.id;
-});
+}, (prev, next) => prev.worker.id === next.worker.id);
 
 WorkerCard.displayName = 'WorkerCard';
 
 WorkerCard.propTypes = {
   worker: PropTypes.shape({
-    id: PropTypes.string.isRequired, // ✅ REQUERIDO
-    nombre: PropTypes.string,
-    apellido: PropTypes.string,
-    foto_perfil: PropTypes.string,
-    foto_portada: PropTypes.string,
-    verificado: PropTypes.bool,
-    biografia: PropTypes.string,
-    titulo_profesional: PropTypes.string,
-    titulo: PropTypes.string,
-    departamento: PropTypes.string,
-    municipio: PropTypes.string,
-    tarifas: PropTypes.object,
-    stats: PropTypes.object,
-    habilidades: PropTypes.array,
-    categorias: PropTypes.array
-  }).isRequired
-  // ❌ Ya no necesitas onCardClick en PropTypes
+    id:                  PropTypes.string.isRequired,
+    nombre:              PropTypes.string,
+    apellido:            PropTypes.string,
+    foto_perfil:         PropTypes.string,
+    foto_portada:        PropTypes.string,
+    verificado:          PropTypes.bool,
+    biografia:           PropTypes.string,
+    titulo_profesional:  PropTypes.string,
+    titulo:              PropTypes.string,
+    departamento:        PropTypes.string,
+    municipio:           PropTypes.string,
+    tarifas:             PropTypes.object,
+    stats:               PropTypes.object,
+    habilidades:         PropTypes.array,
+    categorias:          PropTypes.array,
+  }).isRequired,
 };
 
 export default WorkerCard;
