@@ -24,25 +24,26 @@ import { serviceService } from '../services/serviceService';
 import { workerService } from '../services/workerService';
 import { logger } from '../utils/logger';
 import heroManImage from '../assets/images/heroman.png';
-// Gallery images — Column A (9)
-import imgWorker1  from '../assets/images/ehmitrich-fW6lwDM26o0-unsplash.jpg';
-import imgCreative from '../assets/images/ona-creative-z4S0MYNYT08-unsplash.jpg';
-import imgOutdoor1 from '../assets/images/vitaly-gariev-0rhc6d7o6T8-unsplash.jpg';
-import imgAlina    from '../assets/images/alina-belogolova-4SREHF03pn8-unsplash.jpg';
-import imgCarl     from '../assets/images/carl-campbell-ISO_zsPYWw8-unsplash.jpg';
-import imgDavid    from '../assets/images/david-suarez-Q_pPfSLqz4o-unsplash.jpg';
-import imgHector   from '../assets/images/hector-emilio-gonzalez--SYOWCWxH3Q-unsplash.jpg';
-import imgMaria    from '../assets/images/maria-ziegler-1AmEImwtnFk-unsplash.jpg';
-import imgMathias  from '../assets/images/mathias-reding-pRPiZT3zfUQ-unsplash.jpg';
-// Gallery images — Column B (8)
-import imgService1 from '../assets/images/jimmy-nilsson-masth-UovTD1dG-lA-unsplash.jpg';
-import imgWorker2  from '../assets/images/shishu-yadava-Hu_6KP4m9xA-unsplash.jpg';
-import imgOutdoor2 from '../assets/images/vitaly-gariev-QEXRd41FjZw-unsplash.jpg';
-import imgMichael  from '../assets/images/michael-kahn-xWAsrLw_1hk-unsplash.jpg';
-import imgMilin    from '../assets/images/milin-john-eROpOENKzUw-unsplash.jpg';
-import imgMitchell from '../assets/images/mitchell-luo-TtX79Vkm8gs-unsplash.jpg';
-import imgRoberto  from '../assets/images/roberto-nickson-b9dmHiTXkLk-unsplash.jpg';
-import imgSaemi    from '../assets/images/saemi-kim-4hcTkOw-EKE-unsplash.jpg';
+// Gallery images — optimized versions (336px wide, ~10-50KB each vs original 1-7MB)
+// Col A (9)
+import imgWorker1  from '../assets/images/gallery/ehmitrich-fW6lwDM26o0-unsplash.jpg';
+import imgCreative from '../assets/images/gallery/ona-creative-z4S0MYNYT08-unsplash.jpg';
+import imgOutdoor1 from '../assets/images/gallery/vitaly-gariev-0rhc6d7o6T8-unsplash.jpg';
+import imgAlina    from '../assets/images/gallery/alina-belogolova-4SREHF03pn8-unsplash.jpg';
+import imgCarl     from '../assets/images/gallery/carl-campbell-ISO_zsPYWw8-unsplash.jpg';
+import imgDavid    from '../assets/images/gallery/david-suarez-Q_pPfSLqz4o-unsplash.jpg';
+import imgHector   from '../assets/images/gallery/hector-emilio-gonzalez--SYOWCWxH3Q-unsplash.jpg';
+import imgMaria    from '../assets/images/gallery/maria-ziegler-1AmEImwtnFk-unsplash.jpg';
+import imgMathias  from '../assets/images/gallery/mathias-reding-pRPiZT3zfUQ-unsplash.jpg';
+// Col B (8)
+import imgService1 from '../assets/images/gallery/jimmy-nilsson-masth-UovTD1dG-lA-unsplash.jpg';
+import imgWorker2  from '../assets/images/gallery/shishu-yadava-Hu_6KP4m9xA-unsplash.jpg';
+import imgOutdoor2 from '../assets/images/gallery/vitaly-gariev-QEXRd41FjZw-unsplash.jpg';
+import imgMichael  from '../assets/images/gallery/michael-kahn-xWAsrLw_1hk-unsplash.jpg';
+import imgMilin    from '../assets/images/gallery/milin-john-eROpOENKzUw-unsplash.jpg';
+import imgMitchell from '../assets/images/gallery/mitchell-luo-TtX79Vkm8gs-unsplash.jpg';
+import imgRoberto  from '../assets/images/gallery/roberto-nickson-b9dmHiTXkLk-unsplash.jpg';
+import imgSaemi    from '../assets/images/gallery/saemi-kim-4hcTkOw-EKE-unsplash.jpg';
 import '../styles/home.scss';
 import '../styles/button.scss';
 
@@ -261,7 +262,7 @@ const Home = () => {
                 src={heroManImage}
                 alt="Profesional de servicios del hogar"
                 className="hero-image"
-                fetchpriority="high"
+                fetchPriority="high"
                 decoding="async"
               />
               <div className="hero-image-glow" aria-hidden="true" />
@@ -273,59 +274,6 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Search bar — keeps original position */}
-          <div className="hero-search-section">
-            <div className="hero-search-container">
-              <form onSubmit={handleSearch} role="search" aria-label={t('home.search.placeholder')}>
-                <SearchInput
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={isMobile ? t('home.search.placeholder') : t('home.search.placeholderLong')}
-                  onSubmit={handleSearch}
-                  fullWidth
-                  className="hero-search-input"
-                  startIcon={<Search className="search-icon" />}
-                  endButton={!isMobile && (
-                    <button
-                      type="submit"
-                      className="custom-btn custom-btn-primary search-btn"
-                      disabled={!searchQuery.trim()}
-                    >
-                      {t('home.search.searchNow')}
-                    </button>
-                  )}
-                />
-                {isMobile && (
-                  <button
-                    type="submit"
-                    className="custom-btn custom-btn-primary custom-btn-fullwidth search-btn-mobile"
-                    disabled={!searchQuery.trim()}
-                  >
-                    {t('home.search.searchNow')}
-                  </button>
-                )}
-              </form>
-
-              <div className="popular-searches">
-                <div className="popular-searches-header">
-                  <span className="popular-label">{t('home.search.mostRequested')}</span>
-                  <span className="popular-stats">{t('home.search.servicesCompleted')}</span>
-                </div>
-                <div className="popular-tags">
-                  {SEARCH_TAGS.map((tag, i) => (
-                    <Chip
-                      key={i}
-                      label={t(tag.labelKey)}
-                      size="medium"
-                      className="popular-tag"
-                      variant={tag.variant}
-                      onClick={() => setSearchQuery(tag.query)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -376,21 +324,21 @@ const Home = () => {
             <div className="about-visual" aria-hidden="true">
               <div className="gallery-frame">
                 <div className="gallery-viewport">
-                  {/* Column A — 9 images duplicated for infinite loop */}
+                  {/* Column A — 9 images × 2 for seamless loop */}
                   <div className="gallery-col gallery-col--a">
                     {(() => {
                       const colA = [imgWorker1, imgCreative, imgOutdoor1, imgAlina, imgCarl, imgDavid, imgHector, imgMaria, imgMathias];
                       return [...colA, ...colA].map((src, i) => (
-                        <img key={i} src={src} alt="" className="gallery-img" loading={i < 9 ? 'eager' : 'lazy'} decoding="async" />
+                        <img key={i} src={src} alt="" className="gallery-img" loading="lazy" fetchPriority="low" decoding="async" />
                       ));
                     })()}
                   </div>
-                  {/* Column B — 8 images duplicated for infinite loop */}
+                  {/* Column B — 8 images × 2 for seamless loop */}
                   <div className="gallery-col gallery-col--b">
                     {(() => {
                       const colB = [imgService1, imgWorker2, imgOutdoor2, imgMichael, imgMilin, imgMitchell, imgRoberto, imgSaemi];
                       return [...colB, ...colB].map((src, i) => (
-                        <img key={i} src={src} alt="" className="gallery-img" loading={i < 8 ? 'eager' : 'lazy'} decoding="async" />
+                        <img key={i} src={src} alt="" className="gallery-img" loading="lazy" fetchPriority="low" decoding="async" />
                       ));
                     })()}
                   </div>

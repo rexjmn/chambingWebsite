@@ -25,6 +25,7 @@ import {
 import Cropper from 'react-easy-crop';
 import { useAuth } from '../context/AuthContext';
 import { logger } from '../utils/logger';
+import api from '../services/api';
 
 const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
   const { user, updateUser } = useAuth();
@@ -136,31 +137,13 @@ const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
       const formData = new FormData();
       formData.append('file', croppedBlob, selectedFile.name);
 
-      const token = localStorage.getItem('token');
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/users/profile-photo`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+      const { data: result } = await api.post('/users/profile-photo', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al subir la foto');
-      }
-
-      const result = await response.json();
-      
       // Actualizar el usuario en el contexto
       if (updateUser) {
-        updateUser({
-          ...user,
-          foto_perfil: result.data.foto_perfil
-        });
+        updateUser({ ...user, foto_perfil: result.data.foto_perfil });
       }
 
       // Llamar callback si existe
@@ -173,7 +156,7 @@ const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
       
     } catch (error) {
       logger.error('Error uploading photo:', error);
-      setError(error.message || 'Error al subir la foto');
+      setError(error.response?.data?.message || error.message || 'Error al subir la foto');
     } finally {
       setUploading(false);
     }

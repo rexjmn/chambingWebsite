@@ -14,6 +14,32 @@ body {
   background-color: $light-color;
 }
 
+// ── Forzar light mode en todos los MUI Dialogs ───────────────────────────
+// Evita que el dark-mode del navegador altere los popups
+.MuiDialog-paper,
+.MuiDialog-paper * {
+  color-scheme: light !important;
+}
+
+.MuiDialog-paper {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.MuiDialogTitle-root {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.MuiDialogContent-root {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.MuiDialogActions-root {
+  background-color: #ffffff !important;
+}
+
 // Estilos personalizados para complementar MUI
 .custom-container {
   max-width: 1200px;

@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button,
-  Stack,
   Snackbar,
   Alert
 } from '@mui/material';
-import MuiEditIcon from '@mui/icons-material/Edit'; // ✅ Renombrar para evitar conflicto
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { useNavigate } from 'react-router-dom';
 import { useTranslations } from '../hooks/useTranslations';
 import { useAuth } from '../context/AuthContext';
@@ -21,7 +16,8 @@ import { logger } from '../utils/logger';
 import '../styles/dashboard.scss';
 import '../styles/components/SkeletonLoader.scss';
 
-// Iconos SVG (mantener los que uses en otras partes)
+// ── Icons ────────────────────────────────────────────────────────────────────
+
 const RefreshIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -66,7 +62,8 @@ const PaymentIcon = () => (
 
 const CameraIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
   </svg>
 );
 
@@ -76,10 +73,104 @@ const WallpaperIcon = () => (
   </svg>
 );
 
+const EditIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+  </svg>
+);
+
+const EyeIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  </svg>
+);
+
+const CalendarIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  </svg>
+);
+
+const ArrowRightIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+  </svg>
+);
+
+// ── Category icons ────────────────────────────────────────────────────────────
+
+const CATEGORY_ICONS = {
+  domesticCleaning: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+  ),
+  plumbing: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+    </svg>
+  ),
+  electricity: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+    </svg>
+  ),
+  gardening: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+    </svg>
+  ),
+  carpentry: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+    </svg>
+  ),
+  construction: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+    </svg>
+  ),
+};
+
+const DefaultCategoryIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+);
+
+const CATEGORY_COLORS = {
+  domesticCleaning: 'blue',
+  plumbing: 'cyan',
+  electricity: 'amber',
+  gardening: 'green',
+  carpentry: 'orange',
+  construction: 'slate',
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const getGreeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return 'Buenos días';
+  if (h < 18) return 'Buenas tardes';
+  return 'Buenas noches';
+};
+
+const formatDateLong = () =>
+  new Date().toLocaleDateString('es-ES', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { t, translateService, translateUserType, common } = useTranslations();
+  const { t, translateService, translateUserType } = useTranslations();
   const [categories, setCategories] = useState([]);
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -100,8 +191,8 @@ const Dashboard = () => {
         const minLoadingTime = new Promise(resolve => setTimeout(resolve, 500));
 
         const dataPromises = Promise.all([
-          serviceService.getCategorias().catch(error => {
-            logger.error('Error cargando categorías:', error);
+          serviceService.getCategorias().catch(err => {
+            logger.error('Error cargando categorías:', err);
             return [
               { id: 1, nombre: 'domesticCleaning', descripcion: 'Servicio de limpieza' },
               { id: 2, nombre: 'plumbing', descripcion: 'Reparaciones' },
@@ -111,10 +202,10 @@ const Dashboard = () => {
               { id: 6, nombre: 'construction', descripcion: 'Obras' },
             ];
           }),
-          contractService.getMyContracts().catch(error => {
-            logger.error('Error cargando contratos:', error);
+          contractService.getMyContracts().catch(err => {
+            logger.error('Error cargando contratos:', err);
             return { status: 'success', data: [] };
-          })
+          }),
         ]);
 
         const [results] = await Promise.all([dataPromises, minLoadingTime]);
@@ -129,8 +220,8 @@ const Dashboard = () => {
         } else {
           setContracts([]);
         }
-      } catch (error) {
-        logger.error('Error general:', error);
+      } catch (err) {
+        logger.error('Error general:', err);
         setError('Error al cargar los datos del dashboard');
       } finally {
         setLoading(false);
@@ -141,9 +232,7 @@ const Dashboard = () => {
     loadDashboardData();
   }, [refreshKey]);
 
-  const handleViewWorkers = (categoryId) => {
-    navigate(`/workers?category=${categoryId}`);
-  };
+  const handleViewWorkers = (categoryId) => navigate(`/workers?category=${categoryId}`);
 
   const handleActivateContract = (contract) => {
     setSelectedContract(contract);
@@ -152,56 +241,34 @@ const Dashboard = () => {
 
   const handlePinSubmit = async (pin) => {
     if (!selectedContract) return;
-
     try {
       const response = await contractService.activarContratoConPIN(
         selectedContract.codigo_contrato,
         pin
       );
-
       if (response.status === 'success') {
-        setSnackbar({
-          open: true,
-          message: t('dashboard.contract.activated'),
-          severity: 'success'
-        });
+        setSnackbar({ open: true, message: t('dashboard.contract.activated'), severity: 'success' });
         setPinModalOpen(false);
         setSelectedContract(null);
-        // Trigger re-fetch instead of page reload
         setRefreshKey(prev => prev + 1);
       }
-    } catch (error) {
+    } catch (err) {
       setSnackbar({
         open: true,
-        message: t('dashboard.contract.activationError') + ': ' + (error.response?.data?.message || error.message),
-        severity: 'error'
+        message: t('dashboard.contract.activationError') + ': ' + (err.response?.data?.message || err.message),
+        severity: 'error',
       });
     }
   };
 
-  const handleMenuToggle = () => {
-    setMenuOpen(!menuOpen);
-  };
-
-  const handleMenuClose = () => {
-    setMenuOpen(false);
-  };
-
-  const handleLogout = async () => {
-    await logout();
-    handleMenuClose();
-  };
-
-  const handleRefresh = () => {
-    setRefreshKey(prev => prev + 1);
-  };
+  const handleMenuToggle = () => setMenuOpen(v => !v);
+  const handleMenuClose = () => setMenuOpen(false);
+  const handleLogout = async () => { await logout(); handleMenuClose(); };
+  const handleRefresh = () => setRefreshKey(prev => prev + 1);
 
   const formatDate = (dateString) => {
-    try {
-      return new Date(dateString).toLocaleDateString();
-    } catch {
-      return dateString;
-    }
+    try { return new Date(dateString).toLocaleDateString(); }
+    catch { return dateString; }
   };
 
   const renderProfileAvatar = () => {
@@ -211,13 +278,10 @@ const Dashboard = () => {
           src={user.foto_perfil}
           alt={`Foto de perfil de ${user.nombre}`}
           className="dashboard__avatar"
-          onError={(e) => {
-            e.target.style.display = 'none';
-          }}
+          onError={(e) => { e.target.style.display = 'none'; }}
         />
       );
     }
-
     return (
       <div className="dashboard__avatar dashboard__avatar--placeholder" aria-label="Avatar por defecto">
         {user?.nombre?.charAt(0) || '?'}
@@ -225,18 +289,19 @@ const Dashboard = () => {
     );
   };
 
-  if (loading) {
-    return <DashboardSkeleton />;
-  }
+  if (loading) return <DashboardSkeleton />;
 
   return (
     <div className="dashboard">
-      {/* Header/AppBar */}
+
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <header className="dashboard__header" role="banner">
         <div className="dashboard__header-toolbar">
-          <h1 className="dashboard__header-title">
-            {t('nav.dashboard')} - ChambingApp
-          </h1>
+
+          <div className="dashboard__header-brand">
+            <div className="dashboard__header-logo">C</div>
+            <h1 className="dashboard__header-title">Chambing</h1>
+          </div>
 
           <nav className="dashboard__header-actions" role="navigation" aria-label="Navegación principal">
             {(user?.tipo_usuario === 'admin' || user?.tipo_usuario === 'super_admin') && (
@@ -283,12 +348,7 @@ const Dashboard = () => {
                 <img
                   src={user.foto_perfil}
                   alt=""
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    objectFit: 'cover'
-                  }}
+                  style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
                 />
               ) : (
                 <AccountCircleIcon />
@@ -302,31 +362,14 @@ const Dashboard = () => {
                 className="dashboard__menu-overlay"
                 onClick={handleMenuClose}
                 aria-hidden="true"
-                style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  zIndex: 999
-                }}
+                style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999 }}
               />
               <div className="dashboard__menu" role="menu">
-                <button
-                  className="dashboard__menu-item"
-                  onClick={handleMenuClose}
-                  role="menuitem"
-                  type="button"
-                >
+                <button className="dashboard__menu-item" onClick={handleMenuClose} role="menuitem" type="button">
                   <AccountCircleIcon />
                   {t('nav.profile')}
                 </button>
-                <button
-                  className="dashboard__menu-item"
-                  onClick={handleLogout}
-                  role="menuitem"
-                  type="button"
-                >
+                <button className="dashboard__menu-item" onClick={handleLogout} role="menuitem" type="button">
                   <LogoutIcon />
                   {t('nav.logout')}
                 </button>
@@ -337,13 +380,23 @@ const Dashboard = () => {
       </header>
 
       <main className="dashboard__container">
-        {/* Sección de Perfil con Foto de Portada */}
+
+        {/* ── Greeting banner ─────────────────────────────────────────────── */}
+        <div className="dashboard__greeting">
+          <div className="dashboard__greeting-text">
+            <span className="dashboard__greeting-time">{getGreeting()},</span>
+            <strong className="dashboard__greeting-name">
+              {user?.nombre?.split(' ')[0] || 'Usuario'}
+            </strong>
+          </div>
+          <span className="dashboard__greeting-date">{formatDateLong()}</span>
+        </div>
+
+        {/* ── Profile card ────────────────────────────────────────────────── */}
         <article className="dashboard__profile-card" aria-labelledby="profile-heading">
           <div
             className="dashboard__cover-photo"
-            style={{
-              backgroundImage: user?.foto_portada ? `url(${user.foto_portada})` : undefined
-            }}
+            style={{ backgroundImage: user?.foto_portada ? `url(${user.foto_portada})` : undefined }}
             role="img"
             aria-label="Foto de portada del perfil"
           >
@@ -355,11 +408,13 @@ const Dashboard = () => {
             >
               <WallpaperIcon />
             </button>
-            <div className="dashboard__cover-photo-overlay" aria-hidden="true"></div>
+            <div className="dashboard__cover-photo-overlay" aria-hidden="true" />
           </div>
 
-          <div className="dashboard__profile-info">
-            <div className="dashboard__profile-grid">
+          <div className="dashboard__profile-body">
+
+            {/* Row: avatar + action buttons */}
+            <div className="dashboard__profile-top">
               <div className="dashboard__avatar-container">
                 {renderProfileAvatar()}
                 <button
@@ -372,113 +427,82 @@ const Dashboard = () => {
                 </button>
               </div>
 
-              
-              <div className="dashboard__user-details">
-                <h2 id="profile-heading">
-                  {t('dashboard.welcome', { name: user?.nombre || 'Usuario' })}
-                </h2>
-                <p className="dashboard__user-details-email">{user?.email}</p>
-                {user?.biografia && (
-                  <p className="dashboard__user-bio">{user.biografia}</p>
-                )}
-
-                <Stack 
-                  direction={{ xs: 'column', sm: 'row' }} 
-                  spacing={2} 
-                  sx={{ mt: 3 }}
+              <div className="dashboard__profile-actions">
+                <button
+                  className="dashboard__action-btn"
+                  onClick={() => navigate('/edit-profile')}
+                  type="button"
                 >
-                  <Button
-                    variant="outlined"
-                    startIcon={<MuiEditIcon />}
-                    onClick={() => navigate('/edit-profile')}
-                    sx={{
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      fontWeight: 500,
-                      px: 3,
-                      py: 1,
-                    }}
+                  <EditIcon />
+                  <span>Editar</span>
+                </button>
+
+                <button
+                  className="dashboard__action-btn dashboard__action-btn--primary"
+                  onClick={() => navigate(`/profile/${user?.id}`)}
+                  type="button"
+                >
+                  <EyeIcon />
+                  <span>Perfil</span>
+                </button>
+
+                {user?.tipo_usuario === 'trabajador' && (
+                  <button
+                    className="dashboard__action-btn dashboard__action-btn--success"
+                    onClick={() => navigate('/availability')}
+                    type="button"
                   >
-                    Editar Perfil
-                  </Button>
-
-                  <Button
-                    variant="contained"
-                    startIcon={<VisibilityIcon />}
-                    onClick={() => navigate(`/profile/${user?.id}`)}
-                    sx={{
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      fontWeight: 500,
-                      px: 3,
-                      py: 1,
-                      boxShadow: 2,
-                      '&:hover': {
-                        boxShadow: 4,
-                      },
-                    }}
-                  >
-                    Ver Perfil Público
-                  </Button>
-
-                  {/* ✅ Botón de Calendario - Solo para trabajadores */}
-                  {user?.tipo_usuario === 'trabajador' && (
-                    <Button
-                      variant="outlined"
-                      color="success"
-                      startIcon={<CalendarTodayIcon />}
-                      onClick={() => navigate('/availability')}
-                      sx={{
-                        borderRadius: 2,
-                        textTransform: 'none',
-                        fontWeight: 500,
-                        px: 3,
-                        py: 1,
-                        borderWidth: 2,
-                        '&:hover': {
-                          borderWidth: 2,
-                          backgroundColor: 'success.light',
-                        },
-                      }}
-                    >
-                      Gestionar Disponibilidad
-                    </Button>
-                  )}
-                </Stack>
-              </div>
-
-              <div className="dashboard__user-chips"> 
-                <div className="dashboard__chips" role="list">
-                  <span className="dashboard__chip dashboard__chip--primary" role="listitem">
-                    {t('dashboard.userType', { type: translateUserType(user?.tipo_usuario || 'usuario') })}
-                  </span>
-                  {user?.departamento && (
-                    <span className="dashboard__chip dashboard__chip--info" role="listitem">
-                      {`${user.departamento}, ${user.municipio}`}
-                    </span>
-                  )}
-                  {user?.telefono && (
-                    <span className="dashboard__chip dashboard__chip--secondary" role="listitem">
-                      {user.telefono}
-                    </span>
-                  )}
-                </div>
+                    <CalendarIcon />
+                    <span>Agenda</span>
+                  </button>
+                )}
               </div>
             </div>
+
+            {/* Identity: name, email, bio */}
+            <div className="dashboard__profile-identity">
+              <h2 id="profile-heading">
+                {t('dashboard.welcome', { name: user?.nombre || 'Usuario' })}
+              </h2>
+              <p className="dashboard__user-details-email">{user?.email}</p>
+              {user?.biografia && (
+                <p className="dashboard__user-bio">{user.biografia}</p>
+              )}
+            </div>
+
+            {/* Chips: horizontal scroll */}
+            <div className="dashboard__profile-chips">
+              <div className="dashboard__chips" role="list">
+                <span className="dashboard__chip dashboard__chip--primary" role="listitem">
+                  {t('dashboard.userType', { type: translateUserType(user?.tipo_usuario || 'usuario') })}
+                </span>
+                {user?.departamento && (
+                  <span className="dashboard__chip dashboard__chip--info" role="listitem">
+                    {`${user.departamento}, ${user.municipio}`}
+                  </span>
+                )}
+                {user?.telefono && (
+                  <span className="dashboard__chip dashboard__chip--secondary" role="listitem">
+                    {user.telefono}
+                  </span>
+                )}
+              </div>
+            </div>
+
           </div>
         </article>
 
-        {/* Resto del código permanece igual... */}
         {error && (
           <div className="dashboard__alert dashboard__alert--error" role="alert">
             {error}
           </div>
         )}
 
+        {/* ── Stats ───────────────────────────────────────────────────────── */}
         <section className="dashboard__stats" aria-labelledby="stats-heading">
           <h2 id="stats-heading" className="visually-hidden">Estadísticas del Dashboard</h2>
 
-          <article className="dashboard__stat-card">
+          <article className="dashboard__stat-card dashboard__stat-card--blue">
             <div className="dashboard__stat-card-icon" aria-hidden="true">
               <WorkIcon />
             </div>
@@ -488,7 +512,7 @@ const Dashboard = () => {
             </div>
           </article>
 
-          <article className="dashboard__stat-card">
+          <article className="dashboard__stat-card dashboard__stat-card--green">
             <div className="dashboard__stat-card-icon" aria-hidden="true">
               <AssignmentIcon />
             </div>
@@ -498,7 +522,7 @@ const Dashboard = () => {
             </div>
           </article>
 
-          <article className="dashboard__stat-card">
+          <article className="dashboard__stat-card dashboard__stat-card--amber">
             <div className="dashboard__stat-card-icon" aria-hidden="true">
               <PaymentIcon />
             </div>
@@ -508,7 +532,7 @@ const Dashboard = () => {
             </div>
           </article>
 
-          <article className="dashboard__stat-card">
+          <article className="dashboard__stat-card dashboard__stat-card--indigo">
             <div className="dashboard__stat-card-icon" aria-hidden="true">
               <NotificationsIcon />
             </div>
@@ -519,37 +543,55 @@ const Dashboard = () => {
           </article>
         </section>
 
+        {/* ── Services ────────────────────────────────────────────────────── */}
         <section className="dashboard__section" aria-labelledby="services-heading">
           <div className="dashboard__section-header">
-            <h2 id="services-heading">{t('dashboard.availableServices')}</h2>
+            <div>
+              <h2 id="services-heading">{t('dashboard.availableServices')}</h2>
+              <p className="dashboard__section-subtitle">Explora los servicios disponibles en tu área</p>
+            </div>
           </div>
+
           <div className="dashboard__services">
-            {categories.map((category) => (
-              <article key={category.id} className="dashboard__service-card">
-                <h3>{translateService(category.nombre)}</h3>
-                <p>{category.descripcion}</p>
-                <button
-                  className="dashboard__btn dashboard__btn--outlined"
-                  onClick={() => handleViewWorkers(category.id)}
-                  type="button"
-                >
-                  {t('dashboard.viewWorkers')}
-                </button>
-              </article>
-            ))}
+            {categories.map((category) => {
+              const CategoryIcon = CATEGORY_ICONS[category.nombre] || DefaultCategoryIcon;
+              const color = CATEGORY_COLORS[category.nombre] || 'blue';
+              return (
+                <article key={category.id} className={`dashboard__service-card dashboard__service-card--${color}`}>
+                  <div className="dashboard__service-icon">
+                    <CategoryIcon />
+                  </div>
+                  <h3>{translateService(category.nombre)}</h3>
+                  <p>{category.descripcion}</p>
+                  <button
+                    className="dashboard__service-btn"
+                    onClick={() => handleViewWorkers(category.id)}
+                    type="button"
+                  >
+                    {t('dashboard.viewWorkers')}
+                    <ArrowRightIcon />
+                  </button>
+                </article>
+              );
+            })}
           </div>
         </section>
 
+        {/* ── Contracts ───────────────────────────────────────────────────── */}
         <section className="dashboard__section" aria-labelledby="contracts-heading">
           <div className="dashboard__section-header">
-            <h2 id="contracts-heading">{t('dashboard.recentContracts')}</h2>
+            <div>
+              <h2 id="contracts-heading">{t('dashboard.recentContracts')}</h2>
+              <p className="dashboard__section-subtitle">
+                {contracts.length} contrato{contracts.length !== 1 ? 's' : ''} en total
+              </p>
+            </div>
             {contracts.length > 3 && (
               <button
-                className="dashboard__btn dashboard__btn--outlined"
+                className="dashboard__btn dashboard__btn--outlined dashboard__btn--sm"
                 type="button"
-                onClick={() => setShowAllContracts(!showAllContracts)}
+                onClick={() => setShowAllContracts(v => !v)}
               >
-                <AssignmentIcon />
                 {showAllContracts ? t('dashboard.showLess') : t('dashboard.viewAll')}
               </button>
             )}
@@ -560,16 +602,33 @@ const Dashboard = () => {
               {(showAllContracts ? contracts : contracts.slice(0, 3)).map((contract) => (
                 <article key={contract.id} className="dashboard__contract-card">
                   <div className="dashboard__contract-header">
-                    <h3>{t('dashboard.contract.code', { code: contract.codigo_contrato })}</h3>
+                    <div className="dashboard__contract-title-row">
+                      <span
+                        className={`dashboard__status-dot dashboard__status-dot--${contract.estado}`}
+                        aria-hidden="true"
+                      />
+                      <h3>{t('dashboard.contract.code', { code: contract.codigo_contrato })}</h3>
+                    </div>
                     <span className={`dashboard__contract-status dashboard__contract-status--${contract.estado}`}>
                       {contract.estado.replace('_', ' ').toUpperCase()}
                     </span>
                   </div>
 
                   <div className="dashboard__contract-details">
-                    <p><strong>{t('dashboard.contract.category')}</strong> {contract.categoria?.nombre || 'N/A'}</p>
-                    <p><strong>{t('dashboard.contract.amount')}</strong> ${contract.monto_total}</p>
-                    <p><strong>{t('dashboard.contract.date', { date: formatDate(contract.fecha_creacion) })}</strong></p>
+                    <div className="dashboard__contract-row">
+                      <span className="dashboard__contract-label">{t('dashboard.contract.category')}</span>
+                      <span className="dashboard__contract-value">{contract.categoria?.nombre || 'N/A'}</span>
+                    </div>
+                    <div className="dashboard__contract-row">
+                      <span className="dashboard__contract-label">{t('dashboard.contract.amount')}</span>
+                      <span className="dashboard__contract-value dashboard__contract-value--amount">
+                        ${contract.monto_total}
+                      </span>
+                    </div>
+                    <div className="dashboard__contract-row">
+                      <span className="dashboard__contract-label">Fecha</span>
+                      <span className="dashboard__contract-value">{formatDate(contract.fecha_creacion)}</span>
+                    </div>
 
                     {contract.estado === 'pendiente_activacion' && (
                       <div className="dashboard__contract-pin">
@@ -587,7 +646,6 @@ const Dashboard = () => {
                     >
                       {t('dashboard.contract.viewDetails')}
                     </button>
-
                     {contract.estado === 'pendiente_activacion' && (
                       <button
                         className="dashboard__btn dashboard__btn--primary dashboard__btn--sm"
@@ -621,30 +679,26 @@ const Dashboard = () => {
 
       </main>
 
+      {/* ── Modals ────────────────────────────────────────────────────────── */}
       <ProfilePhotoModal
         open={photoModalOpen}
         onClose={() => setPhotoModalOpen(false)}
-        onPhotoUpdated={(newPhotoUrl) => logger.log('Foto actualizada:', newPhotoUrl)}
+        onPhotoUpdated={(url) => logger.log('Foto actualizada:', url)}
       />
 
       <CoverPhotoModal
         open={coverPhotoModalOpen}
         onClose={() => setCoverPhotoModalOpen(false)}
-        onPhotoUpdated={(newCoverUrl) => logger.log('Foto de portada actualizada:', newCoverUrl)}
+        onPhotoUpdated={(url) => logger.log('Foto de portada actualizada:', url)}
       />
 
-      {/* Pin Modal */}
       <PinModal
         open={pinModalOpen}
-        onClose={() => {
-          setPinModalOpen(false);
-          setSelectedContract(null);
-        }}
+        onClose={() => { setPinModalOpen(false); setSelectedContract(null); }}
         onSubmit={handlePinSubmit}
         contractCode={selectedContract?.codigo_contrato}
       />
 
-      {/* Success/Error Snackbar */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}

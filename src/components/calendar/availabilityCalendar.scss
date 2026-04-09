@@ -1,6 +1,7 @@
 // ============================================================
 // AVAILABILITY CALENDAR - Estilo tipo Google Calendar Planning
 // ============================================================
+@use 'sass:color';
 
 $color-disponible: #1a8754;
 $color-disponible-bg: #d1f5e0;
@@ -671,7 +672,7 @@ $color-borde: #e9ecef;
           padding: 0.2rem 0.625rem;
           font-size: 0.78rem;
           font-weight: 500;
-          color: darken($color-hoy, 8%);
+          color: color.adjust($color-hoy, $lightness: -8%);
           cursor: pointer;
           transition: all 0.15s ease;
 
