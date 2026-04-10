@@ -22,13 +22,10 @@ export default defineConfig({
   },
   // ✅ OPTIMIZACIONES DE PRODUCCIÓN
   build: {
-    // Minificación agresiva
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true, // Elimina console.log en producción
-        drop_debugger: true,
-      }
+    // esbuild está incluido en Vite (no requiere instalación extra)
+    minify: 'esbuild',
+    esbuildOptions: {
+      drop: ['console', 'debugger'],
     },
     // Optimizar chunks
     rollupOptions: {
