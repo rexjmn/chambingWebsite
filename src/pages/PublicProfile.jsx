@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { publicProfileService } from '../services/publicProfileService';
+import { serviceService } from '../services/serviceService';
 import { logger } from '../utils/logger';
 import AvailabilityCalendar from '../components/calendar/AvailabilityCalendar';
 import '../styles/Public-profile.scss';
@@ -40,6 +41,7 @@ const PublicProfile = () => {
   const [skills, setSkills] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [stats, setStats] = useState(null);
+  const [tarifas, setTarifas] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showContactModal, setShowContactModal] = useState(false);
@@ -63,25 +65,29 @@ const PublicProfile = () => {
 
           // Cargar datos adicionales solo si es trabajador
           if (userData.tipo_usuario === 'trabajador') {
-            try {
-              const [reviewsRes, statsRes] = await Promise.allSettled([
-                publicProfileService.getUserReviews(userId),
-                publicProfileService.getUserStats(userId)
-              ]);
+            const [reviewsRes, statsRes, tarifasRes] = await Promise.allSettled([
+              publicProfileService.getUserReviews(userId),
+              publicProfileService.getUserStats(userId),
+              serviceService.getTarifasByWorker(userId),
+            ]);
 
-              if (reviewsRes.status === 'fulfilled') {
-                setReviews(reviewsRes.value.data || []);
-              }
+            if (reviewsRes.status === 'fulfilled') {
+              setReviews(reviewsRes.value.data || []);
+            }
 
-              if (statsRes.status === 'fulfilled') {
-                setStats(statsRes.value.data || {
-                  trabajos_completados: 0,
-                  rating: 0,
-                  total_reviews: 0
-                });
-              }
-            } catch (additionalError) {
-              logger.warn('Error loading additional data:', additionalError);
+            if (statsRes.status === 'fulfilled') {
+              setStats(statsRes.value.data || {
+                trabajos_completados: 0,
+                rating: 0,
+                total_reviews: 0,
+              });
+            }
+
+            // Tarifas: preferir el fetch dedicado; si falla, usar lo que vino en el perfil
+            if (tarifasRes.status === 'fulfilled' && tarifasRes.value) {
+              setTarifas(tarifasRes.value);
+            } else if (userData.tarifas) {
+              setTarifas(userData.tarifas);
             }
           }
         }
@@ -359,7 +365,7 @@ const PublicProfile = () => {
           </div>
 
           {/* Tarifas - Solo para trabajadores verificados con tarifas */}
-          {isTrabajador && isVerified && user.tarifas && (
+          {isTrabajador && isVerified && tarifas && (
             <div className="section-card rates-section">
               <div className="section-header">
                 <AccountCircleIcon className="section-icon" />
@@ -368,39 +374,39 @@ const PublicProfile = () => {
                 </h2>
               </div>
               <div className="rates-grid">
-                {user.tarifas.tarifa_hora && (
+                {tarifas.tarifa_hora > 0 && (
                   <div className="rate-item">
                     <AccessTimeIcon className="rate-icon" />
                     <div className="rate-label">{t('publicProfile.hourlyRate') || 'Por Hora'}</div>
                     <div className="rate-value">
-                      ${parseFloat(user.tarifas.tarifa_hora).toFixed(2)}
+                      ${parseFloat(tarifas.tarifa_hora).toFixed(2)}
                     </div>
                   </div>
                 )}
-                {user.tarifas.tarifa_dia && (
+                {tarifas.tarifa_dia > 0 && (
                   <div className="rate-item">
                     <CalendarTodayIcon className="rate-icon" />
                     <div className="rate-label">{t('publicProfile.dailyRate') || 'Por Día'}</div>
                     <div className="rate-value">
-                      ${parseFloat(user.tarifas.tarifa_dia).toFixed(2)}
+                      ${parseFloat(tarifas.tarifa_dia).toFixed(2)}
                     </div>
                   </div>
                 )}
-                {user.tarifas.tarifa_semana && (
+                {tarifas.tarifa_semana > 0 && (
                   <div className="rate-item">
                     <DateRangeIcon className="rate-icon" />
                     <div className="rate-label">{t('publicProfile.weeklyRate') || 'Por Semana'}</div>
                     <div className="rate-value">
-                      ${parseFloat(user.tarifas.tarifa_semana).toFixed(2)}
+                      ${parseFloat(tarifas.tarifa_semana).toFixed(2)}
                     </div>
                   </div>
                 )}
-                {user.tarifas.tarifa_mes && (
+                {tarifas.tarifa_mes > 0 && (
                   <div className="rate-item">
                     <CalendarTodayIcon className="rate-icon" />
                     <div className="rate-label">{t('publicProfile.monthlyRate') || 'Por Mes'}</div>
                     <div className="rate-value">
-                      ${parseFloat(user.tarifas.tarifa_mes).toFixed(2)}
+                      ${parseFloat(tarifas.tarifa_mes).toFixed(2)}
                     </div>
                   </div>
                 )}

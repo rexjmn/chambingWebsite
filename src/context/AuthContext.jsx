@@ -60,6 +60,7 @@ const authReducer = (state, action) => {
       // ⭐ Limpiar localStorage en logout
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('chambing_needs_onboarding');
       logger.auth('Token y usuario removidos del localStorage');
       
       return {
@@ -299,7 +300,13 @@ export const AuthProvider = ({ children }) => {
       }
 
       logger.auth('Login exitoso', response);
-      
+
+      // Si el usuario no tiene foto de perfil, activar flag de onboarding
+      if (!response.user?.foto_perfil) {
+        localStorage.setItem('chambing_needs_onboarding', 'true');
+        logger.auth('Usuario sin foto — activando onboarding');
+      }
+
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: response,

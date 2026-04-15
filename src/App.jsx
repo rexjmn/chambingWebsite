@@ -24,6 +24,8 @@ const CreateContract = lazy(() => import('./pages/CreateContractSimple'));
 const ContractDetails = lazy(() => import('./pages/ContractDetails'));
 // ✅ Gestión de disponibilidad para trabajadores
 const WorkerAvailability = lazy(() => import('./pages/availability/WorkerAvailability'));
+// ✅ Onboarding post-registro
+const Onboarding = lazy(() => import('./pages/Onboarding'));
 
 // Loading fallback component - optimizado
 const LoadingFallback = () => (
@@ -102,6 +104,18 @@ function App() {
                     <ErrorBoundaryWrapper>
                       <ProtectedRoute>
                         <EditProfile />
+                      </ProtectedRoute>
+                    </ErrorBoundaryWrapper>
+                  }
+                />
+
+                {/* ✅ Onboarding post-registro */}
+                <Route
+                  path="/onboarding"
+                  element={
+                    <ErrorBoundaryWrapper>
+                      <ProtectedRoute>
+                        <Onboarding />
                       </ProtectedRoute>
                     </ErrorBoundaryWrapper>
                   }

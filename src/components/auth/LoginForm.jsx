@@ -50,7 +50,8 @@ const LoginForm = () => {
       logger.form('Intentando login', { email: sanitizedData.email });
       await login(sanitizedData);
       logger.form('Login exitoso, redirigiendo');
-      navigate(from, { replace: true });
+      const needsOnboarding = localStorage.getItem('chambing_needs_onboarding') === 'true';
+      navigate(needsOnboarding ? '/onboarding' : from, { replace: true });
     } catch (error) {
       logger.error('Error en login:', error.message);
     }
