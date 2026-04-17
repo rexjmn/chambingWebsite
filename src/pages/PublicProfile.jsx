@@ -364,8 +364,8 @@ const PublicProfile = () => {
             )}
           </div>
 
-          {/* Tarifas - Solo para trabajadores verificados con tarifas */}
-          {isTrabajador && isVerified && tarifas && (
+          {/* Tarifas - Solo para trabajadores con tarifas */}
+          {isTrabajador && tarifas && (
             <div className="section-card rates-section">
               <div className="section-header">
                 <AccountCircleIcon className="section-icon" />
