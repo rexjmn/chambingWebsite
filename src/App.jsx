@@ -24,6 +24,8 @@ const CreateContract = lazy(() => import('./pages/CreateContractSimple'));
 const ContractDetails = lazy(() => import('./pages/ContractDetails'));
 // ✅ Gestión de disponibilidad para trabajadores
 const WorkerAvailability = lazy(() => import('./pages/availability/WorkerAvailability'));
+// ✅ Onboarding de primer acceso
+const Onboarding = lazy(() => import('./pages/Onboarding'));
 
 // Loading fallback component - optimizado
 const LoadingFallback = () => (
@@ -76,6 +78,18 @@ function App() {
                   <Route path="/" element={<ErrorBoundaryWrapper><Home /></ErrorBoundaryWrapper>} />
                   <Route path="/login" element={<ErrorBoundaryWrapper><LoginForm /></ErrorBoundaryWrapper>} />
                   <Route path="/register" element={<ErrorBoundaryWrapper><RegisterForm /></ErrorBoundaryWrapper>} />
+
+                  {/* Onboarding — primer acceso tras registro */}
+                  <Route
+                    path="/onboarding"
+                    element={
+                      <ErrorBoundaryWrapper>
+                        <ProtectedRoute>
+                          <Onboarding />
+                        </ProtectedRoute>
+                      </ErrorBoundaryWrapper>
+                    }
+                  />
 
                   {/* Perfil Público - Sin autenticación requerida */}
                   <Route path="/profile/:userId" element={<ErrorBoundaryWrapper><PublicProfile /></ErrorBoundaryWrapper>} />

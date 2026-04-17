@@ -50,7 +50,15 @@ const LoginForm = () => {
       logger.form('Intentando login', { email: sanitizedData.email });
       await login(sanitizedData);
       logger.form('Login exitoso, redirigiendo');
-      navigate(from, { replace: true });
+
+      // Detect first-time login: redirect to onboarding if flagged after register
+      const pendingOnboarding = localStorage.getItem('chambing_pending_onboarding');
+      if (pendingOnboarding === sanitizedData.email) {
+        localStorage.removeItem('chambing_pending_onboarding');
+        navigate('/onboarding', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (error) {
       logger.error('Error en login:', error.message);
     }
