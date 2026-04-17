@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { contractService } from '../services/contractService';
+import { useAuth } from '../context/AuthContext';
+import ReviewModal from '../components/ReviewModal';
 import { logger } from '../utils/logger';
 import {
   Box,
@@ -37,9 +39,13 @@ const ContractDetails = () => {
   const { t } = useTranslation();
   const { contractId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
     const loadContract = async () => {
@@ -119,6 +125,42 @@ const ContractDetails = () => {
       style: 'currency',
       currency: 'USD'
     }).format(amount);
+  };
+
+  // Determinar rol del usuario en este contrato
+  const esEmpleador  = user && contract && String(user.id) === String(contract.empleador?.id);
+  const esTrabajador = user && contract && String(user.id) === String(contract.trabajador?.id);
+
+  const handleCompletarContrato = async () => {
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      await contractService.completarContrato(contractId);
+      // Recargar contrato para reflejar nuevo estado
+      const res = await contractService.getContractById(contractId);
+      if (res.status === 'success') setContract(res.data);
+    } catch (err) {
+      logger.error('Error completando contrato:', err);
+      setActionError(err.response?.data?.message || 'No se pudo completar el contrato.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCerrarContrato = async () => {
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      await contractService.cerrarContrato(contractId);
+      const res = await contractService.getContractById(contractId);
+      if (res.status === 'success') setContract(res.data);
+      setShowReviewModal(true);
+    } catch (err) {
+      logger.error('Error cerrando contrato:', err);
+      setActionError(err.response?.data?.message || 'No se pudo cerrar el contrato.');
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   if (loading) {
@@ -439,7 +481,59 @@ const ContractDetails = () => {
             </Grid>
           )}
         </Grid>
+
+        {/* ── Acciones del contrato ── */}
+        {actionError && (
+          <Box sx={{ mt: 2, p: 2, bgcolor: 'error.light', borderRadius: 2 }}>
+            <Typography color="error.dark" variant="body2">{actionError}</Typography>
+          </Box>
+        )}
+
+        {/* Trabajador: marcar como completado cuando está activo */}
+        {esTrabajador && contract.estado === 'activo' && (
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="contained"
+              color="success"
+              size="large"
+              onClick={handleCompletarContrato}
+              disabled={actionLoading}
+              startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <CheckCircleIcon />}
+            >
+              {actionLoading ? 'Procesando...' : 'Marcar como completado'}
+            </Button>
+          </Box>
+        )}
+
+        {/* Empleador: cerrar contrato cuando el trabajador lo marcó como completado */}
+        {esEmpleador && contract.estado === 'completado' && (
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleCerrarContrato}
+              disabled={actionLoading}
+              startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <CheckCircleIcon />}
+            >
+              {actionLoading ? 'Procesando...' : 'Cerrar contrato y dejar reseña'}
+            </Button>
+          </Box>
+        )}
+
       </Container>
+
+      {/* Modal de reseña — se abre tras cerrar el contrato */}
+      <ReviewModal
+        isOpen={showReviewModal}
+        contratoId={contractId}
+        trabajadorId={contract?.trabajador?.id}
+        trabajadorNombre={contract ? `${contract.trabajador?.nombre} ${contract.trabajador?.apellido}` : ''}
+        onSuccess={() => setShowReviewModal(false)}
+        onClose={() => setShowReviewModal(false)}
+        canSkip={true}
+      />
+
     </Box>
   );
 };
