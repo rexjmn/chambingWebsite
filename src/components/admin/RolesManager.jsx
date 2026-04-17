@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import adminService from '../../services/adminService';
 import { logger } from '../../utils/logger';
 
 const RolesManager = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [roles, setRoles] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,7 +45,7 @@ const RolesManager = () => {
     }
 
     try {
-      await adminService.assignRole(assignmentData);
+      await adminService.assignRole({ ...assignmentData, asignadoPorId: user.id });
       alert(t('admin.roles.messages.assignSuccess'));
       setShowAssignModal(false);
       setAssignmentData({ usuarioId: '', rolId: '' });
