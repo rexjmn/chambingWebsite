@@ -30,7 +30,7 @@ const municipiosPorDepartamento = {
 };
 
 // Step identifiers
-const STEPS_CLIENTE   = ['welcome','photo','profile','done'];
+const STEPS_CLIENTE    = ['welcome','photo','profile','done'];
 const STEPS_TRABAJADOR = ['welcome','photo','profile','skills','rates','done'];
 
 // ─── image cropping helpers ──────────────────────────────────────────────────
@@ -83,6 +83,15 @@ const Onboarding = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
+  // Pulse animation state — resets on each new step to guide user's attention
+  const [showPulse, setShowPulse] = useState(true);
+
+  useEffect(() => {
+    setShowPulse(true);
+    const t = setTimeout(() => setShowPulse(false), 6000);
+    return () => clearTimeout(t);
+  }, [currentIdx]);
+
   // Photo state
   const [previewUrl, setPreviewUrl]         = useState(user?.foto_perfil || null);
   const [imageSrc, setImageSrc]             = useState(null);
@@ -112,6 +121,9 @@ const Onboarding = () => {
   const isFirstStep = currentIdx === 0;
   const isLastStep  = currentIdx === steps.length - 1;
   const progress    = Math.round((currentIdx / (steps.length - 1)) * 100);
+
+  // Whether the image cropper is currently active
+  const cropperActive = currentStep === 'photo' && imageSrc !== null;
 
   // ── Load initial data for worker ──────────────────────────────────────
   useEffect(() => {
@@ -170,8 +182,9 @@ const Onboarding = () => {
     setCroppedAreaPixels(pixels);
   }, []);
 
+  // Returns true on success, false on failure
   const handleUploadPhoto = async () => {
-    if (!imageSrc || !croppedAreaPixels) return;
+    if (!imageSrc || !croppedAreaPixels) return false;
 
     setSaving(true);
     setError(null);
@@ -192,10 +205,14 @@ const Onboarding = () => {
       }
 
       setImageSrc(null);
-      await refreshUser();
+      // Don't await refreshUser() here — it sets loading:true in ProtectedRoute
+      // which unmounts this component and resets currentIdx to 0.
+      // The photo URL is already updated in local state (previewUrl).
+      return true; // success
     } catch (err) {
       logger.error('Error uploading photo:', err);
       setError(err.response?.data?.message || 'Error al subir la foto. Intenta de nuevo.');
+      return false; // failure
     } finally {
       setSaving(false);
     }
@@ -205,15 +222,14 @@ const Onboarding = () => {
   const handleNext = async () => {
     setError(null);
 
-    // Perform save actions on specific steps before advancing
     if (currentStep === 'photo' && imageSrc && croppedAreaPixels) {
-      await handleUploadPhoto();
-      if (error) return; // stop if upload failed
+      const ok = await handleUploadPhoto();
+      if (!ok) return; // stop if upload failed
     }
 
     if (currentStep === 'profile') {
-      await saveProfile();
-      if (error) return;
+      const ok = await saveProfile();
+      if (!ok) return;
     }
 
     if (currentStep === 'skills') {
@@ -232,13 +248,21 @@ const Onboarding = () => {
     setCurrentIdx((i) => i + 1);
   };
 
+  // Used only by the cropper save button — uploads AND advances
+  const handleSavePhotoAndAdvance = async () => {
+    const ok = await handleUploadPhoto();
+    if (ok) setCurrentIdx((i) => i + 1);
+  };
+
   const handleBack = () => {
     setError(null);
+    setImageSrc(null); // discard any pending crop
     if (currentIdx > 0) setCurrentIdx((i) => i - 1);
   };
 
   const handleSkip = () => {
     setError(null);
+    setImageSrc(null);
     if (currentStep === 'done') {
       finishOnboarding();
     } else {
@@ -250,6 +274,9 @@ const Onboarding = () => {
     if (user?.id) {
       localStorage.setItem(`chambing_onboarding_done_${user.id}`, '1');
     }
+    // Fire-and-forget refresh so dashboard shows updated user data.
+    // We don't await — navigation happens immediately.
+    refreshUser().catch(() => {});
     navigate('/dashboard', { replace: true });
   };
 
@@ -267,10 +294,14 @@ const Onboarding = () => {
         ...(user?.tipo_usuario === 'trabajador' && { titulo_profesional: tituloProfesional }),
       };
       await profileService.updateProfile(payload);
-      await refreshUser();
+      // Don't await refreshUser() — it triggers ProtectedRoute to unmount
+      // this component (loading:true), resetting currentIdx to 0.
+      // Data is saved on the backend; refresh happens at finishOnboarding.
+      return true;
     } catch (err) {
       logger.error('Error saving profile:', err);
       setError('Error al guardar. Intenta de nuevo.');
+      return false;
     } finally {
       setSaving(false);
     }
@@ -387,7 +418,7 @@ const Onboarding = () => {
             </div>
             <h1 className="onboarding__step-title">Tu foto de perfil</h1>
             <p className="onboarding__step-subtitle">
-              Los perfiles con foto reciben hasta 3 veces más contactos. ¡Solo toma un segundo!
+              Los perfiles con foto reciben hasta 3 veces más contactos.
             </p>
 
             {error && (
@@ -398,7 +429,7 @@ const Onboarding = () => {
             )}
 
             {!imageSrc ? (
-              /* Photo picker */
+              /* ── Photo picker (cropper NOT active) ── */
               <div className="onboarding__photo-area">
                 <button
                   type="button"
@@ -418,13 +449,18 @@ const Onboarding = () => {
                   </div>
                 </button>
 
-                <p className="onboarding__photo-hint">
-                  {photoUploaded
-                    ? 'Foto subida correctamente. Puedes cambiarla tocando la imagen.'
-                    : 'Toca la imagen para seleccionar una foto de tu galería.'}
-                  <br />
-                  <small>JPG, PNG o WebP — máximo 5 MB</small>
-                </p>
+                {photoUploaded ? (
+                  <p className="onboarding__photo-hint onboarding__photo-hint--success">
+                    <CheckCircle size={15} />
+                    ¡Foto guardada! Presiona el botón azul de abajo para continuar.
+                  </p>
+                ) : (
+                  <p className="onboarding__photo-hint">
+                    Toca la imagen de arriba para elegir una foto de tu galería.
+                    <br />
+                    <small>JPG, PNG o WebP — máximo 5 MB</small>
+                  </p>
+                )}
 
                 <input
                   ref={fileInputRef}
@@ -440,11 +476,21 @@ const Onboarding = () => {
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Camera size={18} />
-                  {photoUploaded ? 'Cambiar foto' : 'Elegir foto'}
+                  {photoUploaded ? 'Cambiar foto' : 'Elegir foto de mi galería'}
                 </button>
+
+                {/* Clear hint for older users */}
+                {!photoUploaded && (
+                  <p className="onboarding__photo-skip-hint">
+                    <ArrowRight size={13} />
+                    No tienes foto ahora? Está bien — presiona el botón azul de abajo.
+                  </p>
+                )}
               </div>
             ) : (
-              /* Cropper */
+              /* ── Cropper (imageSrc is set) ──
+                 ⚠️  No navigation buttons here — they live in the fixed bottom nav
+                     to avoid competing buttons. */
               <>
                 <div className="onboarding__cropper-wrap">
                   <Cropper
@@ -474,29 +520,6 @@ const Onboarding = () => {
                       onChange={(e) => setZoom(Number(e.target.value))}
                     />
                   </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.625rem' }}>
-                  <button
-                    type="button"
-                    className="ob-upload-btn"
-                    onClick={() => setImageSrc(null)}
-                    style={{ flex: 1 }}
-                  >
-                    <X size={16} /> Cancelar
-                  </button>
-                  <button
-                    type="button"
-                    className="onboarding__nav-next"
-                    onClick={handleUploadPhoto}
-                    disabled={saving}
-                    style={{ flex: 2, borderRadius: '12px' }}
-                  >
-                    {saving
-                      ? <><span className="onboarding__nav-spinner" /> Subiendo...</>
-                      : <><CheckCircle size={18} /> Guardar foto</>
-                    }
-                  </button>
                 </div>
               </>
             )}
@@ -758,16 +781,26 @@ const Onboarding = () => {
     </div>
   );
 
-  // ── Next button label ─────────────────────────────────────────────────
+  // ── Next button label — context-aware so users always know what happens ──
   const nextLabel = () => {
     if (saving) return <><span className="onboarding__nav-spinner" /> Guardando...</>;
-    if (currentStep === 'done') return <>Ir al Dashboard <ArrowRight size={18} /></>;
-    if (currentStep === 'welcome') return <>Empezar <ChevronRight size={18} /></>;
-    return <>Continuar <ChevronRight size={18} /></>;
+    if (currentStep === 'done')    return <>Ir al Dashboard <ArrowRight size={18} /></>;
+    if (currentStep === 'welcome') return <>Comenzar ahora <ChevronRight size={18} /></>;
+    if (currentStep === 'photo')   return photoUploaded
+      ? <>Continuar con mi foto <ChevronRight size={18} /></>
+      : <>Continuar sin foto <ChevronRight size={18} /></>;
+    return <>Guardar y continuar <ChevronRight size={18} /></>;
   };
 
   // ── Skip visibility ───────────────────────────────────────────────────
-  const showSkip = ['photo', 'profile', 'skills', 'rates'].includes(currentStep);
+  const showSkip = ['photo', 'profile', 'skills', 'rates'].includes(currentStep) && !cropperActive;
+
+  // ── Nav button class ─────────────────────────────────────────────────
+  const nextBtnClass = [
+    'onboarding__nav-next',
+    (isFirstStep || currentStep === 'done') ? 'onboarding__nav-next--full' : '',
+    (showPulse && !saving) ? 'onboarding__nav-next--pulse' : '',
+  ].filter(Boolean).join(' ');
 
   return (
     <div className="onboarding">
@@ -790,7 +823,7 @@ const Onboarding = () => {
 
         {showSkip && (
           <button className="onboarding__skip-btn" onClick={handleSkip}>
-            Omitir
+            Omitir paso
           </button>
         )}
       </header>
@@ -803,28 +836,62 @@ const Onboarding = () => {
         </div>
       </main>
 
-      {/* Bottom navigation */}
+      {/* ── Bottom navigation ──────────────────────────────────────────────
+          When the CROPPER is active, we replace the default nav with
+          "Cancelar" + "Guardar y continuar" to avoid 4 competing buttons.
+          ─────────────────────────────────────────────────────────────────── */}
       <nav className="onboarding__nav" aria-label="Navegación del perfil">
-        {!isFirstStep && currentStep !== 'done' && (
-          <button
-            type="button"
-            className="onboarding__nav-back"
-            onClick={handleBack}
-            disabled={saving}
-          >
-            <ChevronLeft size={18} />
-            Atrás
-          </button>
-        )}
 
-        <button
-          type="button"
-          className={`onboarding__nav-next ${isFirstStep || currentStep === 'done' ? 'onboarding__nav-next--full' : ''}`}
-          onClick={handleNext}
-          disabled={saving}
-        >
-          {nextLabel()}
-        </button>
+        {cropperActive ? (
+          /* Cropper mode: only these two buttons visible */
+          <>
+            <button
+              type="button"
+              className="onboarding__nav-back"
+              onClick={() => setImageSrc(null)}
+              disabled={saving}
+            >
+              <X size={18} />
+              Cancelar
+            </button>
+
+            <button
+              type="button"
+              className={['onboarding__nav-next', showPulse && !saving ? 'onboarding__nav-next--pulse' : ''].filter(Boolean).join(' ')}
+              onClick={handleSavePhotoAndAdvance}
+              disabled={saving}
+            >
+              {saving
+                ? <><span className="onboarding__nav-spinner" /> Guardando...</>
+                : <><CheckCircle size={18} /> Guardar y continuar</>
+              }
+            </button>
+          </>
+        ) : (
+          /* Normal mode */
+          <>
+            {!isFirstStep && currentStep !== 'done' && (
+              <button
+                type="button"
+                className="onboarding__nav-back"
+                onClick={handleBack}
+                disabled={saving}
+              >
+                <ChevronLeft size={18} />
+                Atrás
+              </button>
+            )}
+
+            <button
+              type="button"
+              className={nextBtnClass}
+              onClick={() => { setShowPulse(false); handleNext(); }}
+              disabled={saving}
+            >
+              {nextLabel()}
+            </button>
+          </>
+        )}
       </nav>
 
     </div>
