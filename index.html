@@ -9,14 +9,38 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- ✅ DNS Prefetch para API -->
+    <!-- ✅ DNS Prefetch + Preconnect para API (Render.com cold start mitigation) -->
+    <link rel="preconnect" href="https://chambingapi.onrender.com" />
     <link rel="dns-prefetch" href="https://chambingapi.onrender.com" />
+
+    <!-- ✅ Preload del logo del navbar (above-the-fold crítico) -->
+    <link rel="preload" as="image" href="/LogoChambing.png" />
 
     <title>ChambingApp - Servicios Freelance en El Salvador</title>
     <meta name="description" content="Conecta con profesionales verificados para servicios de plomería, electricidad, limpieza y más en El Salvador." />
 
     <!-- ✅ Performance hints -->
     <meta name="theme-color" content="#1976d2" />
+
+    <!-- ✅ Critical CSS: evita flash de color incorrecto antes de que JS cargue -->
+    <style>
+      footer { background-color: #1F2937 !important; color: white !important; }
+      img { image-rendering: auto; }
+    </style>
+
+    <!-- ✅ API warm-up: previene el cold start de Render.com (free tier)
+         Se ejecuta inmediatamente, no bloquea el render -->
+    <script>
+      (function() {
+        try {
+          fetch('https://chambingapi.onrender.com/api/health', {
+            method: 'GET',
+            mode: 'no-cors',
+            cache: 'no-store'
+          }).catch(function() {});
+        } catch(e) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- ✅ Loading placeholder para mejorar FCP -->

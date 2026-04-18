@@ -14,7 +14,6 @@ import {
   useMediaQuery,
   Drawer,
   Divider,
-  Fade,
   Typography,
 } from '@mui/material';
 import {
@@ -240,9 +239,8 @@ const Navbar = () => {
       anchorEl={anchorEl}
       open={Boolean(anchorEl)}
       onClose={handleMenuClose}
-      TransitionComponent={Fade}
       className="navbar__menu"
-      PaperProps={{ className: 'navbar__menu-paper' }}
+      slotProps={{ paper: { className: 'navbar__menu-paper' } }}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
     >

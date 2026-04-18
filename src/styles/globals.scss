@@ -14,6 +14,13 @@ body {
   background-color: $light-color;
 }
 
+// ── Footer: critical CSS antes de que MUI cargue ─────────────────────────
+// Previene el flash de color incorrecto en el primer render
+footer {
+  background-color: #1F2937 !important;
+  color: white !important;
+}
+
 // ── Forzar light mode en todos los MUI Dialogs ───────────────────────────
 // Evita que el dark-mode del navegador altere los popups
 .MuiDialog-paper,
@@ -38,6 +45,15 @@ body {
 
 .MuiDialogActions-root {
   background-color: #ffffff !important;
+}
+
+// ── Forzar light mode en MUI Menus y Popovers ────────────────────────────
+// Previene que el dark-mode del OS oscurezca los dropdowns
+.MuiMenu-paper,
+.MuiPopover-paper {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  color-scheme: light !important;
 }
 
 // Estilos personalizados para complementar MUI

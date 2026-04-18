@@ -26,6 +26,9 @@ const ContractDetails = lazy(() => import('./pages/ContractDetails'));
 const WorkerAvailability = lazy(() => import('./pages/availability/WorkerAvailability'));
 // ✅ Onboarding de primer acceso
 const Onboarding = lazy(() => import('./pages/Onboarding'));
+// ✅ Notificaciones
+const VerificarEmail = lazy(() => import('./pages/VerificarEmail'));
+const ResponderOferta = lazy(() => import('./pages/ResponderOferta'));
 
 // Loading fallback component - optimizado
 const LoadingFallback = () => (
@@ -183,8 +186,11 @@ function App() {
                 />
                 
                 {/* Página no encontrada */}
-                <Route 
-                  path="*" 
+                <Route path="/verificar-email" element={<ErrorBoundaryWrapper><VerificarEmail /></ErrorBoundaryWrapper>} />
+                <Route path="/ofertas/responder" element={<ErrorBoundaryWrapper><ResponderOferta /></ErrorBoundaryWrapper>} />
+
+                <Route
+                  path="*"
                   element={
                     <div style={{ padding: '2rem', textAlign: 'center' }}>
                       <h2>Página no encontrada</h2>

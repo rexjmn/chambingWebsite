@@ -348,11 +348,12 @@ export const AuthProvider = ({ children }) => {
       }
 
       logger.auth('Registro exitoso', response);
+      dispatch({ type: 'SET_LOADING', payload: false });
       return response;
     } catch (error) {
       logger.error('❌ AuthContext: Error en registro', error);
-      const errorMessage = error.response?.data?.message || 
-                          error.message || 
+      const errorMessage = error.response?.data?.message ||
+                          error.message ||
                           'Error al registrarse';
       dispatch({
         type: 'LOGIN_FAILURE',

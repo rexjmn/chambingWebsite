@@ -536,7 +536,12 @@ $transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
     margin-top: 12px !important;
     overflow: hidden;
-    animation: menuFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    // Explicit background prevents OS dark-mode override
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    color-scheme: light !important;
+    // Animation removed — MUI TransitionComponent={Fade} handles opacity.
+    // Having both caused the semi-transparent dark flash.
   }
 
   &-header {
