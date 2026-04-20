@@ -20,10 +20,13 @@ $transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 // MAIN NAVBAR
 // ============================================
 .navbar {
-  background: #ffffff !important;
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(16px) saturate(1.8);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   color: #1a1a1a !important;
+  color-scheme: light;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 
   // Toolbar principal
   &__toolbar {
@@ -359,15 +362,22 @@ $transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     gap: 8px;
+    color-scheme: light;
   }
 
   &__hamburger {
     color: #1a1a1a !important;
+    background-color: transparent !important;
     padding: 10px !important;
     transition: $transition-smooth !important;
 
+    svg {
+      color: #1a1a1a !important;
+      fill: #1a1a1a !important;
+    }
+
     &:hover {
-      background: rgba(0, 0, 0, 0.04) !important;
+      background: rgba(0, 0, 0, 0.06) !important;
       transform: scale(1.05);
     }
   }
@@ -671,9 +681,12 @@ $transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 // ============================================
-// SCROLL STATE (opcional - agregar con JS)
+// SCROLL STATE — toggled by JS scroll listener
 // ============================================
 .navbar--scrolled {
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08) !important;
-  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(20px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.8) !important;
+  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.10) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.10) !important;
 }

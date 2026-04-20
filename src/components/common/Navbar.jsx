@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslations } from '../../hooks/useTranslations';
 import {
@@ -35,6 +35,13 @@ const Navbar = () => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const isActive = (path) => location.pathname === path;
 
@@ -269,12 +276,12 @@ const Navbar = () => {
 
   return (
     <>
-      <AppBar position="sticky" elevation={0} className="navbar">
+      <AppBar position="sticky" elevation={0} className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
         <Toolbar className="navbar__toolbar">
           <Logo />
 
           {/* Desktop nav — CSS oculta en móvil, nunca necesita JS para decidir */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, flex: 1 }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, flex: 1, justifyContent: 'flex-end' }}>
             <DesktopNav />
           </Box>
 
