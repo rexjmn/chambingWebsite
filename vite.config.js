@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { reactRouter } from '@react-router/dev/vite'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [reactRouter()],
   server: {
     host: '0.0.0.0',
     port: 5173,
@@ -27,16 +27,8 @@ export default defineConfig({
     esbuildOptions: {
       drop: ['console', 'debugger'],
     },
-    // Optimizar chunks
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'mui-core': ['@mui/material', '@mui/system'],
-          'mui-icons': ['@mui/icons-material'],
-        }
-      }
-    },
+    // Framework mode gestiona el code splitting automáticamente
+    rollupOptions: {},
     // Aumentar límite de advertencia
     chunkSizeWarningLimit: 1000,
     // Source maps solo en dev

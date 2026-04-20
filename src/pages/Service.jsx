@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLoaderData } from 'react-router';
 import WorkerCard from '../components/WorkerCard';
 import { logger } from '../utils/logger';
 import '../styles/services.scss';
 
 const Service = () => {
   const { t } = useTranslation();
-  const [workers, setWorkers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const loaderData = useLoaderData();
+  const [workers, setWorkers] = useState(loaderData?.initialWorkers || []);
+  const [loading, setLoading] = useState(!loaderData?.initialWorkers?.length);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     categoria: '',

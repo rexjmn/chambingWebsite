@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useLoaderData } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { publicProfileService } from '../services/publicProfileService';
 import { serviceService } from '../services/serviceService';
@@ -37,12 +38,15 @@ const PublicProfile = () => {
   const navigate = useNavigate();
   const { user: currentUser, isAuthenticated } = useAuth();
 
-  const [user, setUser] = useState(null);
-  const [skills, setSkills] = useState([]);
-  const [reviews, setReviews] = useState([]);
+  // loaderData viene del servidor en SSR; undefined en CSR puro
+  const loaderData = useLoaderData();
+
+  const [user, setUser] = useState(loaderData?.profile || null);
+  const [skills, setSkills] = useState(loaderData?.profile?.habilidades || []);
+  const [reviews, setReviews] = useState(loaderData?.reviews || []);
   const [stats, setStats] = useState(null);
-  const [tarifas, setTarifas] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [tarifas, setTarifas] = useState(loaderData?.profile?.tarifas || null);
+  const [loading, setLoading] = useState(!loaderData?.profile);
   const [error, setError] = useState(null);
   const [showContactModal, setShowContactModal] = useState(false);
 

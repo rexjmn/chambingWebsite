@@ -1,0 +1,1 @@
+import{A as m}from"./createSvgIcon-B-QsUQqU.js";import{g as a}from"./getThemeProps-DgXyZaP2.js";import{c as p}from"./useTheme-DyjQQT2u.js";const c=m();function n({props:s,name:t,defaultTheme:o,themeId:r}){let e=p(o);return r&&(e=e[r]||e),a({theme:e,name:t,props:s})}export{c as s,n as u};
