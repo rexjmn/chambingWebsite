@@ -10,8 +10,6 @@ import {
   Menu,
   MenuItem,
   Avatar,
-  useTheme,
-  useMediaQuery,
   Drawer,
   Divider,
   Typography,
@@ -34,8 +32,6 @@ const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { nav } = useTranslations();
   const location = useLocation();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -277,16 +273,18 @@ const Navbar = () => {
         <Toolbar className="navbar__toolbar">
           <Logo />
 
-          {isMobile ? (
-            <Box className="navbar__mobile-actions">
-              <LanguageSelector variant="icon" size="small" />
-              <IconButton onClick={handleMobileToggle} className="navbar__hamburger">
-                <MenuIcon />
-              </IconButton>
-            </Box>
-          ) : (
+          {/* Desktop nav — CSS oculta en móvil, nunca necesita JS para decidir */}
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, flex: 1 }}>
             <DesktopNav />
-          )}
+          </Box>
+
+          {/* Mobile actions — CSS oculta en desktop */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' } }} className="navbar__mobile-actions">
+            <LanguageSelector variant="icon" size="small" />
+            <IconButton onClick={handleMobileToggle} className="navbar__hamburger">
+              <MenuIcon />
+            </IconButton>
+          </Box>
         </Toolbar>
       </AppBar>
 
