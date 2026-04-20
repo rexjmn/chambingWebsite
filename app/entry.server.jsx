@@ -2,6 +2,24 @@ import { renderToReadableStream } from 'react-dom/server';
 import { ServerRouter } from 'react-router';
 import { isbot } from 'isbot';
 
+// Polyfill browser-only APIs para que los componentes no exploten durante SSR
+if (typeof globalThis.localStorage === 'undefined') {
+  globalThis.localStorage = {
+    getItem: () => null,
+    setItem: () => {},
+    removeItem: () => {},
+    clear: () => {},
+    key: () => null,
+    length: 0,
+  };
+}
+if (typeof globalThis.sessionStorage === 'undefined') {
+  globalThis.sessionStorage = globalThis.localStorage;
+}
+if (typeof globalThis.window === 'undefined') {
+  globalThis.window = globalThis;
+}
+
 export default async function handleRequest(
   request,
   responseStatusCode,
