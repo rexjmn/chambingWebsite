@@ -3,52 +3,36 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { logger } from '../utils/logger';
 
-// Importar traducciones
 import esTranslation from '../locales/es/translation.json';
 import enTranslation from '../locales/en/translation.json';
 import frTranslation from '../locales/fr/translation.json';
 
-// Configuración de recursos de traducción
 const resources = {
-  es: {
-    translation: esTranslation,
-  },
-  en: {
-    translation: enTranslation,
-  },
-  fr: {
-    translation: frTranslation,
-  },
+  es: { translation: esTranslation },
+  en: { translation: enTranslation },
+  fr: { translation: frTranslation },
 };
 
-// Inicializar i18next - CONFIGURACIÓN BÁSICA
-i18n
-  .use(LanguageDetector) // Detecta idioma automáticamente
-  .use(initReactI18next) // Conecta con React
-  .init({
-    resources,
-    
-    // Idiomas soportados
-    supportedLngs: ['es', 'en', 'fr'],
-    
-    // Idioma por defecto si no se puede detectar
-    fallbackLng: 'es',
-    
-    // Configuración de detección
-    detection: {
-      // Dónde guardar la preferencia del usuario
-      caches: ['localStorage'],
-      // Clave en localStorage
-      lookupLocalStorage: 'chambing-language',
-    },
-    
-    // Configuración básica
-    debug: true, // Para ver logs en desarrollo
-    
-    interpolation: {
-      escapeValue: false, // React ya protege contra XSS
-    },
-  });
+// BrowserLanguageDetector accede a window.location y localStorage —
+// ambas APIs no existen en Node.js durante SSR. Solo se usa en el navegador.
+const isBrowser = typeof window !== 'undefined' && typeof window.location !== 'undefined';
+
+const i18nChain = isBrowser ? i18n.use(LanguageDetector) : i18n;
+
+i18nChain.use(initReactI18next).init({
+  resources,
+  supportedLngs: ['es', 'en', 'fr'],
+  fallbackLng: 'es',
+  // La detección de idioma y el caché en localStorage solo aplican en el navegador
+  detection: isBrowser ? {
+    caches: ['localStorage'],
+    lookupLocalStorage: 'chambing-language',
+  } : {},
+  debug: false,
+  interpolation: {
+    escapeValue: false,
+  },
+});
 
 // Función simple para cambiar idioma
 export const changeLanguage = (lng) => {

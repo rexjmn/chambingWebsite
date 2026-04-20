@@ -2,22 +2,43 @@ import { renderToReadableStream } from 'react-dom/server';
 import { ServerRouter } from 'react-router';
 import { isbot } from 'isbot';
 
-// Polyfill browser-only APIs para que los componentes no exploten durante SSR
-if (typeof globalThis.localStorage === 'undefined') {
-  globalThis.localStorage = {
-    getItem: () => null,
-    setItem: () => {},
-    removeItem: () => {},
-    clear: () => {},
-    key: () => null,
-    length: 0,
+// Polyfill browser-only APIs — corre al cargar el módulo del servidor,
+// antes de que cualquier componente React intente renderizarse.
+const _storage = {
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+  clear: () => {},
+  key: () => null,
+  length: 0,
+};
+
+if (typeof globalThis.localStorage === 'undefined') globalThis.localStorage = _storage;
+if (typeof globalThis.sessionStorage === 'undefined') globalThis.sessionStorage = _storage;
+
+if (typeof globalThis.window === 'undefined') {
+  globalThis.window = {
+    location: { search: '', href: '/', pathname: '/', hash: '', origin: '' },
+    navigator: { language: 'es', languages: ['es', 'en'], userAgent: '' },
+    localStorage: _storage,
+    sessionStorage: _storage,
+    document: { cookie: '' },
+    history: { replaceState: () => {}, pushState: () => {}, state: null },
+    screen: {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => true,
+    innerWidth: 1280,
+    innerHeight: 800,
   };
 }
-if (typeof globalThis.sessionStorage === 'undefined') {
-  globalThis.sessionStorage = globalThis.localStorage;
+
+if (typeof globalThis.navigator === 'undefined') {
+  globalThis.navigator = { language: 'es', languages: ['es', 'en'], userAgent: '' };
 }
-if (typeof globalThis.window === 'undefined') {
-  globalThis.window = globalThis;
+
+if (typeof globalThis.document === 'undefined') {
+  globalThis.document = { cookie: '', querySelector: () => null, getElementsByTagName: () => [] };
 }
 
 export default async function handleRequest(
