@@ -23,8 +23,11 @@ i18nChain.use(initReactI18next).init({
   resources,
   supportedLngs: ['es', 'en', 'fr'],
   fallbackLng: 'es',
-  // La detección de idioma y el caché en localStorage solo aplican en el navegador
+  // Solo leer preferencia guardada por el usuario — NO detectar idioma del navegador.
+  // Así el cliente siempre arranca en 'es' igual que el servidor (sin hydration mismatch).
+  // El usuario puede cambiar el idioma manualmente y se guarda en localStorage.
   detection: isBrowser ? {
+    order: ['localStorage'],          // solo localStorage, nunca navigator/htmlTag
     caches: ['localStorage'],
     lookupLocalStorage: 'chambing-language',
   } : {},
