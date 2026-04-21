@@ -209,7 +209,7 @@ const CreateContractSimple = () => {
         modalidad: formData.modalidad,
         ...(formData.modalidad !== 'proyecto' && { cantidad: parseInt(formData.cantidad) || 1 }),
         ...(formData.fecha_inicio && { fechaInicio: formData.fecha_inicio }),
-        ...(formData.fecha_fin && { fechaFin: formData.fecha_fin }),
+        ...(formData.fecha_fin && formData.fecha_fin > formData.fecha_inicio && { fechaFin: formData.fecha_fin }),
         detallesServicio: {
           descripcion: formData.descripcion,
           direccion: formData.direccion || 'Por definir',
