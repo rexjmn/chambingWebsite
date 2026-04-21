@@ -107,14 +107,15 @@ const CreateContract = () => {
         empleadorId: currentUser.id,
         trabajadorId: formData.trabajador_id,
         categoriaId: formData.categoria_id,
-        fechaInicio: formData.fecha_inicio,
+        modalidad: 'proyecto',
+        fechaInicio: formData.fecha_inicio || undefined,
         fechaFin: formData.fecha_fin || undefined,
         detallesServicio: {
           descripcion: formData.descripcion,
           direccion: formData.direccion,
           notas_adicionales: formData.notas || undefined,
         },
-        terminosCondiciones: 'Términos y condiciones estándar del servicio',
+        terminosCondiciones: 'Términos y condiciones estándar del servicio en Chambing',
         monto: parseFloat(formData.monto),
         metodoPago: 'efectivo',
       };
