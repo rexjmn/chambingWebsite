@@ -18,6 +18,7 @@ import {
   Grid,
   Paper,
   CircularProgress,
+  TextField,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -32,6 +33,7 @@ import {
   CheckCircle as CheckCircleIcon,
   Cancel as CancelIcon,
   HourglassEmpty as HourglassIcon,
+  LockOpen as LockOpenIcon,
 } from '@mui/icons-material';
 import '../styles/contractDetails.scss';
 
@@ -46,6 +48,7 @@ const ContractDetails = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState(null);
+  const [pinActivacion, setPinActivacion] = useState('');
 
   useEffect(() => {
     const loadContract = async () => {
@@ -130,6 +133,26 @@ const ContractDetails = () => {
   // Determinar rol del usuario en este contrato
   const esEmpleador  = user && contract && String(user.id) === String(contract.empleador?.id);
   const esTrabajador = user && contract && String(user.id) === String(contract.trabajador?.id);
+
+  const handleActivarContrato = async () => {
+    if (!pinActivacion || pinActivacion.length !== 6) {
+      setActionError('El PIN debe tener exactamente 6 dígitos');
+      return;
+    }
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      await contractService.activarContratoConPIN(contract.codigo_contrato, pinActivacion);
+      const res = await contractService.getContractById(contractId);
+      if (res.status === 'success') setContract(res.data);
+      setPinActivacion('');
+    } catch (err) {
+      logger.error('Error activando contrato:', err);
+      setActionError(err.response?.data?.message || 'PIN incorrecto o contrato no válido.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   const handleCompletarContrato = async () => {
     setActionLoading(true);
@@ -453,29 +476,60 @@ const ContractDetails = () => {
           </Grid>
 
           {/* Estado y Aceptación */}
-          {contract.estado === 'pendiente_activacion' && contract.pin_activacion && (
+          {contract.estado === 'pendiente_activacion' && esEmpleador && (
             <Grid item xs={12}>
-              <Card elevation={2} sx={{ bgcolor: 'warning.light', color: 'warning.contrastText' }}>
+              <Card elevation={2} sx={{ bgcolor: 'warning.light' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom fontWeight={600}>
-                    {t('contractDetails.activation.title') || '⚠️ Pendiente de Activación'}
+                    ⏳ Esperando activación del trabajador
                   </Typography>
                   <Typography variant="body1" paragraph>
-                    {t('contractDetails.activation.message') || 'Este contrato requiere activación por parte del trabajador.'}
+                    El trabajador debe ingresar el PIN de 6 dígitos que recibiste al crear este contrato para activarlo.
                   </Typography>
-                  <Typography variant="body2">
-                    <strong>{t('contractDetails.activation.pin') || 'PIN de activación'}:</strong>
-                    <code style={{
-                      marginLeft: '10px',
-                      padding: '4px 12px',
-                      background: 'rgba(0,0,0,0.1)',
-                      borderRadius: '4px',
-                      fontSize: '1.2rem',
-                      fontWeight: 'bold'
-                    }}>
-                      {contract.pin_activacion}
-                    </code>
+                  {contract.codigo_qr_url && (
+                    <Typography variant="body2">
+                      También puedes compartir el código QR:{' '}
+                      <a href={contract.codigo_qr_url} target="_blank" rel="noopener noreferrer">
+                        {contract.codigo_qr_url}
+                      </a>
+                    </Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
+
+          {contract.estado === 'pendiente_activacion' && esTrabajador && (
+            <Grid item xs={12}>
+              <Card elevation={2} sx={{ bgcolor: 'info.light' }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom fontWeight={600}>
+                    🔑 Activar contrato
                   </Typography>
+                  <Typography variant="body1" paragraph>
+                    Ingresa el PIN de 6 dígitos que te compartió el cliente para activar este contrato.
+                  </Typography>
+                  <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+                    <TextField
+                      label="PIN de activación"
+                      value={pinActivacion}
+                      onChange={e => setPinActivacion(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      inputProps={{ maxLength: 6, inputMode: 'numeric', pattern: '[0-9]*' }}
+                      size="small"
+                      sx={{ width: 160, bgcolor: 'white', borderRadius: 1 }}
+                      placeholder="000000"
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      onClick={handleActivarContrato}
+                      disabled={actionLoading || pinActivacion.length !== 6}
+                      startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <LockOpenIcon />}
+                    >
+                      {actionLoading ? 'Activando...' : 'Activar contrato'}
+                    </Button>
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>

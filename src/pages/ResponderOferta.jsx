@@ -9,9 +9,7 @@ import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import api from '../services/api';
 
 const MODALIDAD_LABELS = {
   hora: 'Por hora',
@@ -40,7 +38,7 @@ export default function ResponderOferta() {
       return;
     }
 
-    axios.get(`${API_URL}/api/contracts/oferta/${token}`)
+    api.get(`/contracts/oferta/${token}`)
       .then(res => {
         if (res.data.status === 'success') {
           setContrato(res.data.data);
@@ -57,7 +55,7 @@ export default function ResponderOferta() {
   const aceptar = async (t = token) => {
     setEnviando(true);
     try {
-      const res = await axios.post(`${API_URL}/api/contracts/oferta/${t}/aceptar`);
+      const res = await api.post(`/contracts/oferta/${t}/aceptar`);
       setResultadoMensaje(res.data.message);
       setResultadoExito(res.data.status === 'success');
       setEstado('respondido');
@@ -73,7 +71,7 @@ export default function ResponderOferta() {
   const rechazar = async () => {
     setEnviando(true);
     try {
-      const res = await axios.post(`${API_URL}/api/contracts/oferta/${token}/rechazar`, {
+      const res = await api.post(`/contracts/oferta/${token}/rechazar`, {
         comentario: comentario.trim() || undefined,
       });
       setResultadoMensaje(res.data.message);
