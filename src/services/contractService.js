@@ -81,41 +81,28 @@ export const contractService = {
     }
   },
 
-  // ========== ACTIVAR CONTRATO (PIN o QR) ==========
+  // ========== FLUJO EN CAMINO / CONFIRMAR LLEGADA ==========
 
-  /**
-   * Activa un contrato usando PIN
-   */
-  async activarContratoConPIN(codigoContrato, pin) {
+  /** Trabajador pulsa "Estoy en camino" — genera código de verificación */
+  async iniciarViaje(contratoId) {
     try {
-      logger.api('Activando contrato con PIN');
-      const response = await api.post('/contracts/activar', {
-        metodoActivacion: 'pin',
-        codigoContrato,
-        pin
-      });
-      logger.api('Contrato activado exitosamente');
+      logger.api('Iniciando viaje', { contratoId });
+      const response = await api.post(`/contracts/${contratoId}/en-camino`);
       return response.data;
     } catch (error) {
-      logger.error('Error activando contrato:', error.message);
+      logger.error('Error iniciando viaje:', error.message);
       throw error;
     }
   },
 
-  /**
-   * Activa un contrato usando QR code
-   */
-  async activarContratoConQR(qrData) {
+  /** Cliente confirma llegada del trabajador ingresando el código de 4 dígitos */
+  async confirmarLlegada(contratoId, codigo) {
     try {
-      logger.api('Activando contrato con QR');
-      const response = await api.post('/contracts/activar', {
-        metodoActivacion: 'qr',
-        qrData
-      });
-      logger.api('Contrato activado exitosamente');
+      logger.api('Confirmando llegada', { contratoId });
+      const response = await api.post(`/contracts/${contratoId}/confirmar-llegada`, { codigo });
       return response.data;
     } catch (error) {
-      logger.error('Error activando contrato con QR:', error.message);
+      logger.error('Error confirmando llegada:', error.message);
       throw error;
     }
   },

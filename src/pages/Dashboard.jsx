@@ -10,7 +10,6 @@ import { serviceService } from '../services/serviceService';
 import { contractService } from '../services/contractService';
 import ProfilePhotoModal from '../components/ProfilePhotoModal';
 import CoverPhotoModal from '../components/CoverPhotoModal';
-import PinModal from '../components/PinModal';
 import { DashboardSkeleton } from '../components/SkeletonLoader';
 import { logger } from '../utils/logger';
 import '../styles/dashboard.scss';
@@ -179,8 +178,6 @@ const Dashboard = () => {
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [coverPhotoModalOpen, setCoverPhotoModalOpen] = useState(false);
   const [showAllContracts, setShowAllContracts] = useState(false);
-  const [pinModalOpen, setPinModalOpen] = useState(false);
-  const [selectedContract, setSelectedContract] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -233,33 +230,6 @@ const Dashboard = () => {
   }, [refreshKey]);
 
   const handleViewWorkers = (categoryId) => navigate(`/workers?category=${categoryId}`);
-
-  const handleActivateContract = (contract) => {
-    setSelectedContract(contract);
-    setPinModalOpen(true);
-  };
-
-  const handlePinSubmit = async (pin) => {
-    if (!selectedContract) return;
-    try {
-      const response = await contractService.activarContratoConPIN(
-        selectedContract.codigo_contrato,
-        pin
-      );
-      if (response.status === 'success') {
-        setSnackbar({ open: true, message: t('dashboard.contract.activated'), severity: 'success' });
-        setPinModalOpen(false);
-        setSelectedContract(null);
-        setRefreshKey(prev => prev + 1);
-      }
-    } catch (err) {
-      setSnackbar({
-        open: true,
-        message: t('dashboard.contract.activationError') + ': ' + (err.response?.data?.message || err.message),
-        severity: 'error',
-      });
-    }
-  };
 
   const handleMenuToggle = () => setMenuOpen(v => !v);
   const handleMenuClose = () => setMenuOpen(false);
@@ -630,10 +600,9 @@ const Dashboard = () => {
                       <span className="dashboard__contract-value">{formatDate(contract.fecha_creacion)}</span>
                     </div>
 
-                    {contract.estado === 'pendiente_activacion' && (
+                    {contract.estado === 'en_camino' && (
                       <div className="dashboard__contract-pin">
-                        <p><strong>{t('dashboard.contract.activationPin')}</strong></p>
-                        <code className="dashboard__pin-code">{contract.pin_activacion}</code>
+                        <p>🚶 <strong>El trabajador está en camino</strong></p>
                       </div>
                     )}
                   </div>
@@ -646,13 +615,13 @@ const Dashboard = () => {
                     >
                       {t('dashboard.contract.viewDetails')}
                     </button>
-                    {contract.estado === 'pendiente_activacion' && (
+                    {(contract.estado === 'confirmado' || contract.estado === 'en_camino') && (
                       <button
                         className="dashboard__btn dashboard__btn--primary dashboard__btn--sm"
-                        onClick={() => handleActivateContract(contract)}
+                        onClick={() => navigate(`/contracts/${contract.id}`)}
                         type="button"
                       >
-                        {t('dashboard.contract.activateContract')}
+                        Ver detalles →
                       </button>
                     )}
                   </div>
@@ -690,13 +659,6 @@ const Dashboard = () => {
         open={coverPhotoModalOpen}
         onClose={() => setCoverPhotoModalOpen(false)}
         onPhotoUpdated={(url) => logger.log('Foto de portada actualizada:', url)}
-      />
-
-      <PinModal
-        open={pinModalOpen}
-        onClose={() => { setPinModalOpen(false); setSelectedContract(null); }}
-        onSubmit={handlePinSubmit}
-        contractCode={selectedContract?.codigo_contrato}
       />
 
       <Snackbar

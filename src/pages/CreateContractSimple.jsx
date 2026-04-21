@@ -281,16 +281,7 @@ const CreateContractSimple = () => {
                 <span>{formatFecha(formData.fecha_inicio)}</span>
               </div>
             )}
-            {createdContract.pin_activacion && (
-              <div className="pin-section">
-                <p><strong>PIN de Activación</strong></p>
-                <code className="pin-code">{createdContract.pin_activacion}</code>
-                <p className="info-text">
-                  <InfoIcon sx={{ fontSize: 16 }} />
-                  Comparte este PIN con el trabajador para activar el contrato
-                </p>
-              </div>
-            )}
+
           </div>
 
           <div className="success-actions">

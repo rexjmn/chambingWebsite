@@ -48,7 +48,8 @@ const ContractDetails = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState(null);
-  const [pinActivacion, setPinActivacion] = useState('');
+  const [codigoConfirmacion, setCodigoConfirmacion] = useState(''); // empleador ingresa código
+  const [codigoLlegada, setCodigoLlegada] = useState(null);         // trabajador ve su código
 
   useEffect(() => {
     const loadContract = async () => {
@@ -134,21 +135,45 @@ const ContractDetails = () => {
   const esEmpleador  = user && contract && String(user.id) === String(contract.empleador?.id);
   const esTrabajador = user && contract && String(user.id) === String(contract.trabajador?.id);
 
-  const handleActivarContrato = async () => {
-    if (!pinActivacion || pinActivacion.length !== 6) {
-      setActionError('El PIN debe tener exactamente 6 dígitos');
+  const handleEnCamino = async () => {
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      const res = await contractService.iniciarViaje(contractId);
+      if (res.status === 'success') {
+        setCodigoLlegada(res.data.codigo_llegada);
+        const updated = await contractService.getContractById(contractId);
+        if (updated.status === 'success') setContract(updated.data);
+      } else {
+        setActionError(res.message || 'No se pudo iniciar el viaje.');
+      }
+    } catch (err) {
+      logger.error('Error iniciando viaje:', err);
+      setActionError(err.response?.data?.message || 'Error al iniciar el viaje.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleConfirmarLlegada = async () => {
+    if (!codigoConfirmacion || codigoConfirmacion.length !== 4) {
+      setActionError('El código debe tener exactamente 4 dígitos');
       return;
     }
     setActionLoading(true);
     setActionError(null);
     try {
-      await contractService.activarContratoConPIN(contract.codigo_contrato, pinActivacion);
-      const res = await contractService.getContractById(contractId);
-      if (res.status === 'success') setContract(res.data);
-      setPinActivacion('');
+      const res = await contractService.confirmarLlegada(contractId, codigoConfirmacion);
+      if (res.status === 'success') {
+        const updated = await contractService.getContractById(contractId);
+        if (updated.status === 'success') setContract(updated.data);
+        setCodigoConfirmacion('');
+      } else {
+        setActionError(res.message || 'Código incorrecto.');
+      }
     } catch (err) {
-      logger.error('Error activando contrato:', err);
-      setActionError(err.response?.data?.message || 'PIN incorrecto o contrato no válido.');
+      logger.error('Error confirmando llegada:', err);
+      setActionError(err.response?.data?.message || 'Código incorrecto. Verifica con el trabajador.');
     } finally {
       setActionLoading(false);
     }
@@ -475,59 +500,118 @@ const ContractDetails = () => {
             </Card>
           </Grid>
 
-          {/* Estado y Aceptación */}
-          {contract.estado === 'pendiente_activacion' && esEmpleador && (
+          {/* ── Contrato confirmado, esperando que trabajador salga ── */}
+          {contract.estado === 'confirmado' && esEmpleador && (
             <Grid item xs={12}>
               <Card elevation={2} sx={{ bgcolor: 'warning.light' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom fontWeight={600}>
-                    ⏳ Esperando activación del trabajador
+                    ⏳ Contrato confirmado
                   </Typography>
-                  <Typography variant="body1" paragraph>
-                    El trabajador debe ingresar el PIN de 6 dígitos que recibiste al crear este contrato para activarlo.
+                  <Typography variant="body1">
+                    El trabajador ha aceptado. Cuando salga hacia tu casa pulsará "Estoy en camino" y recibirás una notificación.
+                    Al llegar, pídele un código de 4 dígitos para confirmar su identidad.
                   </Typography>
-                  {contract.codigo_qr_url && (
-                    <Typography variant="body2">
-                      También puedes compartir el código QR:{' '}
-                      <a href={contract.codigo_qr_url} target="_blank" rel="noopener noreferrer">
-                        {contract.codigo_qr_url}
-                      </a>
-                    </Typography>
-                  )}
                 </CardContent>
               </Card>
             </Grid>
           )}
 
-          {contract.estado === 'pendiente_activacion' && esTrabajador && (
+          {contract.estado === 'confirmado' && esTrabajador && (
             <Grid item xs={12}>
               <Card elevation={2} sx={{ bgcolor: 'info.light' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom fontWeight={600}>
-                    🔑 Activar contrato
+                    🚶 ¿Listo para salir?
                   </Typography>
                   <Typography variant="body1" paragraph>
-                    Ingresa el PIN de 6 dígitos que te compartió el cliente para activar este contrato.
+                    Pulsa el botón cuando estés en camino. Recibirás un código de 4 dígitos que deberás decirle al cliente al llegar.
                   </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    onClick={handleEnCamino}
+                    disabled={actionLoading}
+                    startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <LockOpenIcon />}
+                  >
+                    {actionLoading ? 'Generando código...' : 'Estoy en camino'}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
+
+          {/* ── Trabajador en camino: muestra su código ── */}
+          {contract.estado === 'en_camino' && esTrabajador && (
+            <Grid item xs={12}>
+              <Card elevation={3} sx={{ bgcolor: '#e3f2fd', border: '2px solid #1976d2' }}>
+                <CardContent sx={{ textAlign: 'center' }}>
+                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                    🔑 Tu código de verificación
+                  </Typography>
+                  {codigoLlegada ? (
+                    <>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        Díselo al cliente cuando llegues a su puerta
+                      </Typography>
+                      <Typography variant="h2" fontWeight={900} color="primary" letterSpacing={8} sx={{ my: 2 }}>
+                        {codigoLlegada}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography variant="body1" color="text.secondary">
+                      Tu código fue enviado por WhatsApp/email. Revisa tus mensajes.
+                    </Typography>
+                  )}
+                  <Typography variant="caption" color="text.secondary">
+                    Válido por 4 horas · {contract.codigo_contrato}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
+
+          {/* ── Cliente espera al trabajador: ingresa código ── */}
+          {contract.estado === 'en_camino' && esEmpleador && (
+            <Grid item xs={12}>
+              <Card elevation={2} sx={{ bgcolor: '#e8f5e9', border: '2px solid #388e3c' }}>
+                <CardContent>
+                  <Box display="flex" alignItems="center" gap={2} mb={2}>
+                    <Avatar
+                      src={contract.trabajador?.foto_perfil}
+                      sx={{ width: 56, height: 56 }}
+                    >
+                      {contract.trabajador?.nombre?.charAt(0)}
+                    </Avatar>
+                    <div>
+                      <Typography variant="h6" fontWeight={600}>
+                        🚶 {contract.trabajador?.nombre} {contract.trabajador?.apellido} está en camino
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Cuando llegue, pídele su código de 4 dígitos y confírmalo aquí
+                      </Typography>
+                    </div>
+                  </Box>
                   <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
                     <TextField
-                      label="PIN de activación"
-                      value={pinActivacion}
-                      onChange={e => setPinActivacion(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      inputProps={{ maxLength: 6, inputMode: 'numeric', pattern: '[0-9]*' }}
+                      label="Código del trabajador"
+                      value={codigoConfirmacion}
+                      onChange={e => setCodigoConfirmacion(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                      inputProps={{ maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
                       size="small"
-                      sx={{ width: 160, bgcolor: 'white', borderRadius: 1 }}
-                      placeholder="000000"
+                      sx={{ width: 140, bgcolor: 'white', borderRadius: 1 }}
+                      placeholder="0000"
                     />
                     <Button
                       variant="contained"
-                      color="primary"
+                      color="success"
                       size="large"
-                      onClick={handleActivarContrato}
-                      disabled={actionLoading || pinActivacion.length !== 6}
+                      onClick={handleConfirmarLlegada}
+                      disabled={actionLoading || codigoConfirmacion.length !== 4}
                       startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <LockOpenIcon />}
                     >
-                      {actionLoading ? 'Activando...' : 'Activar contrato'}
+                      {actionLoading ? 'Confirmando...' : 'Confirmar llegada'}
                     </Button>
                   </Box>
                 </CardContent>
