@@ -1,0 +1,133 @@
+@use './variables.scss' as *;
+
+.site-footer {
+  background-color: #1F2937;
+  color: #ffffff;
+  color-scheme: dark;
+  padding: 64px 0 0;
+  margin-top: auto;
+
+  // ── Container ────────────────────────────────────────────────
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+
+    @media (max-width: 768px) { padding: 0 20px; }
+  }
+
+  // ── Grid ─────────────────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+
+    @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 480px)  { grid-template-columns: 1fr; gap: 32px; }
+  }
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  // ── Brand ────────────────────────────────────────────────────
+  &__brand {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 4px;
+  }
+
+  &__desc {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #9CA3AF;
+    margin: 0;
+  }
+
+  // ── Social ───────────────────────────────────────────────────
+  &__social {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  &__social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateY(-2px);
+    }
+  }
+
+  // ── Headings ─────────────────────────────────────────────────
+  &__heading {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 8px;
+  }
+
+  // ── Nav links ────────────────────────────────────────────────
+  &__links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__link {
+    font-size: 0.875rem;
+    color: #9CA3AF;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    width: fit-content;
+
+    &:hover { color: #ffffff; }
+  }
+
+  // ── Contact list ─────────────────────────────────────────────
+  &__contact {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.875rem;
+      color: #9CA3AF;
+
+      svg { flex-shrink: 0; color: #9CA3AF; }
+    }
+  }
+
+  // ── Bottom bar ───────────────────────────────────────────────
+  &__bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 48px;
+    padding: 24px 0;
+    text-align: center;
+
+    p {
+      margin: 0;
+      font-size: 0.8125rem;
+      color: #6B7280;
+    }
+  }
+}
