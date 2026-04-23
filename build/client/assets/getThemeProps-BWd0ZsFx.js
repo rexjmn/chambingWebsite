@@ -1,0 +1,1 @@
+import{B as r}from"./createSvgIcon-tUZ1ORcO.js";function p(t){const{theme:o,name:e,props:n}=t;return!o||!o.components||!o.components[e]||!o.components[e].defaultProps?n:r(o.components[e].defaultProps,n)}export{p as g};

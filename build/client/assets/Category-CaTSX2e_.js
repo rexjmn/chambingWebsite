@@ -1,0 +1,1 @@
+import{p as o}from"./chunk-OE4NN4TA-B5Lwa_ev.js";import{l as r}from"./createSvgIcon-tUZ1ORcO.js";const c=r(o.jsx("path",{d:"M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"})),a=r([o.jsx("path",{d:"m12 2-5.5 9h11z"},"0"),o.jsx("circle",{cx:"17.5",cy:"17.5",r:"4.5"},"1"),o.jsx("path",{d:"M3 13.5h8v8H3z"},"2")]);export{c as A,a as C};

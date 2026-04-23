@@ -30,17 +30,14 @@ export default function ResponderOferta() {
   const [contrato, setContrato] = useState(null);
   const [empleadorStats, setEmpleadorStats] = useState(null);
   const [empleadorReviews, setEmpleadorReviews] = useState([]);
-  const [accion, setAccion] = useState(null);
-  const [comentario, setComentario] = useState('');
+  const [accion, setAccion] = useState(null); // null | 'rechazar'
+  const [mensaje, setMensaje] = useState('');  // mensaje opcional (aceptar o rechazar)
   const [enviando, setEnviando] = useState(false);
   const [resultadoMensaje, setResultadoMensaje] = useState('');
   const [resultadoExito, setResultadoExito] = useState(false);
 
   useEffect(() => {
-    if (!token) {
-      setEstado('error');
-      return;
-    }
+    if (!token) { setEstado('error'); return; }
 
     api.get(`/contracts/oferta/${token}`)
       .then(res => {
@@ -48,10 +45,10 @@ export default function ResponderOferta() {
           const data = res.data.data;
           setContrato(data);
           setEstado('loaded');
-          if (accionInicial === 'aceptar') aceptar(token);
+          // Solo pre-abrir formulario de rechazo si llega con accion=rechazar
+          // NUNCA auto-aceptar: el trabajador siempre decide en la página
           if (accionInicial === 'rechazar') setAccion('rechazar');
 
-          // Cargar reputación del empleador en paralelo
           const empleadorId = data.empleador?.id;
           if (empleadorId) {
             api.get(`/users/${empleadorId}/stats`).then(r => setEmpleadorStats(r.data?.data)).catch(() => {});
@@ -64,10 +61,12 @@ export default function ResponderOferta() {
       .catch(() => setEstado('error'));
   }, [token]);
 
-  const aceptar = async (t = token) => {
+  const aceptar = async () => {
     setEnviando(true);
     try {
-      const res = await api.post(`/contracts/oferta/${t}/aceptar`);
+      const res = await api.post(`/contracts/oferta/${token}/aceptar`, {
+        mensaje: mensaje.trim() || undefined,
+      });
       setResultadoMensaje(res.data.message);
       setResultadoExito(res.data.status === 'success');
       setEstado('respondido');
@@ -84,7 +83,7 @@ export default function ResponderOferta() {
     setEnviando(true);
     try {
       const res = await api.post(`/contracts/oferta/${token}/rechazar`, {
-        comentario: comentario.trim() || undefined,
+        comentario: mensaje.trim() || undefined,
       });
       setResultadoMensaje(res.data.message);
       setResultadoExito(res.data.status === 'success');
@@ -264,43 +263,43 @@ export default function ResponderOferta() {
 
         <Divider sx={{ my: 3 }} />
 
-        {accion !== 'rechazar' ? (
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <Button
-              variant="contained"
-              color="success"
-              size="large"
-              fullWidth
-              disabled={enviando}
-              onClick={() => aceptar()}
-            >
-              {enviando ? <CircularProgress size={22} color="inherit" /> : '✓ Aceptar oferta'}
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              size="large"
-              fullWidth
-              onClick={() => setAccion('rechazar')}
-            >
-              ✗ Rechazar
-            </Button>
-          </Stack>
-        ) : (
-          <Box>
-            <Typography variant="subtitle2" gutterBottom>
-              Motivo del rechazo (opcional)
-            </Typography>
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              placeholder="Ej: No tengo disponibilidad en esas fechas..."
-              value={comentario}
-              onChange={e => setComentario(e.target.value)}
-              inputProps={{ maxLength: 500 }}
-              sx={{ mb: 2 }}
-            />
+        <Box>
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            label={accion === 'rechazar' ? 'Motivo del rechazo (opcional)' : 'Mensaje para el cliente (opcional)'}
+            placeholder={accion === 'rechazar' ? 'Ej: No tengo disponibilidad en esas fechas...' : 'Ej: ¡Con gusto! Estaré puntual.'}
+            value={mensaje}
+            onChange={e => setMensaje(e.target.value)}
+            inputProps={{ maxLength: 500 }}
+            sx={{ mb: 2 }}
+          />
+
+          {accion !== 'rechazar' ? (
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <Button
+                variant="contained"
+                color="success"
+                size="large"
+                fullWidth
+                disabled={enviando}
+                onClick={aceptar}
+              >
+                {enviando ? <CircularProgress size={22} color="inherit" /> : '✓ Aceptar oferta'}
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                size="large"
+                fullWidth
+                disabled={enviando}
+                onClick={() => setAccion('rechazar')}
+              >
+                ✗ Rechazar
+              </Button>
+            </Stack>
+          ) : (
             <Stack direction="row" spacing={2}>
               <Button variant="outlined" onClick={() => setAccion(null)} disabled={enviando}>
                 Cancelar
@@ -308,14 +307,15 @@ export default function ResponderOferta() {
               <Button
                 variant="contained"
                 color="error"
+                fullWidth
                 disabled={enviando}
                 onClick={rechazar}
               >
                 {enviando ? <CircularProgress size={22} color="inherit" /> : 'Confirmar rechazo'}
               </Button>
             </Stack>
-          </Box>
-        )}
+          )}
+        </Box>
       </Paper>
     </Box>
   );
