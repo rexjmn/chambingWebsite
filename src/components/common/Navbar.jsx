@@ -149,7 +149,19 @@ const Navbar = () => {
       open={mobileOpen}
       onClose={handleMobileToggle}
       className="navbar__drawer"
-      PaperProps={{ className: 'navbar__drawer-paper' }}
+      PaperProps={{
+        className: 'navbar__drawer-paper',
+        sx: {
+          colorScheme: 'light',
+          backgroundColor: '#ffffff',
+          color: '#1a1a1a',
+        },
+      }}
+      slotProps={{
+        backdrop: {
+          sx: { backgroundColor: 'rgba(15, 23, 42, 0.25)', backdropFilter: 'blur(4px)' },
+        },
+      }}
     >
       <Box className="navbar__drawer-content">
         {/* Header */}
