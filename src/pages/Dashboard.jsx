@@ -241,6 +241,23 @@ const Dashboard = () => {
     catch { return dateString; }
   };
 
+  const getActionBanner = (contract) => {
+    const esEmpleador  = String(user?.id) === String(contract.empleador?.id);
+    const esTrabajador = String(user?.id) === String(contract.trabajador?.id);
+
+    if (contract.estado === 'oferta_pendiente' && esTrabajador)
+      return { color: '#fff3e0', border: '#f57c00', icon: '⚡', text: 'Tienes una oferta pendiente — responde antes de 72 h' };
+    if (contract.estado === 'en_camino' && esEmpleador)
+      return { color: '#e8f5e9', border: '#388e3c', icon: '🔑', text: 'El trabajador está en camino — pídele el código al llegar' };
+    if (contract.estado === 'en_camino' && esTrabajador)
+      return { color: '#e3f2fd', border: '#1976d2', icon: '🚶', text: 'Muestra tu código al cliente cuando llegues' };
+    if (contract.estado === 'activo' && esTrabajador)
+      return { color: '#f3e5f5', border: '#7b1fa2', icon: '✅', text: 'Trabajo en progreso — marca como completado cuando termines' };
+    if (contract.estado === 'completado' && esEmpleador)
+      return { color: '#fce4ec', border: '#c62828', icon: '⭐', text: 'El trabajador terminó — confirma y deja tu reseña' };
+    return null;
+  };
+
   const renderProfileAvatar = () => {
     if (user?.foto_perfil) {
       return (
@@ -569,8 +586,35 @@ const Dashboard = () => {
 
           {contracts.length > 0 ? (
             <div className="dashboard__contracts">
-              {(showAllContracts ? contracts : contracts.slice(0, 3)).map((contract) => (
-                <article key={contract.id} className="dashboard__contract-card">
+              {(showAllContracts ? contracts : contracts.slice(0, 3))
+                .slice()
+                .sort((a, b) => (getActionBanner(b) ? 1 : 0) - (getActionBanner(a) ? 1 : 0))
+                .map((contract) => {
+                const banner = getActionBanner(contract);
+                return (
+                <article
+                  key={contract.id}
+                  className="dashboard__contract-card"
+                  style={banner ? { border: `2px solid ${banner.border}` } : undefined}
+                >
+                  {banner && (
+                    <div style={{
+                      background: banner.color,
+                      borderBottom: `1px solid ${banner.border}`,
+                      padding: '8px 14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: '#333',
+                      borderRadius: '6px 6px 0 0',
+                    }}>
+                      <span style={{ fontSize: 16 }}>{banner.icon}</span>
+                      {banner.text}
+                    </div>
+                  )}
+
                   <div className="dashboard__contract-header">
                     <div className="dashboard__contract-title-row">
                       <span
@@ -580,7 +624,7 @@ const Dashboard = () => {
                       <h3>{t('dashboard.contract.code', { code: contract.codigo_contrato })}</h3>
                     </div>
                     <span className={`dashboard__contract-status dashboard__contract-status--${contract.estado}`}>
-                      {contract.estado.replace('_', ' ').toUpperCase()}
+                      {contract.estado.replace(/_/g, ' ').toUpperCase()}
                     </span>
                   </div>
 
@@ -599,12 +643,6 @@ const Dashboard = () => {
                       <span className="dashboard__contract-label">Fecha</span>
                       <span className="dashboard__contract-value">{formatDate(contract.fecha_creacion)}</span>
                     </div>
-
-                    {contract.estado === 'en_camino' && (
-                      <div className="dashboard__contract-pin">
-                        <p>🚶 <strong>El trabajador está en camino</strong></p>
-                      </div>
-                    )}
                   </div>
 
                   <div className="dashboard__contract-actions">
@@ -615,18 +653,19 @@ const Dashboard = () => {
                     >
                       {t('dashboard.contract.viewDetails')}
                     </button>
-                    {(contract.estado === 'confirmado' || contract.estado === 'en_camino') && (
+                    {banner && (
                       <button
                         className="dashboard__btn dashboard__btn--primary dashboard__btn--sm"
                         onClick={() => navigate(`/contracts/${contract.id}`)}
                         type="button"
                       >
-                        Ver detalles →
+                        Ir ahora →
                       </button>
                     )}
                   </div>
                 </article>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="dashboard__empty-state">

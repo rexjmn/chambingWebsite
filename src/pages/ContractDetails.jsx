@@ -269,6 +269,186 @@ const ContractDetails = () => {
           </Box>
         </Box>
 
+        {/* ══════════════════════════════════════════════════
+            ACCIONES REQUERIDAS — siempre visibles al tope
+            ══════════════════════════════════════════════════ */}
+
+        {/* Oferta pendiente: cliente espera respuesta */}
+        {contract.estado === 'oferta_pendiente' && esEmpleador && (
+          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#fff8e1', border: '2px solid #f9a825', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600}>⏳ Esperando respuesta del trabajador</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              La oferta expira en 72 horas. El trabajador recibirá un recordatorio.
+            </Typography>
+          </Box>
+        )}
+
+        {/* Confirmado: empleador espera que trabajador salga */}
+        {contract.estado === 'confirmado' && esEmpleador && (
+          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#fff3e0', border: '2px solid #f57c00', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600}>✅ Oferta aceptada</Typography>
+            <Typography variant="body2" sx={{ mt: 0.5 }}>
+              El trabajador confirmó. Cuando salga hacia tu ubicación recibirás una notificación.
+              Al llegar, <strong>pídele un código de 4 dígitos</strong> para confirmar su identidad.
+            </Typography>
+          </Box>
+        )}
+
+        {/* Confirmado: trabajador sale */}
+        {contract.estado === 'confirmado' && esTrabajador && (
+          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#e3f2fd', border: '2px solid #1976d2', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} gutterBottom>🚶 ¿Listo para salir?</Typography>
+            <Typography variant="body2" paragraph>
+              Pulsa el botón cuando estés en camino. Recibirás un código de 4 dígitos que deberás decirle al cliente al llegar.
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleEnCamino}
+              disabled={actionLoading}
+              startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <LockOpenIcon />}
+            >
+              {actionLoading ? 'Generando código...' : 'Estoy en camino'}
+            </Button>
+          </Box>
+        )}
+
+        {/* En camino: trabajador ve su código */}
+        {contract.estado === 'en_camino' && esTrabajador && (
+          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#e3f2fd', border: '2px solid #1976d2', borderRadius: 2, textAlign: 'center' }}>
+            <Typography variant="h6" fontWeight={600} gutterBottom>🔑 Tu código de verificación</Typography>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Díselo al cliente cuando llegues a su puerta
+            </Typography>
+            <Typography variant="h2" fontWeight={900} color="primary" letterSpacing={8} sx={{ my: 2 }}>
+              {codigoLlegada || contract.codigo_llegada}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Válido por 4 horas · {contract.codigo_contrato}
+            </Typography>
+          </Box>
+        )}
+
+        {/* En camino: cliente confirma llegada */}
+        {contract.estado === 'en_camino' && esEmpleador && (
+          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#e8f5e9', border: '2px solid #388e3c', borderRadius: 2 }}>
+            <Box display="flex" alignItems="center" gap={2} mb={2}>
+              <Avatar src={contract.trabajador?.foto_perfil} sx={{ width: 48, height: 48 }}>
+                {contract.trabajador?.nombre?.charAt(0)}
+              </Avatar>
+              <div>
+                <Typography variant="h6" fontWeight={600}>
+                  🚶 {contract.trabajador?.nombre} {contract.trabajador?.apellido} está en camino
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Cuando llegue, pídele su código de 4 dígitos y confírmalo aquí
+                </Typography>
+              </div>
+            </Box>
+            <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+              <TextField
+                label="Código del trabajador"
+                value={codigoConfirmacion}
+                onChange={e => setCodigoConfirmacion(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                inputProps={{ maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
+                size="small"
+                sx={{ width: 140, bgcolor: 'white', borderRadius: 1 }}
+                placeholder="0000"
+              />
+              <Button
+                variant="contained"
+                color="success"
+                size="large"
+                onClick={handleConfirmarLlegada}
+                disabled={actionLoading || codigoConfirmacion.length !== 4}
+                startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <LockOpenIcon />}
+              >
+                {actionLoading ? 'Confirmando...' : 'Confirmar llegada'}
+              </Button>
+            </Box>
+          </Box>
+        )}
+
+        {/* Activo: trabajador marca como completado */}
+        {esTrabajador && contract.estado === 'activo' && (
+          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#f3e5f5', border: '2px solid #7b1fa2', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} gutterBottom>🔨 Trabajo en progreso</Typography>
+            <Typography variant="body2" paragraph>
+              Cuando hayas terminado el trabajo, márcalo como completado para notificar al cliente.
+            </Typography>
+            <Button
+              variant="contained"
+              color="success"
+              size="large"
+              onClick={handleCompletarContrato}
+              disabled={actionLoading}
+              startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <CheckCircleIcon />}
+            >
+              {actionLoading ? 'Procesando...' : 'Marcar como completado'}
+            </Button>
+          </Box>
+        )}
+
+        {/* Completado: empleador cierra y reseña */}
+        {esEmpleador && contract.estado === 'completado' && (
+          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#fce4ec', border: '2px solid #c62828', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} gutterBottom>⭐ El trabajador terminó el trabajo</Typography>
+            <Typography variant="body2" paragraph>
+              Confirma que el trabajo fue realizado correctamente. Podrás dejar una reseña al cerrar.
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleCerrarContrato}
+              disabled={actionLoading}
+              startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <CheckCircleIcon />}
+            >
+              {actionLoading ? 'Procesando...' : 'Cerrar contrato y dejar reseña'}
+            </Button>
+          </Box>
+        )}
+
+        {/* Cerrado: dejar reseña pendiente */}
+        {contract.estado === 'cerrado' && (esEmpleador || esTrabajador) && !yaResene && (
+          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#e8f5e9', border: '2px solid #2e7d32', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} gutterBottom>⭐ Deja tu reseña</Typography>
+            <Typography variant="body2" paragraph>
+              Tu opinión ayuda a construir la confianza en la plataforma.
+            </Typography>
+            <Button
+              variant="outlined"
+              color="success"
+              size="large"
+              startIcon={<CheckCircleIcon />}
+              onClick={() => {
+                const otro = esTrabajador ? contract.empleador : contract.trabajador;
+                setReviewTarget({
+                  calificadoId: otro?.id,
+                  calificadoNombre: `${otro?.nombre} ${otro?.apellido}`,
+                  titulo: esTrabajador ? 'Califica al cliente' : 'Califica al trabajador',
+                });
+              }}
+            >
+              Dejar reseña
+            </Button>
+          </Box>
+        )}
+
+        {contract.estado === 'cerrado' && (esEmpleador || esTrabajador) && yaResene && (
+          <Box sx={{ mb: 3, p: 2, bgcolor: 'success.light', borderRadius: 2 }}>
+            <Typography variant="body2" color="success.dark">✓ Ya dejaste tu reseña para este contrato.</Typography>
+          </Box>
+        )}
+
+        {actionError && (
+          <Box sx={{ mb: 3, p: 2, bgcolor: 'error.light', borderRadius: 2 }}>
+            <Typography color="error.dark" variant="body2">{actionError}</Typography>
+          </Box>
+        )}
+
+        {/* ══ Información del contrato ══ */}
         <Grid container spacing={3}>
           {/* Información de las Partes */}
           <Grid item xs={12}>
@@ -501,186 +681,7 @@ const ContractDetails = () => {
             </Card>
           </Grid>
 
-          {/* ── Contrato confirmado, esperando que trabajador salga ── */}
-          {contract.estado === 'confirmado' && esEmpleador && (
-            <Grid item xs={12}>
-              <Card elevation={2} sx={{ bgcolor: 'warning.light' }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom fontWeight={600}>
-                    ⏳ Contrato confirmado
-                  </Typography>
-                  <Typography variant="body1">
-                    El trabajador ha aceptado. Cuando salga hacia tu casa pulsará "Estoy en camino" y recibirás una notificación.
-                    Al llegar, pídele un código de 4 dígitos para confirmar su identidad.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          )}
-
-          {contract.estado === 'confirmado' && esTrabajador && (
-            <Grid item xs={12}>
-              <Card elevation={2} sx={{ bgcolor: 'info.light' }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom fontWeight={600}>
-                    🚶 ¿Listo para salir?
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    Pulsa el botón cuando estés en camino. Recibirás un código de 4 dígitos que deberás decirle al cliente al llegar.
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    onClick={handleEnCamino}
-                    disabled={actionLoading}
-                    startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <LockOpenIcon />}
-                  >
-                    {actionLoading ? 'Generando código...' : 'Estoy en camino'}
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-          )}
-
-          {/* ── Trabajador en camino: muestra su código ── */}
-          {contract.estado === 'en_camino' && esTrabajador && (
-            <Grid item xs={12}>
-              <Card elevation={3} sx={{ bgcolor: '#e3f2fd', border: '2px solid #1976d2' }}>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" fontWeight={600} gutterBottom>
-                    🔑 Tu código de verificación
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Díselo al cliente cuando llegues a su puerta
-                  </Typography>
-                  <Typography variant="h2" fontWeight={900} color="primary" letterSpacing={8} sx={{ my: 2 }}>
-                    {codigoLlegada || contract.codigo_llegada}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Válido por 4 horas · {contract.codigo_contrato}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          )}
-
-          {/* ── Cliente espera al trabajador: ingresa código ── */}
-          {contract.estado === 'en_camino' && esEmpleador && (
-            <Grid item xs={12}>
-              <Card elevation={2} sx={{ bgcolor: '#e8f5e9', border: '2px solid #388e3c' }}>
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={2} mb={2}>
-                    <Avatar
-                      src={contract.trabajador?.foto_perfil}
-                      sx={{ width: 56, height: 56 }}
-                    >
-                      {contract.trabajador?.nombre?.charAt(0)}
-                    </Avatar>
-                    <div>
-                      <Typography variant="h6" fontWeight={600}>
-                        🚶 {contract.trabajador?.nombre} {contract.trabajador?.apellido} está en camino
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Cuando llegue, pídele su código de 4 dígitos y confírmalo aquí
-                      </Typography>
-                    </div>
-                  </Box>
-                  <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
-                    <TextField
-                      label="Código del trabajador"
-                      value={codigoConfirmacion}
-                      onChange={e => setCodigoConfirmacion(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                      inputProps={{ maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
-                      size="small"
-                      sx={{ width: 140, bgcolor: 'white', borderRadius: 1 }}
-                      placeholder="0000"
-                    />
-                    <Button
-                      variant="contained"
-                      color="success"
-                      size="large"
-                      onClick={handleConfirmarLlegada}
-                      disabled={actionLoading || codigoConfirmacion.length !== 4}
-                      startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <LockOpenIcon />}
-                    >
-                      {actionLoading ? 'Confirmando...' : 'Confirmar llegada'}
-                    </Button>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          )}
         </Grid>
-
-        {/* ── Acciones del contrato ── */}
-        {actionError && (
-          <Box sx={{ mt: 2, p: 2, bgcolor: 'error.light', borderRadius: 2 }}>
-            <Typography color="error.dark" variant="body2">{actionError}</Typography>
-          </Box>
-        )}
-
-        {/* Trabajador: marcar como completado cuando está activo */}
-        {esTrabajador && contract.estado === 'activo' && (
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              variant="contained"
-              color="success"
-              size="large"
-              onClick={handleCompletarContrato}
-              disabled={actionLoading}
-              startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <CheckCircleIcon />}
-            >
-              {actionLoading ? 'Procesando...' : 'Marcar como completado'}
-            </Button>
-          </Box>
-        )}
-
-        {/* Empleador: cerrar contrato cuando el trabajador lo marcó como completado */}
-        {esEmpleador && contract.estado === 'completado' && (
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              onClick={handleCerrarContrato}
-              disabled={actionLoading}
-              startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <CheckCircleIcon />}
-            >
-              {actionLoading ? 'Procesando...' : 'Cerrar contrato y dejar reseña'}
-            </Button>
-          </Box>
-        )}
-
-        {/* Contrato cerrado: ambas partes pueden dejar reseña si aún no lo hicieron */}
-        {contract.estado === 'cerrado' && (esEmpleador || esTrabajador) && !yaResene && (
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              size="large"
-              startIcon={<CheckCircleIcon />}
-              onClick={() => {
-                const otro = esTrabajador ? contract.empleador : contract.trabajador;
-                setReviewTarget({
-                  calificadoId: otro?.id,
-                  calificadoNombre: `${otro?.nombre} ${otro?.apellido}`,
-                  titulo: esTrabajador ? 'Califica al cliente' : 'Califica al trabajador',
-                });
-              }}
-            >
-              Dejar reseña
-            </Button>
-          </Box>
-        )}
-
-        {contract.estado === 'cerrado' && (esEmpleador || esTrabajador) && yaResene && (
-          <Box sx={{ mt: 3, p: 2, bgcolor: 'success.light', borderRadius: 2 }}>
-            <Typography variant="body2" color="success.dark">
-              ✓ Ya dejaste tu reseña para este contrato.
-            </Typography>
-          </Box>
-        )}
 
       </Container>
 
