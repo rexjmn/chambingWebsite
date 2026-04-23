@@ -87,40 +87,51 @@ const CoverPhotoModal = ({ open, onClose, onPhotoUpdated }) => {
 
   const getCroppedImg = async (imageSrc, pixelCrop, rotation = 0) => {
     const image = await createImage(imageSrc);
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
 
     const maxSize = Math.max(image.width, image.height);
     const safeArea = 2 * ((maxSize / 2) * Math.sqrt(2));
 
-    canvas.width = safeArea;
-    canvas.height = safeArea;
+    const rotCanvas = document.createElement('canvas');
+    const rotCtx = rotCanvas.getContext('2d');
+    rotCanvas.width = safeArea;
+    rotCanvas.height = safeArea;
 
-    ctx.translate(safeArea / 2, safeArea / 2);
-    ctx.rotate((rotation * Math.PI) / 180);
-    ctx.translate(-safeArea / 2, -safeArea / 2);
-
-    ctx.drawImage(
+    rotCtx.translate(safeArea / 2, safeArea / 2);
+    rotCtx.rotate((rotation * Math.PI) / 180);
+    rotCtx.translate(-safeArea / 2, -safeArea / 2);
+    rotCtx.drawImage(
       image,
       safeArea / 2 - image.width * 0.5,
       safeArea / 2 - image.height * 0.5
     );
 
-    const data = ctx.getImageData(0, 0, safeArea, safeArea);
+    const data = rotCtx.getImageData(0, 0, safeArea, safeArea);
 
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
+    // Cap cover photo at 1200×400 to keep uploads under ~200 KB
+    const MAX_W = 1200;
+    const MAX_H = 400;
+    const scale = Math.min(1, MAX_W / pixelCrop.width, MAX_H / pixelCrop.height);
+    const outW = Math.round(pixelCrop.width * scale);
+    const outH = Math.round(pixelCrop.height * scale);
 
-    ctx.putImageData(
+    const tmpCanvas = document.createElement('canvas');
+    const tmpCtx = tmpCanvas.getContext('2d');
+    tmpCanvas.width = pixelCrop.width;
+    tmpCanvas.height = pixelCrop.height;
+    tmpCtx.putImageData(
       data,
       0 - safeArea / 2 + image.width * 0.5 - pixelCrop.x,
       0 - safeArea / 2 + image.height * 0.5 - pixelCrop.y
     );
 
+    const outCanvas = document.createElement('canvas');
+    const outCtx = outCanvas.getContext('2d');
+    outCanvas.width = outW;
+    outCanvas.height = outH;
+    outCtx.drawImage(tmpCanvas, 0, 0, outW, outH);
+
     return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        resolve(blob);
-      }, 'image/jpeg', 0.95);
+      outCanvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.80);
     });
   };
 
