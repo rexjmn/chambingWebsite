@@ -9,7 +9,6 @@ import {
   sanitizeInput,
   isValidEmail,
   isValidPhone,
-  isValidDUI,
   validatePasswordStrength,
   detectSQLInjection,
   detectXSS
@@ -17,7 +16,7 @@ import {
 import { logger } from '../../utils/logger';
 import '../../styles/auth.scss';
 import {
-  User, Mail, Phone, IdCard, MapPin, Home,
+  User, Mail, Phone, MapPin, Home,
   Lock, Eye, EyeOff, AlertCircle, Info,
   Briefcase, Search, Shield, Star, ChevronRight
 } from 'lucide-react';
@@ -43,9 +42,6 @@ const buildValidationSchema = (t) => yup.object().shape({
   telefono: yup.string()
     .required(t('auth.register.validation.phoneRequired'))
     .test('is-valid-phone', t('auth.register.validation.phoneInvalid'), value => isValidPhone(value)),
-  dui: yup.string()
-    .optional()
-    .test('is-valid-dui', t('auth.register.validation.duiInvalid'), value => !value || isValidDUI(value)),
   departamento: yup.string().required(t('auth.register.validation.departmentRequired')),
   municipio: yup.string().required(t('auth.register.validation.municipalityRequired')),
   direccion_detalle: yup.string().optional().max(255, 'La dirección no puede exceder 255 caracteres'),
@@ -121,7 +117,6 @@ const RegisterForm = () => {
         apellido: sanitizeInput(data.apellido),
         email: sanitizeInput(data.email).toLowerCase(),
         telefono: data.telefono.replace(/\D/g, ''),
-        dui: data.dui || '',
         departamento: data.departamento,
         municipio: data.municipio,
         direccion: sanitizeInput(data.direccion_detalle || ''),
@@ -409,29 +404,6 @@ const RegisterForm = () => {
                   )}
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">
-                    {t('auth.register.dui')} <span className="label-optional">(Opcional)</span>
-                  </label>
-                  <div className="input-wrapper">
-                    <IdCard size={18} className="input-icon" />
-                    <input
-                      {...register('dui')}
-                      type="text"
-                      className={`form-input ${errors.dui ? 'input-error' : ''}`}
-                      placeholder={t('auth.register.placeholders.dui')}
-                      maxLength={10}
-                    />
-                  </div>
-                  {errors.dui ? (
-                    <div className="form-error">
-                      <AlertCircle size={14} className="error-icon" />
-                      {errors.dui.message}
-                    </div>
-                  ) : (
-                    <div className="form-helper">{t('auth.register.helperTexts.dui')}</div>
-                  )}
-                </div>
               </div>
             </div>
 
