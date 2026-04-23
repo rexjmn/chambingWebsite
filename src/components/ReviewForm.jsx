@@ -6,36 +6,34 @@ import { logger } from '../utils/logger';
 import '../styles/components/ReviewForm.scss';
 
 /**
- * ReviewForm Component
- *
- * Formulario para que los clientes dejen reseñas a los trabajadores
- * después de completar un contrato.
+ * ReviewForm Component — bidireccional (cliente ↔ trabajador)
  *
  * Props:
  * - contratoId: ID del contrato
- * - trabajadorId: ID del trabajador a calificar
- * - trabajadorNombre: Nombre del trabajador
+ * - calificadoId: ID del usuario a calificar
+ * - calificadoNombre: Nombre del usuario a calificar
+ * - titulo: (opcional) título del modal, default "Califica tu Experiencia"
  * - onSuccess: Callback cuando se crea exitosamente
  * - onCancel: Callback para cancelar
  * - onClose: Callback para cerrar el modal
  */
 const ReviewForm = ({
   contratoId,
-  trabajadorId,
-  trabajadorNombre,
+  calificadoId,
+  calificadoNombre,
+  titulo,
   onSuccess,
   onCancel,
   onClose,
 }) => {
   const { t } = useTranslation();
-  const [calificacion, setCalificacion] = useState(0);
+  const [estrellas, setEstrellas] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comentario, setComentario] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Validación en tiempo real
-  const isValid = calificacion > 0 && comentario.trim().length >= 10;
+  const isValid = estrellas > 0 && comentario.trim().length >= 10;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,16 +50,12 @@ const ReviewForm = ({
       setLoading(true);
       setError(null);
 
-      logger.form('Enviando reseña', {
-        contratoId,
-        trabajadorId,
-        calificacion,
-      });
+      logger.form('Enviando reseña', { contratoId, calificadoId, estrellas });
 
       await reviewService.createReview({
         contratoId,
-        trabajadorId,
-        calificacion,
+        calificadoId,
+        estrellas,
         comentario: comentario.trim(),
       });
 
@@ -109,15 +103,14 @@ const ReviewForm = ({
   const renderStars = () => {
     return Array.from({ length: 5 }, (_, index) => {
       const starValue = index + 1;
-      const isFilled =
-        hoverRating > 0 ? starValue <= hoverRating : starValue <= calificacion;
+      const isFilled = hoverRating > 0 ? starValue <= hoverRating : starValue <= estrellas;
 
       return (
         <button
           key={starValue}
           type="button"
           className={`star-button ${isFilled ? 'filled' : ''}`}
-          onClick={() => setCalificacion(starValue)}
+          onClick={() => setEstrellas(starValue)}
           onMouseEnter={() => setHoverRating(starValue)}
           onMouseLeave={() => setHoverRating(0)}
           aria-label={`${starValue} ${starValue === 1 ? 'estrella' : 'estrellas'}`}
@@ -137,10 +130,10 @@ const ReviewForm = ({
       <div className="review-form-header">
         <div>
           <h2 className="review-form-title">
-            {t('reviews.leaveReview') || 'Califica tu Experiencia'}
+            {titulo || t('reviews.leaveReview') || 'Califica tu Experiencia'}
           </h2>
           <p className="review-form-subtitle">
-            {t('reviews.reviewFor') || 'Trabajador'}: <strong>{trabajadorNombre}</strong>
+            Para: <strong>{calificadoNombre}</strong>
           </p>
         </div>
         {onClose && (
@@ -164,9 +157,9 @@ const ReviewForm = ({
           </label>
           <div className="stars-container">
             {renderStars()}
-            {calificacion > 0 && (
+            {estrellas > 0 && (
               <span className="rating-text">
-                {calificacion} {t('reviews.stars') || 'estrellas'}
+                {estrellas} {t('reviews.stars') || 'estrellas'}
               </span>
             )}
           </div>
@@ -188,7 +181,7 @@ const ReviewForm = ({
             className="form-textarea"
             placeholder={
               t('reviews.commentPlaceholder') ||
-              'Cuéntanos sobre tu experiencia con este trabajador...'
+              'Cuéntanos sobre tu experiencia...'
             }
             rows={5}
             maxLength={500}

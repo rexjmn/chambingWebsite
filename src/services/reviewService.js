@@ -17,32 +17,29 @@ import { logger } from '../utils/logger';
 
 export const reviewService = {
   /**
-   * Crea una nueva reseña para un trabajador
-   * Verbo HTTP: POST
-   *
-   * @param {Object} reviewData - Datos de la reseña
-   * @param {string} reviewData.contratoId - ID del contrato
-   * @param {string} reviewData.trabajadorId - ID del trabajador
-   * @param {number} reviewData.calificacion - Rating de 1-5
-   * @param {string} reviewData.comentario - Comentario de la reseña
-   * @returns {Promise} Reseña creada
+   * Crea una nueva reseña (bidireccional: cliente ↔ trabajador)
    */
-  async createReview(reviewData) {
+  async createReview({ contratoId, calificadoId, estrellas, comentario }) {
     try {
-      logger.api('Creando reseña', { contratoId: reviewData.contratoId });
-
-      const response = await api.post('/reviews', {
-        contrato_id: reviewData.contratoId,
-        trabajador_id: reviewData.trabajadorId,
-        calificacion: reviewData.calificacion,
-        comentario: reviewData.comentario,
-      });
-
-      logger.api('Reseña creada exitosamente', { reviewId: response.data?.id });
+      logger.api('Creando reseña', { contratoId });
+      const response = await api.post('/reviews', { contratoId, calificadoId, estrellas, comentario });
+      logger.api('Reseña creada exitosamente');
       return response.data;
     } catch (error) {
       logger.error('Error creando reseña:', error.message);
       throw error;
+    }
+  },
+
+  /** Obtiene todas las reseñas de un contrato (para saber si el usuario ya reseñó) */
+  async getContractReviews(contratoId) {
+    try {
+      const response = await api.get(`/reviews/contrato/${contratoId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 404) return { status: 'success', data: [] };
+      logger.error('Error obteniendo reseñas del contrato:', error.message);
+      return { status: 'success', data: [] };
     }
   },
 

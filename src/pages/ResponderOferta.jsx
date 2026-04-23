@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Box, Paper, Typography, CircularProgress, Button, Divider,
-  TextField, Chip, Alert, Stack
+  TextField, Chip, Alert, Stack, Avatar
 } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import StarIcon from '@mui/icons-material/Star';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import api from '../services/api';
 
 const MODALIDAD_LABELS = {
@@ -24,9 +26,11 @@ export default function ResponderOferta() {
   const token = searchParams.get('token');
   const accionInicial = searchParams.get('accion'); // 'aceptar' | 'rechazar'
 
-  const [estado, setEstado] = useState('cargando'); // 'cargando' | 'loaded' | 'respondido' | 'error'
+  const [estado, setEstado] = useState('cargando');
   const [contrato, setContrato] = useState(null);
-  const [accion, setAccion] = useState(null); // null | 'rechazar'
+  const [empleadorStats, setEmpleadorStats] = useState(null);
+  const [empleadorReviews, setEmpleadorReviews] = useState([]);
+  const [accion, setAccion] = useState(null);
   const [comentario, setComentario] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [resultadoMensaje, setResultadoMensaje] = useState('');
@@ -41,10 +45,18 @@ export default function ResponderOferta() {
     api.get(`/contracts/oferta/${token}`)
       .then(res => {
         if (res.data.status === 'success') {
-          setContrato(res.data.data);
+          const data = res.data.data;
+          setContrato(data);
           setEstado('loaded');
           if (accionInicial === 'aceptar') aceptar(token);
           if (accionInicial === 'rechazar') setAccion('rechazar');
+
+          // Cargar reputación del empleador en paralelo
+          const empleadorId = data.empleador?.id;
+          if (empleadorId) {
+            api.get(`/users/${empleadorId}/stats`).then(r => setEmpleadorStats(r.data?.data)).catch(() => {});
+            api.get(`/users/${empleadorId}/reviews`).then(r => setEmpleadorReviews(r.data?.data?.slice(0, 3) || [])).catch(() => {});
+          }
         } else {
           setEstado('error');
         }
@@ -138,9 +150,60 @@ export default function ResponderOferta() {
         <Typography variant="h5" fontWeight="bold" gutterBottom>
           Nueva oferta de trabajo
         </Typography>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
-          <strong>{empleador?.nombre} {empleador?.apellido}</strong> te está ofreciendo trabajo.
-        </Typography>
+
+        {/* Perfil del cliente */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2 }}>
+          <Avatar
+            src={empleador?.foto_perfil}
+            sx={{ width: 56, height: 56, bgcolor: 'primary.main' }}
+          >
+            {empleador?.nombre?.charAt(0)}
+          </Avatar>
+          <Box>
+            <Typography fontWeight="bold">
+              {empleador?.nombre} {empleador?.apellido}
+            </Typography>
+            {empleadorStats && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.3 }}>
+                {Array.from({ length: 5 }, (_, i) => {
+                  const avg = empleadorStats.rating || 0;
+                  return i < Math.round(avg)
+                    ? <StarIcon key={i} sx={{ fontSize: 16, color: 'warning.main' }} />
+                    : <StarOutlineIcon key={i} sx={{ fontSize: 16, color: 'text.disabled' }} />;
+                })}
+                <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
+                  {empleadorStats.rating
+                    ? `${Number(empleadorStats.rating).toFixed(1)} (${empleadorStats.total_reviews || 0} reseñas)`
+                    : 'Sin reseñas aún'}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Box>
+
+        {/* Reseñas recientes del cliente */}
+        {empleadorReviews.length > 0 && (
+          <Box sx={{ mb: 2, p: 1.5, bgcolor: '#f9f9f9', borderRadius: 2 }}>
+            <Typography variant="caption" fontWeight="bold" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+              Lo que dicen trabajadores anteriores
+            </Typography>
+            <Stack spacing={1}>
+              {empleadorReviews.map((r) => (
+                <Box key={r.id} sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
+                  <Box sx={{ display: 'flex', gap: 0.2, mt: 0.2, flexShrink: 0 }}>
+                    {Array.from({ length: r.estrellas }, (_, i) => (
+                      <StarIcon key={i} sx={{ fontSize: 12, color: 'warning.main' }} />
+                    ))}
+                  </Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                    "{r.comentario?.slice(0, 100)}{r.comentario?.length > 100 ? '…' : ''}"
+                    {' '}— {r.calificador?.nombre}
+                  </Typography>
+                </Box>
+              ))}
+            </Stack>
+          </Box>
+        )}
 
         <Divider sx={{ my: 2 }} />
 

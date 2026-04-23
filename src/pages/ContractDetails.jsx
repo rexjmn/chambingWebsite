@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { contractService } from '../services/contractService';
+import { reviewService } from '../services/reviewService';
 import { useAuth } from '../context/AuthContext';
 import ReviewModal from '../components/ReviewModal';
 import { logger } from '../utils/logger';
@@ -45,11 +46,12 @@ const ContractDetails = () => {
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewTarget, setReviewTarget] = useState(null); // { calificadoId, calificadoNombre, titulo }
+  const [contractReviews, setContractReviews] = useState([]);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState(null);
-  const [codigoConfirmacion, setCodigoConfirmacion] = useState(''); // empleador ingresa código
-  const [codigoLlegada, setCodigoLlegada] = useState(null);         // trabajador ve su código
+  const [codigoConfirmacion, setCodigoConfirmacion] = useState('');
+  const [codigoLlegada, setCodigoLlegada] = useState(null);
 
   useEffect(() => {
     const loadContract = async () => {
@@ -73,36 +75,26 @@ const ContractDetails = () => {
     loadContract();
   }, [contractId, t]);
 
+  useEffect(() => {
+    if (contract?.estado === 'cerrado') {
+      reviewService.getContractReviews(contractId)
+        .then(res => setContractReviews(res.data || []))
+        .catch(() => {});
+    }
+  }, [contract?.estado, contractId]);
+
   const getStatusChip = (estado) => {
     const statusConfig = {
-      'pendiente_activacion': {
-        color: 'warning',
-        icon: <HourglassIcon />,
-        label: t('contractDetails.status.pending') || 'Pendiente de Activación'
-      },
-      'activo': {
-        color: 'success',
-        icon: <CheckCircleIcon />,
-        label: t('contractDetails.status.active') || 'Activo'
-      },
-      'completado': {
-        color: 'info',
-        icon: <CheckCircleIcon />,
-        label: t('contractDetails.status.completed') || 'Completado'
-      },
-      'cancelado': {
-        color: 'error',
-        icon: <CancelIcon />,
-        label: t('contractDetails.status.cancelled') || 'Cancelado'
-      },
-      'cerrado': {
-        color: 'default',
-        icon: <CheckCircleIcon />,
-        label: t('contractDetails.status.closed') || 'Cerrado'
-      }
+      'oferta_pendiente': { color: 'warning', icon: <HourglassIcon />, label: 'Oferta pendiente' },
+      'confirmado':        { color: 'info',    icon: <HourglassIcon />, label: 'Confirmado' },
+      'en_camino':         { color: 'info',    icon: <HourglassIcon />, label: 'En camino' },
+      'activo':            { color: 'success', icon: <CheckCircleIcon />, label: t('contractDetails.status.active') || 'Activo' },
+      'completado':        { color: 'info',    icon: <CheckCircleIcon />, label: t('contractDetails.status.completed') || 'Completado' },
+      'cerrado':           { color: 'default', icon: <CheckCircleIcon />, label: t('contractDetails.status.closed') || 'Cerrado' },
+      'cancelado':         { color: 'error',   icon: <CancelIcon />,      label: t('contractDetails.status.cancelled') || 'Cancelado' },
     };
 
-    const config = statusConfig[estado] || statusConfig['pendiente_activacion'];
+    const config = statusConfig[estado] || { color: 'default', icon: <HourglassIcon />, label: estado };
 
     return (
       <Chip
@@ -202,7 +194,12 @@ const ContractDetails = () => {
       await contractService.cerrarContrato(contractId);
       const res = await contractService.getContractById(contractId);
       if (res.status === 'success') setContract(res.data);
-      setShowReviewModal(true);
+      // Abrir modal para que el empleador califique al trabajador
+      setReviewTarget({
+        calificadoId: contract.trabajador?.id,
+        calificadoNombre: `${contract.trabajador?.nombre} ${contract.trabajador?.apellido}`,
+        titulo: 'Califica al trabajador',
+      });
     } catch (err) {
       logger.error('Error cerrando contrato:', err);
       setActionError(err.response?.data?.message || 'No se pudo cerrar el contrato.');
@@ -210,6 +207,9 @@ const ContractDetails = () => {
       setActionLoading(false);
     }
   };
+
+  // Determina si el usuario actual ya dejó una reseña en este contrato
+  const yaResene = contractReviews.some(r => String(r.calificador?.id) === String(user?.id));
 
   if (loading) {
     return (
@@ -659,16 +659,47 @@ const ContractDetails = () => {
           </Box>
         )}
 
+        {/* Contrato cerrado: ambas partes pueden dejar reseña si aún no lo hicieron */}
+        {contract.estado === 'cerrado' && (esEmpleador || esTrabajador) && !yaResene && (
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              size="large"
+              startIcon={<CheckCircleIcon />}
+              onClick={() => {
+                const otro = esTrabajador ? contract.empleador : contract.trabajador;
+                setReviewTarget({
+                  calificadoId: otro?.id,
+                  calificadoNombre: `${otro?.nombre} ${otro?.apellido}`,
+                  titulo: esTrabajador ? 'Califica al cliente' : 'Califica al trabajador',
+                });
+              }}
+            >
+              Dejar reseña
+            </Button>
+          </Box>
+        )}
+
+        {contract.estado === 'cerrado' && (esEmpleador || esTrabajador) && yaResene && (
+          <Box sx={{ mt: 3, p: 2, bgcolor: 'success.light', borderRadius: 2 }}>
+            <Typography variant="body2" color="success.dark">
+              ✓ Ya dejaste tu reseña para este contrato.
+            </Typography>
+          </Box>
+        )}
+
       </Container>
 
-      {/* Modal de reseña — se abre tras cerrar el contrato */}
+      {/* Modal de reseña — bidireccional */}
       <ReviewModal
-        isOpen={showReviewModal}
+        isOpen={!!reviewTarget}
         contratoId={contractId}
-        trabajadorId={contract?.trabajador?.id}
-        trabajadorNombre={contract ? `${contract.trabajador?.nombre} ${contract.trabajador?.apellido}` : ''}
-        onSuccess={() => setShowReviewModal(false)}
-        onClose={() => setShowReviewModal(false)}
+        calificadoId={reviewTarget?.calificadoId}
+        calificadoNombre={reviewTarget?.calificadoNombre}
+        titulo={reviewTarget?.titulo}
+        onSuccess={() => { setReviewTarget(null); setContractReviews(prev => [...prev, { calificador: { id: user?.id } }]); }}
+        onClose={() => setReviewTarget(null)}
         canSkip={true}
       />
 
