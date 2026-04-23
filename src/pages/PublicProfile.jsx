@@ -67,29 +67,30 @@ const PublicProfile = () => {
             setSkills(userData.habilidades);
           }
 
-          // Cargar datos adicionales solo si es trabajador
+          // Cargar reviews y stats para todos los usuarios
+          const [reviewsRes, statsRes] = await Promise.allSettled([
+            publicProfileService.getUserReviews(userId),
+            publicProfileService.getUserStats(userId),
+          ]);
+
+          if (reviewsRes.status === 'fulfilled') {
+            setReviews(reviewsRes.value.data || []);
+          }
+
+          if (statsRes.status === 'fulfilled') {
+            setStats(statsRes.value.data || {
+              trabajos_completados: 0,
+              rating: 0,
+              total_reviews: 0,
+            });
+          }
+
+          // Tarifas: solo para trabajadores
           if (userData.tipo_usuario === 'trabajador') {
-            const [reviewsRes, statsRes, tarifasRes] = await Promise.allSettled([
-              publicProfileService.getUserReviews(userId),
-              publicProfileService.getUserStats(userId),
-              serviceService.getTarifasByWorker(userId),
-            ]);
-
-            if (reviewsRes.status === 'fulfilled') {
-              setReviews(reviewsRes.value.data || []);
-            }
-
-            if (statsRes.status === 'fulfilled') {
-              setStats(statsRes.value.data || {
-                trabajos_completados: 0,
-                rating: 0,
-                total_reviews: 0,
-              });
-            }
-
-            // Tarifas: preferir el fetch dedicado; si falla, usar lo que vino en el perfil
-            if (tarifasRes.status === 'fulfilled' && tarifasRes.value) {
-              setTarifas(tarifasRes.value);
+            const tarifasRes = await Promise.allSettled([serviceService.getTarifasByWorker(userId)]);
+            const tr = tarifasRes[0];
+            if (tr.status === 'fulfilled' && tr.value) {
+              setTarifas(tr.value);
             } else if (userData.tarifas) {
               setTarifas(userData.tarifas);
             }
@@ -273,8 +274,8 @@ const PublicProfile = () => {
                 )}
               </div>
 
-              {/* Rating y Estadísticas - Solo para trabajadores verificados */}
-              {isTrabajador && isVerified && (
+              {/* Rating y Estadísticas - Para cualquier usuario con reseñas */}
+              {(displayReviewCount > 0 || (isTrabajador && isVerified)) && (
                 <div className="rating-stats">
                   <div className="rating-container">
                     <div className="stars">
@@ -453,13 +454,16 @@ const PublicProfile = () => {
           </div>
         )}
 
-        {/* Reviews - Solo si es trabajador verificado y tiene reviews */}
-        {isTrabajador && isVerified && reviews.length > 0 && (
+        {/* Reviews - Para cualquier usuario que tenga reseñas */}
+        {reviews.length > 0 && (
           <div className="reviews-section section-card">
             <div className="section-header">
               <StarIcon className="section-icon" />
               <h2 className="section-title">
-                {t('publicProfile.clientReviews') || 'Reseñas de Clientes'} ({displayReviewCount})
+                {isTrabajador
+                  ? (t('publicProfile.clientReviews') || 'Reseñas de Clientes')
+                  : 'Reseñas de trabajadores'
+                } ({displayReviewCount})
               </h2>
             </div>
 
@@ -470,19 +474,19 @@ const PublicProfile = () => {
                     <div className="reviewer-info">
                       <div className="reviewer-name">
                         <AccountCircleIcon sx={{ marginRight: 1, verticalAlign: 'middle' }} />
-                        {review.cliente_nombre || review.cliente}
+                        {review.calificador?.nombre} {review.calificador?.apellido}
                       </div>
                       <div className="stars">
-                        {renderStars(review.rating || review.calificacion)}
+                        {renderStars(review.estrellas || 0)}
                       </div>
                     </div>
                     <div className="review-date">
                       <CalendarTodayIcon sx={{ fontSize: 16, marginRight: 0.5, verticalAlign: 'middle' }} />
-                      {formatDate(review.fecha || review.created_at)}
+                      {formatDate(review.fecha_creacion)}
                     </div>
                   </div>
                   <p className="review-comment">
-                    {review.comentario || review.comment}
+                    {review.comentario}
                   </p>
                 </div>
               ))}

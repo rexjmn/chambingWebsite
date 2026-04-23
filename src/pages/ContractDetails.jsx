@@ -297,14 +297,14 @@ const ContractDetails = () => {
                           <Typography variant="h6" fontWeight={600}>
                             {contract.empleador?.nombre} {contract.empleador?.apellido}
                           </Typography>
-                          {contract.empleador?.email && (
-                            <Box display="flex" alignItems="center" gap={1} mt={0.5}>
-                              <EmailIcon fontSize="small" color="action" />
-                              <Typography variant="body2" color="text.secondary">
-                                {contract.empleador.email}
-                              </Typography>
-                            </Box>
-                          )}
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            sx={{ mt: 0.5 }}
+                            onClick={() => navigate(`/profile/${contract.empleador?.id}`)}
+                          >
+                            Ver perfil
+                          </Button>
                         </div>
                       </Box>
                     </Paper>
@@ -327,14 +327,15 @@ const ContractDetails = () => {
                           <Typography variant="h6" fontWeight={600}>
                             {contract.trabajador?.nombre} {contract.trabajador?.apellido}
                           </Typography>
-                          {contract.trabajador?.email && (
-                            <Box display="flex" alignItems="center" gap={1} mt={0.5}>
-                              <EmailIcon fontSize="small" color="action" />
-                              <Typography variant="body2" color="text.secondary">
-                                {contract.trabajador.email}
-                              </Typography>
-                            </Box>
-                          )}
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            color="success"
+                            sx={{ mt: 0.5 }}
+                            onClick={() => navigate(`/profile/${contract.trabajador?.id}`)}
+                          >
+                            Ver perfil
+                          </Button>
                         </div>
                       </Box>
                     </Paper>
@@ -362,7 +363,7 @@ const ContractDetails = () => {
                           {t('contractDetails.service.category') || 'Categoría del servicio'}
                         </Typography>
                         <Typography variant="body1" fontWeight={600}>
-                          {contract.categoria_servicio?.nombre || t('contractDetails.notSpecified')}
+                          {contract.categoria?.nombre || t('contractDetails.notSpecified')}
                         </Typography>
                       </div>
                     </Box>
@@ -550,20 +551,12 @@ const ContractDetails = () => {
                   <Typography variant="h6" fontWeight={600} gutterBottom>
                     🔑 Tu código de verificación
                   </Typography>
-                  {codigoLlegada ? (
-                    <>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        Díselo al cliente cuando llegues a su puerta
-                      </Typography>
-                      <Typography variant="h2" fontWeight={900} color="primary" letterSpacing={8} sx={{ my: 2 }}>
-                        {codigoLlegada}
-                      </Typography>
-                    </>
-                  ) : (
-                    <Typography variant="body1" color="text.secondary">
-                      Tu código fue enviado por WhatsApp/email. Revisa tus mensajes.
-                    </Typography>
-                  )}
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    Díselo al cliente cuando llegues a su puerta
+                  </Typography>
+                  <Typography variant="h2" fontWeight={900} color="primary" letterSpacing={8} sx={{ my: 2 }}>
+                    {codigoLlegada || contract.codigo_llegada}
+                  </Typography>
                   <Typography variant="caption" color="text.secondary">
                     Válido por 4 horas · {contract.codigo_contrato}
                   </Typography>
