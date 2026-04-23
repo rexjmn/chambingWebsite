@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslations } from '../../hooks/useTranslations';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import {
   AppBar,
   Toolbar,
@@ -27,6 +28,8 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import LanguageSelector from './LanguageSelector';
 import '../../styles/navbar.scss';
+
+const navbarLightTheme = createTheme({ palette: { mode: 'light' } });
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -149,19 +152,7 @@ const Navbar = () => {
       open={mobileOpen}
       onClose={handleMobileToggle}
       className="navbar__drawer"
-      PaperProps={{
-        className: 'navbar__drawer-paper',
-        sx: {
-          colorScheme: 'light',
-          backgroundColor: '#ffffff',
-          color: '#1a1a1a',
-        },
-      }}
-      slotProps={{
-        backdrop: {
-          sx: { backgroundColor: 'rgba(15, 23, 42, 0.25)', backdropFilter: 'blur(4px)' },
-        },
-      }}
+      PaperProps={{ className: 'navbar__drawer-paper' }}
     >
       <Box className="navbar__drawer-content">
         {/* Header */}
@@ -287,7 +278,7 @@ const Navbar = () => {
   );
 
   return (
-    <>
+    <ThemeProvider theme={navbarLightTheme}>
       <AppBar position="sticky" elevation={0} className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
         <Toolbar className="navbar__toolbar">
           <Logo />
@@ -309,7 +300,7 @@ const Navbar = () => {
 
       <MobileDrawer />
       {isAuthenticated && <ProfileMenu />}
-    </>
+    </ThemeProvider>
   );
 };
 
