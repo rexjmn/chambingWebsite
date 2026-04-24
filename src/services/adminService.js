@@ -182,7 +182,29 @@ const adminService = {
       logger.error('Error loading workers stats:', error.message);
       return null;
     }
-  }
+  },
+
+  // ============ SERVICIOS (catalogo de habilidades) ============
+  async getSkills(includeInactive = false) {
+    const params = includeInactive ? { includeInactive: 'true' } : {};
+    const response = await api.get('/skills', { params });
+    return response.data.data || response.data;
+  },
+
+  async createSkill(skillData) {
+    const response = await api.post('/skills', skillData);
+    return response.data.data || response.data;
+  },
+
+  async updateSkill(id, skillData) {
+    const response = await api.patch(`/skills/${id}`, skillData);
+    return response.data.data || response.data;
+  },
+
+  async deleteSkill(id) {
+    const response = await api.delete(`/skills/${id}`);
+    return response.data.data || response.data;
+  },
 };
 
 export default adminService;

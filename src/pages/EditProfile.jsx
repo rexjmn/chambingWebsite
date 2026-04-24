@@ -473,28 +473,28 @@ const EditProfile = () => {
           </section>
         )}
 
-        {/* Habilidades - Solo para trabajadores */}
+        {/* Servicios - Solo para trabajadores */}
         {user?.tipo_usuario === 'trabajador' && (
           <section className="edit-profile__section">
-            <h2>Mis Habilidades</h2>
+            <h2>Mis Servicios</h2>
             <p className="edit-profile__hint">
-              Selecciona todas las habilidades en las que tienes experiencia
+              Selecciona todos los servicios que ofreces a tus clientes
             </p>
 
             {/* Buscador */}
             <div className="edit-profile__search">
               <input
                 type="text"
-                placeholder="Buscar habilidad..."
+                placeholder="Buscar servicio..."
                 value={searchSkill}
                 onChange={(e) => setSearchSkill(e.target.value)}
               />
             </div>
 
-            {/* Seleccionadas */}
+            {/* Seleccionados */}
             {selectedSkills.length > 0 && (
               <div className="edit-profile__selected-skills">
-                <h3>Seleccionadas ({selectedSkills.length})</h3>
+                <h3>Seleccionados ({selectedSkills.length})</h3>
                 <div className="edit-profile__skills-list">
                   {selectedSkills.map(skill => (
                     <button
@@ -503,14 +503,14 @@ const EditProfile = () => {
                       className="edit-profile__skill-tag edit-profile__skill-tag--selected"
                       onClick={() => toggleSkill(skill)}
                     >
-                      {skill.nombre} ✕
+                      {skill.nombre} &times;
                     </button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Por categoría */}
+            {/* Por categoria */}
             <div className="edit-profile__skills-categories">
               {Object.entries(skillsByCategory).map(([category, skills]) => (
                 <div key={category} className="edit-profile__skill-category">
@@ -522,11 +522,10 @@ const EditProfile = () => {
                         <button
                           key={skill.id}
                           type="button"
-                          className={`edit-profile__skill-tag ${isSelected ? 'edit-profile__skill-tag--selected' : ''
-                            }`}
+                          className={`edit-profile__skill-tag ${isSelected ? 'edit-profile__skill-tag--selected' : ''}`}
                           onClick={() => toggleSkill(skill)}
                         >
-                          {skill.nombre} {isSelected && '✓'}
+                          {skill.nombre}
                         </button>
                       );
                     })}
@@ -537,7 +536,7 @@ const EditProfile = () => {
 
             {availableSkills.length === 0 && (
               <div className="edit-profile__no-skills">
-                No hay habilidades disponibles en este momento.
+                No hay servicios disponibles en este momento.
               </div>
             )}
           </section>

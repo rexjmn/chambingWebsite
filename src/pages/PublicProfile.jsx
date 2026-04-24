@@ -419,23 +419,21 @@ const PublicProfile = () => {
             </div>
           )}
 
-          {/* Habilidades - Solo si es trabajador y tiene habilidades */}
+          {/* Servicios ofrecidos */}
           {isTrabajador && skills.length > 0 && (
-            <div className="section-card skills-section">
+            <div className="section-card services-section">
               <div className="section-header">
                 <WorkIcon className="section-icon" />
-                <h2 className="section-title">
-                  {t('publicProfile.mySkills') || 'Mis Habilidades'}
-                </h2>
+                <h2 className="section-title">Servicios que ofrezco</h2>
               </div>
-              <div className="skills-container">
+              <ul className="services-list">
                 {skills.map((skill, index) => (
-                  <div key={skill.id || index} className="skill-badge">
-                    <CheckCircleIcon className="checkmark" />
-                    {skill.nombre || skill.name}
-                  </div>
+                  <li key={skill.id || index} className="services-list__item">
+                    <CheckCircleIcon className="services-list__icon" />
+                    <span>{skill.nombre || skill.name}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
 

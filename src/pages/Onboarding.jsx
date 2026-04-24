@@ -627,9 +627,9 @@ const Onboarding = () => {
             <div className="onboarding__step-icon">
               <Briefcase size={30} strokeWidth={1.75} />
             </div>
-            <h1 className="onboarding__step-title">Tus habilidades</h1>
+            <h1 className="onboarding__step-title">Tus servicios</h1>
             <p className="onboarding__step-subtitle">
-              Selecciona los servicios que ofreces. Los clientes podrán filtrarte por categoría.
+              Selecciona los servicios que ofreces. Los clientes podran filtrarte por categoria.
             </p>
 
             <div className="ob-skills-search">
