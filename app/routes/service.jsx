@@ -24,38 +24,32 @@ export function meta() {
       url: PAGE_URL,
     }),
     { name: 'robots', content: 'index, follow' },
-    { tagName: 'link', rel: 'canonical', href: PAGE_URL },
   ];
 }
 
 export function links() {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: `Servicios | ${SITE_NAME}`,
-    url: PAGE_URL,
-    description:
-      'Directorio de profesionales freelance verificados disponibles para contratación en El Salvador.',
-    publisher: {
-      '@type': 'Organization',
-      name: SITE_NAME,
-      url: SITE_URL,
-    },
-    about: {
-      '@type': 'Service',
-      areaServed: { '@type': 'Country', name: 'El Salvador' },
-      serviceType: 'Servicios del hogar y profesionales',
-    },
-  };
-
-  return [
-    { rel: 'canonical', href: PAGE_URL },
-    {
-      tagName: 'script',
-      type: 'application/ld+json',
-      children: JSON.stringify(jsonLd),
-    },
-  ];
+  return [{ rel: 'canonical', href: PAGE_URL }];
 }
 
-export default Service;
+const pageJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: `Servicios | ${SITE_NAME}`,
+  url: PAGE_URL,
+  description: 'Directorio de profesionales freelance verificados disponibles para contratación en El Salvador.',
+  publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+  about: {
+    '@type': 'Service',
+    areaServed: { '@type': 'Country', name: 'El Salvador' },
+    serviceType: 'Servicios del hogar y profesionales',
+  },
+});
+
+export default function ServiceRoute() {
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: pageJsonLd }} />
+      <Service />
+    </>
+  );
+}
