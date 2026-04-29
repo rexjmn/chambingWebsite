@@ -17,7 +17,6 @@ import {
   HourglassEmpty as HourglassEmptyIcon,
   Info as InfoIcon,
   LocationOn as LocationOnIcon,
-  Phone as PhoneIcon,
   Star as StarIcon,
   StarHalf as StarHalfIcon,
   StarOutline as StarOutlineIcon,
@@ -26,7 +25,6 @@ import {
   DateRange as DateRangeIcon,
   AccessTime as AccessTimeIcon,
   AccountCircle as AccountCircleIcon,
-  Email as EmailIcon,
   Close as CloseIcon,
   FormatQuote as FormatQuoteIcon,
   Assignment as AssignmentIcon,
@@ -48,7 +46,6 @@ const PublicProfile = () => {
   const [tarifas, setTarifas] = useState(loaderData?.profile?.tarifas || null);
   const [loading, setLoading] = useState(!loaderData?.profile);
   const [error, setError] = useState(null);
-  const [showContactModal, setShowContactModal] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -311,17 +308,6 @@ const PublicProfile = () => {
 
               {/* Botones de acción */}
               <div className="action-buttons">
-                {/* Botón de Contacto - Solo si hay teléfono (trabajadores verificados) */}
-                {user.telefono && (
-                  <button
-                    onClick={() => setShowContactModal(true)}
-                    className="contact-button"
-                  >
-                    <PhoneIcon />
-                    {t('publicProfile.contact') || 'Contactar'}
-                  </button>
-                )}
-
                 {/* Botón de Contratar - Solo para trabajadores verificados */}
                 {isTrabajador && isVerified && (
                   <button
@@ -492,55 +478,6 @@ const PublicProfile = () => {
           </div>
         )}
       </div>
-
-      {/* Modal de Contacto */}
-      {showContactModal && (
-        <>
-          <div
-            onClick={() => setShowContactModal(false)}
-            className="modal-overlay"
-          />
-          <div className="modal">
-            <div className="section-header">
-              <PhoneIcon className="section-icon" />
-              <h3 className="modal-title">
-                {t('publicProfile.contactInfo') || 'Información de Contacto'}
-              </h3>
-            </div>
-            <div className="modal-content">
-              {user.telefono && (
-                <div className="contact-info">
-                  <PhoneIcon sx={{ color: 'primary.main', fontSize: 24 }} />
-                  <div>
-                    <div className="label">{t('publicProfile.phone') || 'Teléfono'}</div>
-                    <div className="value">
-                      <a href={`tel:${user.telefono}`}>{user.telefono}</a>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {user.email && (
-                <div className="contact-info">
-                  <EmailIcon sx={{ color: 'primary.main', fontSize: 24 }} />
-                  <div>
-                    <div className="label">{t('publicProfile.email')}</div>
-                    <div className="value">
-                      <a href={`mailto:${user.email}`}>{user.email}</a>
-                    </div>
-                  </div>
-                </div>
-              )}
-              <button
-                onClick={() => setShowContactModal(false)}
-                className="close-button"
-              >
-                <CloseIcon sx={{ marginRight: 1 }} />
-                {t('common.close') || 'Cerrar'}
-              </button>
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 };
