@@ -71,11 +71,14 @@ export function meta({ data, params }) {
   const url = `${SITE_URL}/profile/${params.userId}`;
 
   if (!profile) {
-    return buildMeta({
-      title: `Perfil de Profesional | ${SITE_NAME}`,
-      description: 'Consulta el perfil de este profesional verificado en ChambingApp El Salvador.',
-      url,
-    });
+    return [
+      ...buildMeta({
+        title: `Perfil de Profesional | ${SITE_NAME}`,
+        description: 'Consulta el perfil de este profesional verificado en ChambingApp El Salvador.',
+        url,
+      }),
+      { tagName: 'link', rel: 'canonical', href: url },
+    ];
   }
 
   const name = [profile.nombre, profile.apellido].filter(Boolean).join(' ');
@@ -92,11 +95,8 @@ export function meta({ data, params }) {
       type: 'profile',
     }),
     { name: 'robots', content: 'index, follow' },
+    { tagName: 'link', rel: 'canonical', href: url },
   ];
-}
-
-export function links({ params }) {
-  return [{ rel: 'canonical', href: `${SITE_URL}/profile/${params.userId}` }];
 }
 
 export default function ProfileRoute() {
