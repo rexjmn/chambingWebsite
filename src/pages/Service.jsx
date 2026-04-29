@@ -140,7 +140,7 @@ const Service = () => {
     "provider": {
       "@type": "Organization",
       "name": "ChambingApp",
-      "url": "https://chambingapp.com"
+      "url": "https://chambing.com"
     },
     "areaServed": {
       "@type": "Country",
@@ -209,7 +209,7 @@ const Service = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={t('services.metaTitle')} />
         <meta name="twitter:description" content={t('services.metaDescription')} />
-        <link rel="canonical" href="https://chambingapp.com/services" />
+        <link rel="canonical" href="https://chambing.com/service" />
         <script type="application/ld+json">
           {JSON.stringify(schemaData)}
         </script>

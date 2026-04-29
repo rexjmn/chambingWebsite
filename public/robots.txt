@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Allow: /service
+Allow: /profile/
+
+# Rutas privadas — no indexar
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /edit-profile
+Disallow: /onboarding
+Disallow: /availability
+Disallow: /contracts/
+Disallow: /ofertas/
+Disallow: /perfil
+
+Sitemap: https://chambing.com/sitemap.xml

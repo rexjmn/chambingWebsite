@@ -1,8 +1,9 @@
 import Service from '../../src/pages/Service';
+import { buildMeta, SITE_URL, SITE_NAME } from '../seo';
 
 const API = process.env.API_INTERNAL_URL || 'http://localhost:3000/api';
+const PAGE_URL = `${SITE_URL}/service`;
 
-// Corre en el servidor — pre-carga la lista inicial de trabajadores sin filtros
 export async function loader() {
   try {
     const res = await fetch(`${API}/users/workers?page=1&limit=20`);
@@ -12,6 +13,49 @@ export async function loader() {
   } catch {
     return { initialWorkers: [] };
   }
+}
+
+export function meta() {
+  return [
+    ...buildMeta({
+      title: 'Servicios Disponibles | ChambingApp',
+      description:
+        'Explora cientos de profesionales disponibles en El Salvador. Plomeros, electricistas, pintores, técnicos, limpieza y más. Contrata con confianza.',
+      url: PAGE_URL,
+    }),
+    { name: 'robots', content: 'index, follow' },
+    { tagName: 'link', rel: 'canonical', href: PAGE_URL },
+  ];
+}
+
+export function links() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `Servicios | ${SITE_NAME}`,
+    url: PAGE_URL,
+    description:
+      'Directorio de profesionales freelance verificados disponibles para contratación en El Salvador.',
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    about: {
+      '@type': 'Service',
+      areaServed: { '@type': 'Country', name: 'El Salvador' },
+      serviceType: 'Servicios del hogar y profesionales',
+    },
+  };
+
+  return [
+    { rel: 'canonical', href: PAGE_URL },
+    {
+      tagName: 'script',
+      type: 'application/ld+json',
+      children: JSON.stringify(jsonLd),
+    },
+  ];
 }
 
 export default Service;

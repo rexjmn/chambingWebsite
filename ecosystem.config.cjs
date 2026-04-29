@@ -13,7 +13,7 @@ module.exports = {
         // Fetch server-side (loaders SSR) → NestJS local, sin pasar por Nginx
         API_INTERNAL_URL: 'http://localhost:3000/api',
         // Fetch client-side (Axios en el navegador) → pasa por Nginx /api
-        VITE_API_URL: 'https://chambing.pro/api',
+        VITE_API_URL: 'https://chambing.com/api',
       },
     },
   ],
