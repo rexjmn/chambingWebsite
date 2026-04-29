@@ -69,6 +69,9 @@ $shadow-primary: 0 8px 16px rgba(37, 99, 235, 0.3);
 
 // ===== VARIABLES CSS (Custom Properties) =====
 :root {
+  // El sitio es exclusivamente light-mode — forzar que el navegador no aplique adaptaciones oscuras
+  color-scheme: light;
+
   // ===== Variables del NAVBAR =====
   --chambing-primary: #1a1a1a;
   --chambing-secondary: #666666;
@@ -124,27 +127,6 @@ $shadow-primary: 0 8px 16px rgba(37, 99, 235, 0.3);
   --gradient-primary: linear-gradient(135deg, #233DFF 0%, #4F63FF 50%, #8B5CF6 100%);
   --gradient-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-// ===== DARK MODE =====
-@media (prefers-color-scheme: dark) {
-  :root {
-    --chambing-primary: #ffffff;
-    --chambing-secondary: #a0a0a0;
-    --chambing-light-gray: #1e1e1e;
-    --chambing-border: rgba(255, 255, 255, 0.08);
-    --chambing-hover: rgba(255, 255, 255, 0.04);
-    --chambing-shadow: rgba(0, 0, 0, 0.4);
-    --chambing-text: #ffffff;
-    --chambing-text-light: #a0a0a0;
-    --chambing-brand-shadow: rgba(255, 255, 255, 0.1);
-
-    --color-gray-50: #1F2937;
-    --color-gray-100: #374151;
-
-    --glass-bg: rgba(30, 30, 30, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
-  }
 }
 
 // ===== MIXINS =====
