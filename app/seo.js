@@ -26,8 +26,11 @@ export function buildMeta({
     { property: 'og:title', content: title },
     { property: 'og:description', content: description },
     { property: 'og:image', content: image },
+    { property: 'og:image:secure_url', content: image },
+    { property: 'og:image:type', content: 'image/png' },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
+    { property: 'og:image:alt', content: title },
     { property: 'og:url', content: url },
 
     // Twitter Card — X (Twitter)
