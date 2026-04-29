@@ -3,6 +3,7 @@ import { index, route } from '@react-router/dev/routes';
 export default [
   // ── Rutas públicas con SSR ────────────────────────────────────────────────
   index('routes/home.jsx'),
+  route('/sitemap.xml', 'routes/sitemap.xml.jsx'),
   route('/service', 'routes/service.jsx'),
   route('/profile/:userId', 'routes/profile.$userId.jsx'),
 
