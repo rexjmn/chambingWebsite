@@ -10,7 +10,7 @@ import Cropper from 'react-easy-crop';
 import {
   User, Camera, MapPin, Briefcase, DollarSign,
   CheckCircle, ChevronRight, ChevronLeft, Search,
-  Star, ArrowRight, X,
+  Star, ArrowRight, X, Phone,
 } from 'lucide-react';
 import '../styles/onboarding.scss';
 
@@ -29,9 +29,15 @@ const municipiosPorDepartamento = {
   'Sonsonate':['Sonsonate','Acajutla','Izalco','Nahuizalco','Sonzacate','Armenia','Caluco'],
 };
 
-// Step identifiers
-const STEPS_CLIENTE    = ['welcome','photo','profile','done'];
-const STEPS_TRABAJADOR = ['welcome','photo','profile','skills','rates','done'];
+// Step identifiers — phone step injected for OAuth users (no password set)
+const buildSteps = (user) => {
+  const isOAuth = user?.auth_provider && user.auth_provider !== 'local';
+  const phoneStep = isOAuth ? ['phone'] : [];
+  if (user?.tipo_usuario === 'trabajador') {
+    return ['welcome', 'photo', ...phoneStep, 'profile', 'skills', 'rates', 'done'];
+  }
+  return ['welcome', 'photo', ...phoneStep, 'profile', 'done'];
+};
 
 // ─── image cropping helpers ──────────────────────────────────────────────────
 const createImage = (url) =>
@@ -78,7 +84,7 @@ const Onboarding = () => {
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
 
-  const steps = user?.tipo_usuario === 'trabajador' ? STEPS_TRABAJADOR : STEPS_CLIENTE;
+  const steps = buildSteps(user);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -107,6 +113,10 @@ const Onboarding = () => {
   const [departamento, setDepartamento]     = useState(user?.departamento || '');
   const [municipio, setMunicipio]           = useState(user?.municipio || '');
   const [tituloProfesional, setTituloProfesional] = useState(user?.titulo_profesional || '');
+
+  // Phone state (for OAuth users)
+  const [telefono, setTelefono]             = useState(user?.telefono || '');
+  const [telefonoError, setTelefonoError]   = useState('');
 
   // Skills state
   const [availableSkills, setAvailableSkills] = useState([]);
@@ -227,6 +237,11 @@ const Onboarding = () => {
       if (!ok) return; // stop if upload failed
     }
 
+    if (currentStep === 'phone') {
+      const ok = await savePhone();
+      if (!ok) return;
+    }
+
     if (currentStep === 'profile') {
       const ok = await saveProfile();
       if (!ok) return;
@@ -281,6 +296,30 @@ const Onboarding = () => {
   };
 
   // ── Save helpers ──────────────────────────────────────────────────────
+  const savePhone = async () => {
+    const digits = telefono.replace(/\D/g, '');
+    if (digits.length < 8) {
+      setTelefonoError('Ingresa un número válido de 8 dígitos');
+      return false;
+    }
+    setTelefonoError('');
+    setSaving(true);
+    try {
+      await profileService.updateProfile({
+        nombre:   user?.nombre   || '',
+        apellido: user?.apellido || '',
+        telefono: digits,
+      });
+      return true;
+    } catch (err) {
+      logger.error('Error saving phone:', err);
+      setError('Error al guardar el teléfono. Intenta de nuevo.');
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const saveProfile = async () => {
     setSaving(true);
     try {
@@ -362,16 +401,19 @@ const Onboarding = () => {
       // ── Welcome ────────────────────────────────────────────────────
       case 'welcome': {
         const isWorker = user?.tipo_usuario === 'trabajador';
+        const isOAuth  = user?.auth_provider && user.auth_provider !== 'local';
         const items = isWorker
           ? [
-              { icon: <Camera size={18} />, title: 'Foto de perfil', desc: 'Una foto genera más confianza' },
-              { icon: <User size={18} />, title: 'Tu presentación', desc: 'Cuéntanos sobre tu experiencia' },
+              { icon: <Camera   size={18} />, title: 'Foto de perfil',        desc: 'Una foto genera más confianza' },
+              ...(isOAuth ? [{ icon: <Phone size={18} />, title: 'Número de WhatsApp', desc: 'Para recibir notificaciones de contratos' }] : []),
+              { icon: <User     size={18} />, title: 'Tu presentación',        desc: 'Cuéntanos sobre tu experiencia' },
               { icon: <Briefcase size={18} />, title: 'Habilidades y tarifas', desc: 'Para que los clientes te encuentren' },
             ]
           : [
-              { icon: <Camera size={18} />, title: 'Foto de perfil', desc: 'Opcional, pero mejora tu experiencia' },
-              { icon: <MapPin size={18} />, title: 'Tu ubicación', desc: 'Confirmamos dónde encontrarte' },
-              { icon: <Star size={18} />, title: 'Listo para empezar', desc: 'Encuentra profesionales cerca de ti' },
+              { icon: <Camera size={18} />, title: 'Foto de perfil',   desc: 'Opcional, pero mejora tu experiencia' },
+              ...(isOAuth ? [{ icon: <Phone size={18} />, title: 'Número de WhatsApp', desc: 'Para recibir notificaciones importantes' }] : []),
+              { icon: <MapPin size={18} />, title: 'Tu ubicación',     desc: 'Confirmamos dónde encontrarte' },
+              { icon: <Star   size={18} />, title: 'Listo para empezar', desc: 'Encuentra profesionales cerca de ti' },
             ];
 
         return (
@@ -523,6 +565,66 @@ const Onboarding = () => {
                 </div>
               </>
             )}
+          </div>
+        );
+
+      // ── Phone ─────────────────────────────────────────────────────
+      case 'phone':
+        return (
+          <div className="onboarding__step">
+            <div className="onboarding__step-icon">
+              <Phone size={30} strokeWidth={1.75} />
+            </div>
+            <h1 className="onboarding__step-title">Tu número de WhatsApp</h1>
+            <p className="onboarding__step-subtitle">
+              {user?.telefono
+                ? 'Confirma que este número sigue siendo el correcto. Te enviaremos notificaciones por WhatsApp.'
+                : 'Necesitamos tu número para enviarte notificaciones de contratos y mensajes por WhatsApp.'}
+            </p>
+
+            {error && (
+              <div className="ob-alert ob-alert--error">
+                <X size={16} /> {error}
+              </div>
+            )}
+
+            <div className="ob-form-group">
+              <label className="ob-label" htmlFor="ob-telefono">
+                Número de teléfono (El Salvador)
+              </label>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <span style={{
+                  position: 'absolute', left: '0.875rem',
+                  color: '#9CA3AF', fontSize: '0.9375rem', fontWeight: 500,
+                  pointerEvents: 'none', zIndex: 1,
+                }}>
+                  +503
+                </span>
+                <input
+                  id="ob-telefono"
+                  className="ob-input"
+                  type="tel"
+                  inputMode="numeric"
+                  placeholder="7000-0000"
+                  value={telefono}
+                  onChange={(e) => {
+                    setTelefonoError('');
+                    const v = e.target.value.replace(/[^\d\-\s]/g, '');
+                    setTelefono(v);
+                  }}
+                  maxLength={9}
+                  style={{ paddingLeft: '3.5rem' }}
+                />
+              </div>
+              {telefonoError && (
+                <div className="ob-alert ob-alert--error" style={{ marginTop: '0.5rem', padding: '0.5rem 0.75rem' }}>
+                  <X size={14} /> {telefonoError}
+                </div>
+              )}
+              <p style={{ fontSize: '0.8rem', color: '#9CA3AF', marginTop: '0.5rem', lineHeight: 1.5 }}>
+                Solo usamos tu numero para enviarte notificaciones importantes via WhatsApp. No lo compartimos con terceros.
+              </p>
+            </div>
           </div>
         );
 
@@ -793,7 +895,7 @@ const Onboarding = () => {
   };
 
   // ── Skip visibility ───────────────────────────────────────────────────
-  const showSkip = ['photo', 'profile', 'skills', 'rates'].includes(currentStep) && !cropperActive;
+  const showSkip = ['photo', 'phone', 'profile', 'skills', 'rates'].includes(currentStep) && !cropperActive;
 
   // ── Nav button class ─────────────────────────────────────────────────
   const nextBtnClass = [

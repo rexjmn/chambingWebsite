@@ -260,6 +260,21 @@ const RegisterForm = () => {
 
           <form className="register-form" onSubmit={handleSubmit(onSubmit)} noValidate>
 
+            {/* ── Google button (top) ── */}
+            <button
+              type="button"
+              className="btn-google"
+              onClick={handleGoogleLogin}
+              disabled={loading}
+            >
+              {GOOGLE_ICON}
+              Continuar con Google
+            </button>
+
+            <div className="auth-divider">
+              <span className="divider-text">o regístrate con tu correo</span>
+            </div>
+
             {/* ── Role selection ── */}
             <div className="role-section">
               <p className="role-section__label">{t('auth.register.userType')}</p>
@@ -622,20 +637,6 @@ const RegisterForm = () => {
                   <ChevronRight size={18} strokeWidth={2.5} />
                 </>
               )}
-            </button>
-
-            <div className="auth-divider">
-              <span className="divider-text">o</span>
-            </div>
-
-            <button
-              type="button"
-              className="btn-google"
-              onClick={handleGoogleLogin}
-              disabled={loading}
-            >
-              {GOOGLE_ICON}
-              Continuar con Google
             </button>
 
             <div className="register-footer">
