@@ -16,11 +16,24 @@ npm run test:coverage
 
 ## Architecture
 
-### Routing — `src/App.jsx`
-All pages are `React.lazy()`-loaded and wrapped in `<Suspense>`. Route structure:
+### Routing — `app/routes.js` (SSR) + `src/App.jsx` (legacy SPA shell)
+React Router v7 with `ssr: true` (`react-router.config.js`). **All routes MUST be registered in two places:**
+
+1. **`app/routes.js`** — the SSR route manifest. This is what `react-router-serve` uses server-side. Missing a route here = HTTP 404 on direct navigation.
+2. **`src/App.jsx`** — the client-side `<BrowserRouter>` tree (used for in-app navigation after hydration).
+
+Route files live in `app/routes/` and are thin re-exports of the real components in `src/`:
+```js
+// app/routes/auth.google-callback.jsx
+import GoogleCallback from '../../src/pages/GoogleCallback';
+export default GoogleCallback;
+```
+
+Route structure:
 - Public: `/`, `/login`, `/register`, `/service`, `/profile/:userId`
 - Protected via `<ProtectedRoute>`: `/dashboard`, `/onboarding`, `/contracts/:id`, `/edit-profile`, etc.
 - Role-gated (admin/super_admin): `/admin`
+- OAuth callback: `/auth/google-callback`
 - `ScrollToTop` hook resets scroll on every route change.
 
 ### Auth — `src/context/AuthContext.jsx`
@@ -62,6 +75,29 @@ All API calls go through service files in `src/services/` — never call axios d
 - Step 2: Bio, phone, title, location
 - Step 3 (workers only): Tarifas with live net-earnings calculator (10% platform + 3.5% gateway + 13% IVA El Salvador)
 - On finish: calls `profileService.updateProfile()` then `serviceService.createTarifas()`, clears the `chambing_needs_onboarding` flag, navigates to `/dashboard`.
+
+### Google OAuth — `src/pages/GoogleCallback.jsx`
+Server-side redirect flow (not popup). Backend NestJS handles the OAuth dance; frontend only receives the final redirect.
+
+**Flow:**
+1. User clicks Google button → `window.location.href = VITE_API_URL + '/auth/google'`
+2. NestJS `GET /api/auth/google` → Passport redirects to Google consent screen
+3. Google redirects to `GET /api/auth/google/callback` → NestJS sets httpOnly cookies + redirects to `/auth/google-callback`
+4. `GoogleCallback.jsx` calls `refreshUser()` → checks `foto_perfil` → sends to `/onboarding` or `/dashboard`
+
+**Account linking:** If Google email matches an existing email/password account, `google_id` is linked to that account (no duplicate user created).
+
+**To add a new OAuth provider** (e.g. GitHub):
+- Backend: create `src/auth/strategies/github.strategy.ts`, add `GET /auth/github` + `/auth/github/callback` endpoints in `auth.controller.ts`, register in `auth.module.ts`
+- Frontend: add button in `LoginForm.jsx` + `RegisterForm.jsx`, style in `src/styles/auth.scss`
+- SSR route: create `app/routes/auth.github-callback.jsx` + register in `app/routes.js` (critical — SSR 404 otherwise)
+- DB: `auth_provider` column already exists; add provider-specific ID column via TypeORM migration
+
+**VPS deployment notes:**
+- nginx proxies `chambing.com/api → localhost:3000` — no separate subdomain needed for the API
+- `GOOGLE_CALLBACK_URL` must be `https://chambing.com/api/auth/google/callback`
+- Google Cloud Console → Authorized redirect URIs: `https://chambing.com/api/auth/google/callback`
+- Google Cloud Console → Authorized JavaScript origins: `https://chambing.com`
 
 ### Reviews
 All review components (`ReviewForm`, `ReviewModal`) and `reviewService` are complete. Wired into `ContractDetails.jsx`:
