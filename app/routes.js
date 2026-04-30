@@ -22,4 +22,5 @@ export default [
   route('/contracts/:contractId', 'routes/contracts.$contractId.jsx'),
   route('/admin', 'routes/admin.jsx'),
   route('/ofertas/responder', 'routes/ofertas.responder.jsx'),
+  route('/auth/google-callback', 'routes/auth.google-callback.jsx'),
 ];
