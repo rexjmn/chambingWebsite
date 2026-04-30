@@ -1,9 +1,10 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const ProtectedRoute = ({ children, requiredRoles = [] }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   // Mostrar loading mientras verifica autenticación
   if (loading) {
@@ -29,9 +30,9 @@ const ProtectedRoute = ({ children, requiredRoles = [] }) => {
     );
   }
 
-  // Si no está autenticado, redirigir al home
   if (!user) {
-    return <Navigate to="/" replace />;
+    sessionStorage.setItem('chambing_return_url', location.pathname + location.search);
+    return <Navigate to="/login" replace />;
   }
 
   // Si se requieren roles específicos, verificar

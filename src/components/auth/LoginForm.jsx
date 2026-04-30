@@ -26,7 +26,6 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/dashboard';
   const message = location.state?.message;
 
   // Schema de validación con seguridad mejorada
@@ -50,6 +49,10 @@ const LoginForm = () => {
   });
 
   const handleGoogleLogin = () => {
+    const returnUrl = sessionStorage.getItem('chambing_return_url') || location.state?.from;
+    if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
+      sessionStorage.setItem('chambing_return_url', returnUrl);
+    }
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
     window.location.href = `${apiUrl}/auth/google`;
   };
@@ -65,13 +68,21 @@ const LoginForm = () => {
       await login(sanitizedData);
       logger.form('Login exitoso, redirigiendo');
 
-      // Detect first-time login: redirect to onboarding if flagged after register
       const pendingOnboarding = localStorage.getItem('chambing_pending_onboarding');
       if (pendingOnboarding === sanitizedData.email) {
         localStorage.removeItem('chambing_pending_onboarding');
         navigate('/onboarding', { replace: true });
+        return;
+      }
+
+      const returnUrl = sessionStorage.getItem('chambing_return_url');
+      sessionStorage.removeItem('chambing_return_url');
+
+      if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
+        navigate(returnUrl, { replace: true });
       } else {
-        navigate(from, { replace: true });
+        const userType = response?.user?.tipo_usuario || 'cliente';
+        navigate(userType === 'cliente' ? '/service' : '/dashboard', { replace: true });
       }
     } catch (error) {
       logger.error('Error en login:', error.message);

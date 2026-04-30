@@ -13,11 +13,22 @@ const GoogleCallback = () => {
       try {
         await refreshUser();
         const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-        if (!storedUser?.foto_perfil) {
-          localStorage.setItem('chambing_needs_onboarding', 'true');
+        if (!storedUser) throw new Error('No user after refresh');
+
+        const onboardingDone = localStorage.getItem(`chambing_onboarding_done_${storedUser.id}`);
+
+        if (!onboardingDone) {
           navigate('/onboarding', { replace: true });
+          return;
+        }
+
+        const returnUrl = sessionStorage.getItem('chambing_return_url');
+        sessionStorage.removeItem('chambing_return_url');
+
+        if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
+          navigate(returnUrl, { replace: true });
         } else {
-          navigate('/dashboard', { replace: true });
+          navigate(storedUser.tipo_usuario === 'cliente' ? '/service' : '/dashboard', { replace: true });
         }
       } catch {
         setError('No se pudo completar el inicio de sesión con Google.');

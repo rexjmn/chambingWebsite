@@ -289,10 +289,16 @@ const Onboarding = () => {
     if (user?.id) {
       localStorage.setItem(`chambing_onboarding_done_${user.id}`, '1');
     }
-    // Fire-and-forget refresh so dashboard shows updated user data.
-    // We don't await — navigation happens immediately.
     refreshUser().catch(() => {});
-    navigate('/dashboard', { replace: true });
+
+    const returnUrl = sessionStorage.getItem('chambing_return_url');
+    sessionStorage.removeItem('chambing_return_url');
+
+    if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
+      navigate(returnUrl, { replace: true });
+    } else {
+      navigate(user?.tipo_usuario === 'cliente' ? '/service' : '/dashboard', { replace: true });
+    }
   };
 
   // ── Save helpers ──────────────────────────────────────────────────────

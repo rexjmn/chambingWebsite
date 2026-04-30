@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslations } from '../../hooks/useTranslations';
 import { useAuth } from '../../context/AuthContext';
 import { useForm } from 'react-hook-form';
@@ -84,6 +84,7 @@ const RegisterForm = () => {
   const [passwordStrength, setPasswordStrength] = useState(null);
   const { register: registerUser, loading, error, clearError } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     register,
@@ -117,6 +118,13 @@ const RegisterForm = () => {
   }, [error, clearError]);
 
   const handleGoogleLogin = () => {
+    const existing = sessionStorage.getItem('chambing_return_url');
+    if (!existing) {
+      const returnUrl = location.state?.from || document.referrer;
+      if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
+        sessionStorage.setItem('chambing_return_url', returnUrl);
+      }
+    }
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
     window.location.href = `${apiUrl}/auth/google`;
   };

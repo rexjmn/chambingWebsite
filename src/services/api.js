@@ -126,23 +126,25 @@ api.interceptors.response.use(
  * - Il y a une erreur d'authentification non récupérable
  */
 function handleLogout() {
-  // Prévenir les appels multiples simultanés
   if (isRedirecting) return;
-
   isRedirecting = true;
 
   logger.auth('Sesión expirada - Cerrando sesión automáticamente');
-
-  // Limpiar solo información del usuario de localStorage
-  // Las cookies httpOnly se limpian automáticamente al llamar /auth/logout
   localStorage.removeItem('user');
 
-  // Rediriger vers la page de connexion après un court délai
-  // Cela évite les problèmes de course conditionnelle avec les requêtes en attente
-  setTimeout(() => {
-    window.location.href = '/login';
+  // Only hard-redirect from protected routes — public pages (profile, service, home)
+  // should stay visible even when unauthenticated API calls return 401.
+  const protectedPrefixes = ['/dashboard', '/edit-profile', '/admin', '/availability', '/contracts', '/onboarding', '/perfil'];
+  const onProtectedPage = protectedPrefixes.some(p => window.location.pathname.startsWith(p));
+
+  if (onProtectedPage) {
+    setTimeout(() => {
+      window.location.href = '/login';
+      isRedirecting = false;
+    }, 100);
+  } else {
     isRedirecting = false;
-  }, 100);
+  }
 }
 
 /**
