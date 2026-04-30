@@ -22,10 +22,9 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { serviceService } from '../services/serviceService';
 import { workerService } from '../services/workerService';
+import { publicProfileService } from '../services/publicProfileService';
 import { logger } from '../utils/logger';
 import heroManImage from '../assets/images/heroman.png';
-// Gallery images — optimized versions (336px wide, ~10-50KB each vs original 1-7MB)
-// Col A (9)
 import imgWorker1  from '../assets/images/gallery/ehmitrich-fW6lwDM26o0-unsplash.jpg';
 import imgCreative from '../assets/images/gallery/ona-creative-z4S0MYNYT08-unsplash.jpg';
 import imgOutdoor1 from '../assets/images/gallery/vitaly-gariev-0rhc6d7o6T8-unsplash.jpg';
@@ -35,7 +34,6 @@ import imgDavid    from '../assets/images/gallery/david-suarez-Q_pPfSLqz4o-unspl
 import imgHector   from '../assets/images/gallery/hector-emilio-gonzalez--SYOWCWxH3Q-unsplash.jpg';
 import imgMaria    from '../assets/images/gallery/maria-ziegler-1AmEImwtnFk-unsplash.jpg';
 import imgMathias  from '../assets/images/gallery/mathias-reding-pRPiZT3zfUQ-unsplash.jpg';
-// Col B (8)
 import imgService1 from '../assets/images/gallery/jimmy-nilsson-masth-UovTD1dG-lA-unsplash.jpg';
 import imgWorker2  from '../assets/images/gallery/shishu-yadava-Hu_6KP4m9xA-unsplash.jpg';
 import imgOutdoor2 from '../assets/images/gallery/vitaly-gariev-QEXRd41FjZw-unsplash.jpg';
@@ -47,7 +45,6 @@ import imgSaemi    from '../assets/images/gallery/saemi-kim-4hcTkOw-EKE-unsplash
 import '../styles/home.scss';
 import '../styles/button.scss';
 
-/* ─── Render star rating ─────────────────────────────── */
 const StarRating = ({ value = 5 }) => (
   <div className="tcard-stars" aria-label={`${value} de 5 estrellas`}>
     {Array.from({ length: 5 }, (_, i) => (
@@ -62,9 +59,6 @@ const StarRating = ({ value = 5 }) => (
   </div>
 );
 
-/* ════════════════════════════════════════════════════════
-   HOME COMPONENT
-════════════════════════════════════════════════════════ */
 const Home = () => {
   const { t, translateService } = useTranslations();
   const { isAuthenticated } = useAuth();
@@ -77,13 +71,12 @@ const Home = () => {
   const [featuredWorkers, setFeaturedWorkers] = useState([]);
   const [topRatedWorkers, setTopRatedWorkers] = useState([]);
   const [loadingWorkers, setLoadingWorkers] = useState(true);
+  const [platformStats, setPlatformStats] = useState(null);
 
-  /* Load categories */
   useEffect(() => {
     serviceService.getCategories()
       .then((data) => setCategories(data.slice(0, 6)))
       .catch(() => {
-        logger.log('Usando categorías mock');
         setCategories([
           { id: 1, nombre: 'domesticCleaning', icono: 'cleaning' },
           { id: 2, nombre: 'plumbing',         icono: 'plumbing' },
@@ -95,7 +88,6 @@ const Home = () => {
       });
   }, []);
 
-  /* Load workers */
   useEffect(() => {
     setLoadingWorkers(true);
     Promise.all([
@@ -111,6 +103,12 @@ const Home = () => {
         setTopRatedWorkers(topRated || []);
       }
     }).finally(() => setLoadingWorkers(false));
+  }, []);
+
+  useEffect(() => {
+    publicProfileService.getPlatformStats()
+      .then(res => { if (res?.data) setPlatformStats(res.data); })
+      .catch(() => {});
   }, []);
 
   const generateMockWorkers = (count) => {
@@ -211,6 +209,37 @@ const Home = () => {
     { labelKey: 'home.search.popularTags.construction',     query: 'Construcción',       variant: 'default' },
   ];
 
+  const statsItems = [
+    {
+      n: platformStats ? `${platformStats.verified_workers}+` : '—',
+      label: t('home.stats.verifiedProfessionals'),
+      icon: <Users size={24} strokeWidth={1.75} />,
+    },
+    {
+      n: platformStats ? `${platformStats.completed_services}+` : '—',
+      label: t('home.stats.completedServices'),
+      icon: <TrendingUp size={24} strokeWidth={1.75} />,
+    },
+    {
+      n: platformStats
+        ? platformStats.average_rating > 0
+          ? `${platformStats.average_rating.toFixed(1)}/5`
+          : '—'
+        : '—',
+      label: t('home.stats.averageRating'),
+      icon: <Star size={24} strokeWidth={1.75} />,
+    },
+    {
+      n: platformStats
+        ? platformStats.satisfied_clients_pct > 0
+          ? `${platformStats.satisfied_clients_pct}%`
+          : '—'
+        : '—',
+      label: t('home.stats.satisfiedClients'),
+      icon: <CheckCircle size={24} strokeWidth={1.75} />,
+    },
+  ];
+
   return (
     <div className="home-page" itemScope itemType="https://schema.org/LocalBusiness">
       <meta itemProp="name" content="Chambing" />
@@ -220,8 +249,6 @@ const Home = () => {
       <section className="hero-section" aria-label={t('home.hero.title')}>
         <div className="hero-container">
           <div className="hero-content">
-
-            {/* Text — left */}
             <div className="hero-positioning">
               <div className="hero-left">
                 <h1 className="hero-title">{t('home.hero.title')}</h1>
@@ -256,7 +283,6 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Image — right */}
             <div className="hero-image-container">
               <img
                 src={heroManImage}
@@ -273,7 +299,6 @@ const Home = () => {
               <div className="hero-image-dots" aria-hidden="true" />
             </div>
           </div>
-
         </div>
       </section>
 
@@ -288,8 +313,6 @@ const Home = () => {
         <meta itemProp="areaServed" content="El Salvador" />
         <div className="sec-wrap">
           <div className="about-grid">
-
-            {/* Left — text + pills */}
             <div className="about-text">
               <span className="about-badge" aria-hidden="true">
                 <Shield size={12} strokeWidth={2.5} />
@@ -320,11 +343,9 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Right — gallery carousel */}
             <div className="about-visual" aria-hidden="true">
               <div className="gallery-frame">
                 <div className="gallery-viewport">
-                  {/* Column A — 9 images × 2 for seamless loop */}
                   <div className="gallery-col gallery-col--a">
                     {(() => {
                       const colA = [imgWorker1, imgCreative, imgOutdoor1, imgAlina, imgCarl, imgDavid, imgHector, imgMaria, imgMathias];
@@ -333,7 +354,6 @@ const Home = () => {
                       ));
                     })()}
                   </div>
-                  {/* Column B — 8 images × 2 for seamless loop */}
                   <div className="gallery-col gallery-col--b">
                     {(() => {
                       const colB = [imgService1, imgWorker2, imgOutdoor2, imgMichael, imgMilin, imgMitchell, imgRoberto, imgSaemi];
@@ -351,7 +371,6 @@ const Home = () => {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </section>
@@ -445,12 +464,7 @@ const Home = () => {
       <section className="stats-section" aria-label="Estadísticas de Chambing">
         <div className="sec-wrap">
           <div className="stats-grid">
-            {[
-              { n: '5,000+',  label: t('home.stats.verifiedProfessionals'), icon: <Users size={24} strokeWidth={1.75} /> },
-              { n: '15,000+', label: t('home.stats.completedServices'),     icon: <TrendingUp size={24} strokeWidth={1.75} /> },
-              { n: '4.8/5',   label: t('home.stats.averageRating'),         icon: <Star size={24} strokeWidth={1.75} /> },
-              { n: '98%',     label: t('home.stats.satisfiedClients'),      icon: <CheckCircle size={24} strokeWidth={1.75} /> },
-            ].map((s, i) => (
+            {statsItems.map((s, i) => (
               <div key={i} className="stat-item">
                 <span className="stat-icon" aria-hidden="true">{s.icon}</span>
                 <span className="stat-number">{s.n}</span>
@@ -502,12 +516,10 @@ const Home = () => {
                 itemScope
                 itemType="https://schema.org/Review"
               >
-                {/* Quote SVG icon */}
                 <svg className="tcard-quote-icon" aria-hidden="true" width="32" height="24" viewBox="0 0 32 24" fill="none">
                   <path d="M0 24V14.4C0 10.08 1.12 6.6 3.36 3.96C5.68 1.32 8.88 0 12.96 0V4.56C10.72 4.56 9.04 5.28 7.92 6.72C6.88 8.08 6.36 9.92 6.36 12.24H12.96V24H0ZM19.04 24V14.4C19.04 10.08 20.16 6.6 22.4 3.96C24.72 1.32 27.92 0 32 0V4.56C29.76 4.56 28.08 5.28 26.96 6.72C25.92 8.08 25.4 9.92 25.4 12.24H32V24H19.04Z" fill="currentColor"/>
                 </svg>
 
-                {/* Stars + service tag row */}
                 <div className="tcard-top">
                   <StarRating value={item.rating} />
                   <span className="tcard-service-tag">{item.service}</span>
