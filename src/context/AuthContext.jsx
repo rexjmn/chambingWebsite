@@ -407,7 +407,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: value.isAuthenticated,
     loading: value.loading,
     userHasPhoto: !!value.user?.foto_perfil,
-    tokenInStorage: !!localStorage.getItem('token')
+    tokenInStorage: typeof window !== 'undefined' && !!localStorage.getItem('token')
   });
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

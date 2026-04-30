@@ -130,12 +130,13 @@ function handleLogout() {
   isRedirecting = true;
 
   logger.auth('Sesión expirada - Cerrando sesión automáticamente');
-  localStorage.removeItem('user');
+  if (typeof window !== 'undefined') localStorage.removeItem('user');
 
   // Only hard-redirect from protected routes — public pages (profile, service, home)
   // should stay visible even when unauthenticated API calls return 401.
   const protectedPrefixes = ['/dashboard', '/edit-profile', '/admin', '/availability', '/contracts', '/onboarding', '/perfil'];
-  const onProtectedPage = protectedPrefixes.some(p => window.location.pathname.startsWith(p));
+  const onProtectedPage = typeof window !== 'undefined' &&
+    protectedPrefixes.some(p => window.location.pathname.startsWith(p));
 
   if (onProtectedPage) {
     setTimeout(() => {
