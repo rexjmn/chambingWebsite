@@ -105,11 +105,12 @@ const authReducer = (state, action) => {
         localStorage.setItem('user', JSON.stringify(action.payload));
         logger.auth('Usuario actualizado desde servidor');
       }
-      
+
       return {
         ...state,
         loading: false,
         user: action.payload,
+        isAuthenticated: !!action.payload,
         error: null
       };
       

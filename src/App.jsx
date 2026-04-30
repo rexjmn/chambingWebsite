@@ -29,6 +29,7 @@ const Onboarding = lazy(() => import('./pages/Onboarding'));
 // ✅ Notificaciones
 const VerificarEmail = lazy(() => import('./pages/VerificarEmail'));
 const ResponderOferta = lazy(() => import('./pages/ResponderOferta'));
+const GoogleCallback = lazy(() => import('./pages/GoogleCallback'));
 
 // Loading fallback component - optimizado
 const LoadingFallback = () => (
@@ -188,6 +189,7 @@ function App() {
                 {/* Página no encontrada */}
                 <Route path="/verificar-email" element={<ErrorBoundaryWrapper><VerificarEmail /></ErrorBoundaryWrapper>} />
                 <Route path="/ofertas/responder" element={<ErrorBoundaryWrapper><ResponderOferta /></ErrorBoundaryWrapper>} />
+                <Route path="/auth/google-callback" element={<ErrorBoundaryWrapper><GoogleCallback /></ErrorBoundaryWrapper>} />
 
                 <Route
                   path="*"
