@@ -9,34 +9,45 @@ const GoogleCallback = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let active = true;
+    let redirectTimeout = null;
+
     const completeGoogleLogin = async () => {
-      try {
-        await refreshUser();
-        const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-        if (!storedUser) throw new Error('No user after refresh');
+      await refreshUser();
 
-        const onboardingDone = localStorage.getItem(`chambing_onboarding_done_${storedUser.id}`);
+      if (!active) return;
 
-        if (!onboardingDone) {
-          navigate('/onboarding', { replace: true });
-          return;
-        }
-
-        const returnUrl = sessionStorage.getItem('chambing_return_url');
-        sessionStorage.removeItem('chambing_return_url');
-
-        if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
-          navigate(returnUrl, { replace: true });
-        } else {
-          navigate(storedUser.tipo_usuario === 'cliente' ? '/service' : '/dashboard', { replace: true });
-        }
-      } catch {
+      const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+      if (!storedUser) {
         setError('No se pudo completar el inicio de sesión con Google.');
-        setTimeout(() => navigate('/login', { replace: true }), 3000);
+        redirectTimeout = setTimeout(() => {
+          if (active) navigate('/login', { replace: true });
+        }, 3000);
+        return;
+      }
+
+      const onboardingDone = localStorage.getItem(`chambing_onboarding_done_${storedUser.id}`);
+      if (!onboardingDone) {
+        navigate('/onboarding', { replace: true });
+        return;
+      }
+
+      const returnUrl = sessionStorage.getItem('chambing_return_url');
+      sessionStorage.removeItem('chambing_return_url');
+
+      if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
+        navigate(returnUrl, { replace: true });
+      } else {
+        navigate(storedUser.tipo_usuario === 'cliente' ? '/service' : '/dashboard', { replace: true });
       }
     };
 
     completeGoogleLogin();
+
+    return () => {
+      active = false;
+      if (redirectTimeout) clearTimeout(redirectTimeout);
+    };
   }, []);
 
   if (error) {

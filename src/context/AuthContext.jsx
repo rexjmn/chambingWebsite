@@ -257,19 +257,22 @@ export const AuthProvider = ({ children }) => {
             payload: { token: null, user } // token es null porque está en httpOnly cookie
           });
 
-          // Después, refrescar datos del servidor en background para verificar que la sesión sigue válida
-          setTimeout(async () => {
-            try {
-              await refreshUser();
-            } catch (error) {
-              logger.error('❌ Error refreshing user in background:', error);
-              // Si falla la verificación (401), limpiar todo
-              if (error.message.includes('401')) {
-                logger.auth('Session expired or invalid, logging out');
-                dispatch({ type: 'LOGOUT' });
+          // Skip background refresh when GoogleCallback is handling it to avoid
+          // two concurrent refreshUser() calls racing for the same refresh token
+          if (window.location.pathname !== '/auth/google-callback') {
+            setTimeout(async () => {
+              try {
+                await refreshUser();
+              } catch (error) {
+                logger.error('❌ Error refreshing user in background:', error);
+                // Si falla la verificación (401), limpiar todo
+                if (error.message.includes('401')) {
+                  logger.auth('Session expired or invalid, logging out');
+                  dispatch({ type: 'LOGOUT' });
+                }
               }
-            }
-          }, 100);
+            }, 100);
+          }
 
         } catch (error) {
           logger.error('❌ Error parsing stored user:', error);
