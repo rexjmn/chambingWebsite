@@ -1,110 +1,48 @@
 import axios from 'axios';
 import { logger } from '../utils/logger';
 
-/**
- * ========================================================================
- * CONFIGURATION AXIOS AVEC INTERCEPTEURS
- * ========================================================================
- *
- * Ce fichier configure une instance centralisée d'Axios avec :
- * 1. URL de base dynamique selon l'environnement
- * 2. Intercepteurs de requêtes pour l'authentification
- * 3. Intercepteurs de réponses pour la gestion des erreurs
- * 4. Support pour tous les verbes HTTP : GET, POST, PUT, PATCH, DELETE
- */
-
-// Configuration de l'URL de base selon l'environnement
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
   (import.meta.env.PROD
     ? 'https://chambingapi.onrender.com/api'
     : 'http://localhost:3000/api');
 
-/**
- * Instance Axios configurée avec une URL de base et des en-têtes par défaut
- * Cette instance sera utilisée par tous les services de l'application
- */
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // Timeout de 30 secondes
-  withCredentials: true, // ✅ Enviar cookies httpOnly automáticamente
+  timeout: 30000,
+  withCredentials: true,
 });
 
-// Variable pour éviter les redirections multiples simultanées
 let isRedirecting = false;
 
-/**
- * ========================================================================
- * INTERCEPTEUR DE REQUÊTES (REQUEST)
- * ========================================================================
- *
- * S'exécute AVANT chaque requête HTTP
- * Fonctionnalités :
- * - Los tokens se envían automáticamente en cookies httpOnly
- * - No es necesario agregar manualmente el token al header
- */
 api.interceptors.request.use(
-  (config) => {
-    // ✅ Los tokens ahora se envían automáticamente en cookies httpOnly
-    // No necesitamos agregar manualmente el token al header
-    // El navegador envía las cookies automáticamente con withCredentials: true
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (config) => config,
+  (error) => Promise.reject(error)
 );
 
-/**
- * ========================================================================
- * INTERCEPTEUR DE RÉPONSES (RESPONSE)
- * ========================================================================
- *
- * S'exécute APRÈS chaque réponse HTTP
- * Fonctionnalités :
- * - Gère les réponses réussies (2xx)
- * - Gère les erreurs d'authentification (401) avec un rafraîchissement de token automatique
- * - Gère les autres erreurs HTTP (404, 500, etc.)
- */
 api.interceptors.response.use(
-  // Gestion des réponses réussies (statut 2xx)
-  (response) => {
-    return response;
-  },
-  // Gestion des erreurs (statut 4xx, 5xx)
+  (response) => response,
   async (error) => {
-    // === GESTION DE L'ERREUR 401 (Non Autorisé) ===
     if (error.response?.status === 401) {
-      // Éviter les redirections multiples simultanées
       if (isRedirecting) {
         return Promise.reject(error);
       }
 
-      // Tenter de rafraîchir le token automatiquement
       if (!error.config._retry) {
         error.config._retry = true;
 
         try {
           logger.api('Token expirado - Intentando refrescar automáticamente');
-
-          // ✅ El backend lee el refreshToken desde las cookies automáticamente
-          // No necesitamos enviarlo en el body
-          await axios.post(`${API_BASE_URL}/auth/refresh`, {}, {
-            withCredentials: true // Enviar cookies con la petición
-          });
-
+          await axios.post(`${API_BASE_URL}/auth/refresh`, {}, { withCredentials: true });
           logger.api('Token refrescado automáticamente');
-
-          // Réessayer la requête originale
-          // Las nuevas cookies se enviarán automáticamente
           return api.request(error.config);
-
         } catch (refreshError) {
           logger.error('Error al refrescar token automáticamente:', refreshError.message);
           handleLogout();
+          return Promise.reject(refreshError);
         }
       } else {
         handleLogout();
@@ -115,16 +53,6 @@ api.interceptors.response.use(
   }
 );
 
-/**
- * ========================================================================
- * FONCTION DE DÉCONNEXION AUTOMATIQUE
- * ========================================================================
- *
- * Nettoie la session de l'utilisateur et redirige vers la page de connexion lorsque :
- * - Le token a expiré et ne peut pas être rafraîchi
- * - Le refresh token a également expiré
- * - Il y a une erreur d'authentification non récupérable
- */
 function handleLogout() {
   if (isRedirecting) return;
   isRedirecting = true;
@@ -132,8 +60,6 @@ function handleLogout() {
   logger.auth('Sesión expirada - Cerrando sesión automáticamente');
   if (typeof window !== 'undefined') localStorage.removeItem('user');
 
-  // Only hard-redirect from protected routes — public pages (profile, service, home)
-  // should stay visible even when unauthenticated API calls return 401.
   const protectedPrefixes = ['/dashboard', '/edit-profile', '/admin', '/availability', '/contracts', '/onboarding', '/perfil'];
   const onProtectedPage = typeof window !== 'undefined' &&
     protectedPrefixes.some(p => window.location.pathname.startsWith(p));
@@ -148,22 +74,4 @@ function handleLogout() {
   }
 }
 
-/**
- * ========================================================================
- * EXPORTATION DE L'INSTANCE AXIOS
- * ========================================================================
- *
- * Cette instance configurée doit être importée dans tous les services :
- *
- * import api from './api';
- *
- * UTILISATION DES VERBES HTTP :
- * - GET:    api.get('/endpoint')
- * - POST:   api.post('/endpoint', data)
- * - PUT:    api.put('/endpoint', data)
- * - PATCH:  api.patch('/endpoint', data)
- * - DELETE: api.delete('/endpoint')
- *
- * Tous les intercepteurs seront appliqués automatiquement à ces requêtes.
- */
 export default api;
