@@ -1,4 +1,3 @@
-// src/pages/Onboarding.jsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -14,16 +13,16 @@ import {
 } from 'lucide-react';
 import '../styles/onboarding.scss';
 
-// ─── helpers ────────────────────────────────────────────────────────────────
+// ─── helpers ────────────────────────────────────────────────────────────────────────────
 const departamentosSV = [
-  'Ahuachapán','Cabañas','Chalatenango','Cuscatlán','La Libertad',
+  'Ahuachapán','Cabañas','Chalatenango','Cuscatán','La Libertad',
   'La Paz','La Unión','Morazán','San Miguel','San Salvador',
   'San Vicente','Santa Ana','Sonsonate','Usulután',
 ];
 
 const municipiosPorDepartamento = {
   'San Salvador':['San Salvador','Mejicanos','Soyapango','Apopa','Delgado','Ilopango','San Marcos','Ayutuxtepeque','Cuscatancingo'],
-  'La Libertad':['Santa Tecla','Antiguo Cuscatlán','Nuevo Cuscatlán','San Juan Opico','Colón','La Libertad','Quezaltepeque'],
+  'La Libertad':['Santa Tecla','Antiguo Cuscatán','Nuevo Cuscatán','San Juan Opico','Colón','La Libertad','Quezaltepeque'],
   'Santa Ana':['Santa Ana','Metapán','Chalchuapa','Candelaria de la Frontera','Coatepeque','El Congo','Texistepeque'],
   'San Miguel':['San Miguel','Usulután','Santiago de María','Chinameca','Nueva Guadalupe','San Rafael Oriente'],
   'Sonsonate':['Sonsonate','Acajutla','Izalco','Nahuizalco','Sonzacate','Armenia','Caluco'],
@@ -39,7 +38,7 @@ const buildSteps = (tipoUsuario, isOAuth) => {
   return ['welcome', ...userTypeStep, 'photo', ...phoneStep, 'profile', 'done'];
 };
 
-// ─── image cropping helpers ──────────────────────────────────────────────────
+// ─── image cropping helpers ────────────────────────────────────────────────────────────────
 const createImage = (url) =>
   new Promise((resolve, reject) => {
     const img = new Image();
@@ -171,7 +170,7 @@ const Onboarding = () => {
     }
   }, [selectedUserType]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Photo handlers ────────────────────────────────────────────────────
+  // ── Photo handlers ────────────────────────────────────────────────────────────
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -224,9 +223,6 @@ const Onboarding = () => {
       }
 
       setImageSrc(null);
-      // Don't await refreshUser() here — it sets loading:true in ProtectedRoute
-      // which unmounts this component and resets currentIdx to 0.
-      // The photo URL is already updated in local state (previewUrl).
       return true; // success
     } catch (err) {
       logger.error('Error uploading photo:', err);
@@ -237,7 +233,7 @@ const Onboarding = () => {
     }
   };
 
-  // ── Navigation ────────────────────────────────────────────────────────
+  // ── Navigation ─────────────────────────────────────────────────────────────
   const handleNext = async () => {
     setError(null);
 
@@ -308,6 +304,8 @@ const Onboarding = () => {
     if (user?.id) {
       localStorage.setItem(`chambing_onboarding_done_${user.id}`, '1');
     }
+    // Persist completion server-side so any browser/device skips onboarding on future logins
+    profileService.completeOnboarding().catch(() => {});
     refreshUser().catch(() => {});
 
     const returnUrl = sessionStorage.getItem('chambing_return_url');
@@ -322,7 +320,7 @@ const Onboarding = () => {
     }
   };
 
-  // ── Save helpers ──────────────────────────────────────────────────────
+  // ── Save helpers ─────────────────────────────────────────────────────────────
   const saveUserType = async () => {
     setSaving(true);
     try {
@@ -374,9 +372,6 @@ const Onboarding = () => {
         ...(selectedUserType === 'trabajador' && { titulo_profesional: tituloProfesional }),
       };
       await profileService.updateProfile(payload);
-      // Don't await refreshUser() — it triggers ProtectedRoute to unmount
-      // this component (loading:true), resetting currentIdx to 0.
-      // Data is saved on the backend; refresh happens at finishOnboarding.
       return true;
     } catch (err) {
       logger.error('Error saving profile:', err);
@@ -435,11 +430,11 @@ const Onboarding = () => {
     s.nombre.toLowerCase().includes(skillSearch.toLowerCase())
   );
 
-  // ── Render steps ──────────────────────────────────────────────────────
+  // ── Render steps ────────────────────────────────────────────────────────────
   const renderStep = () => {
     switch (currentStep) {
 
-      // ── Welcome ────────────────────────────────────────────────────
+      // ── Welcome ─────────────────────────────────────────────────────────────
       case 'welcome': {
         const isWorker = selectedUserType === 'trabajador';
         const items = isWorker
@@ -493,7 +488,7 @@ const Onboarding = () => {
         );
       }
 
-      // ── User type (OAuth only) ─────────────────────────────────────
+      // ── User type (OAuth only) ───────────────────────────────────────────────
       case 'userType':
         return (
           <div className="onboarding__step">
@@ -557,7 +552,7 @@ const Onboarding = () => {
           </div>
         );
 
-      // ── Photo ──────────────────────────────────────────────────────
+      // ── Photo ────────────────────────────────────────────────────────────
       case 'photo':
         return (
           <div className="onboarding__step">
@@ -674,7 +669,7 @@ const Onboarding = () => {
           </div>
         );
 
-      // ── Phone ─────────────────────────────────────────────────────
+      // ── Phone ─────────────────────────────────────────────────────────────
       case 'phone':
         return (
           <div className="onboarding__step">
@@ -734,7 +729,7 @@ const Onboarding = () => {
           </div>
         );
 
-      // ── Profile ────────────────────────────────────────────────────
+      // ── Profile ───────────────────────────────────────────────────────────
       case 'profile':
         return (
           <div className="onboarding__step">
@@ -828,7 +823,7 @@ const Onboarding = () => {
           </div>
         );
 
-      // ── Skills ─────────────────────────────────────────────────────
+      // ── Skills ─────────────────────────────────────────────────────────────
       case 'skills':
         return (
           <div className="onboarding__step">
@@ -884,7 +879,7 @@ const Onboarding = () => {
           </div>
         );
 
-      // ── Rates ──────────────────────────────────────────────────────
+      // ── Rates ────────────────────────────────────────────────────────────
       case 'rates':
         return (
           <div className="onboarding__step">
@@ -927,7 +922,7 @@ const Onboarding = () => {
           </div>
         );
 
-      // ── Done ───────────────────────────────────────────────────────
+      // ── Done ─────────────────────────────────────────────────────────────
       case 'done':
         return (
           <div className="onboarding__step">
@@ -974,7 +969,7 @@ const Onboarding = () => {
     }
   };
 
-  // ── Dot indicators ────────────────────────────────────────────────────
+  // ── Dot indicators ────────────────────────────────────────────────────────────
   const renderDots = () => (
     <div className="onboarding__dots" aria-hidden="true">
       {steps.map((_, i) => (
@@ -1000,10 +995,10 @@ const Onboarding = () => {
     return <>Guardar y continuar <ChevronRight size={18} /></>;
   };
 
-  // ── Skip visibility (userType is mandatory — not skippable) ───────────
+  // ── Skip visibility (userType is mandatory — not skippable) ───────────────────────────
   const showSkip = ['photo', 'phone', 'profile', 'skills', 'rates'].includes(currentStep) && !cropperActive;
 
-  // ── Nav button class ─────────────────────────────────────────────────
+  // ── Nav button class ────────────────────────────────────────────────────────────
   const nextBtnClass = [
     'onboarding__nav-next',
     (isFirstStep || currentStep === 'done') ? 'onboarding__nav-next--full' : '',
@@ -1044,7 +1039,7 @@ const Onboarding = () => {
         </div>
       </main>
 
-      {/* ── Bottom navigation ──────────────────────────────────────────────
+      {/* ── Bottom navigation ───────────────────────────────────────────────────────────────────
           When the CROPPER is active, we replace the default nav with
           "Cancelar" + "Guardar y continuar" to avoid 4 competing buttons.
           ─────────────────────────────────────────────────────────────────── */}
