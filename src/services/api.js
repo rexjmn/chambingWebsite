@@ -4,7 +4,7 @@ import { logger } from '../utils/logger';
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
   (import.meta.env.PROD
-    ? 'https://chambingapi.onrender.com/api'
+    ? 'https://chambing.com/api'
     : 'http://localhost:3000/api');
 
 const api = axios.create({
@@ -36,8 +36,6 @@ api.interceptors.response.use(
       if (!error.config._retry) {
         error.config._retry = true;
 
-        // If a refresh is already in progress, queue this request instead of
-        // starting a second concurrent refresh (which would fail for single-use tokens)
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
             refreshQueue.push({ resolve, reject, config: error.config });
