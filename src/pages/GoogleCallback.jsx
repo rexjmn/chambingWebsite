@@ -13,12 +13,11 @@ const GoogleCallback = () => {
     let redirectTimeout = null;
 
     const completeGoogleLogin = async () => {
-      await refreshUser();
+      const user = await refreshUser();
 
       if (!active) return;
 
-      const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-      if (!storedUser) {
+      if (!user) {
         setError('No se pudo completar el inicio de sesión con Google.');
         redirectTimeout = setTimeout(() => {
           if (active) navigate('/login', { replace: true });
@@ -26,7 +25,7 @@ const GoogleCallback = () => {
         return;
       }
 
-      const onboardingDone = localStorage.getItem(`chambing_onboarding_done_${storedUser.id}`);
+      const onboardingDone = localStorage.getItem(`chambing_onboarding_done_${user.id}`);
       if (!onboardingDone) {
         navigate('/onboarding', { replace: true });
         return;
@@ -38,7 +37,7 @@ const GoogleCallback = () => {
       if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
         navigate(returnUrl, { replace: true });
       } else {
-        navigate(storedUser.tipo_usuario === 'cliente' ? '/service' : '/dashboard', { replace: true });
+        navigate(user.tipo_usuario === 'cliente' ? '/service' : '/dashboard', { replace: true });
       }
     };
 
