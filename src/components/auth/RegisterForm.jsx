@@ -125,7 +125,8 @@ const RegisterForm = () => {
         sessionStorage.setItem('chambing_return_url', returnUrl);
       }
     }
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+    const apiUrl = import.meta.env.VITE_API_URL ||
+      (import.meta.env.PROD ? 'https://chambing.com/api' : 'http://localhost:3000/api');
     window.location.href = `${apiUrl}/auth/google`;
   };
 

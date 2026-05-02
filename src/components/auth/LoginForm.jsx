@@ -28,7 +28,6 @@ const LoginForm = () => {
 
   const message = location.state?.message;
 
-  // Schema de validación con seguridad mejorada
   const schema = yup.object().shape({
     email: yup
       .string()
@@ -53,7 +52,8 @@ const LoginForm = () => {
     if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
       sessionStorage.setItem('chambing_return_url', returnUrl);
     }
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+    const apiUrl = import.meta.env.VITE_API_URL ||
+      (import.meta.env.PROD ? 'https://chambing.com/api' : 'http://localhost:3000/api');
     window.location.href = `${apiUrl}/auth/google`;
   };
 
@@ -81,7 +81,8 @@ const LoginForm = () => {
       if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
         navigate(returnUrl, { replace: true });
       } else {
-        const userType = response?.user?.tipo_usuario || 'cliente';
+        const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+        const userType = storedUser?.tipo_usuario || 'cliente';
         navigate(userType === 'cliente' ? '/service' : '/dashboard', { replace: true });
       }
     } catch (error) {
