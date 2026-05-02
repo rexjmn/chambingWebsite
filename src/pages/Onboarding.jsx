@@ -29,14 +29,14 @@ const municipiosPorDepartamento = {
   'Sonsonate':['Sonsonate','Acajutla','Izalco','Nahuizalco','Sonzacate','Armenia','Caluco'],
 };
 
-// Step identifiers — phone step injected for OAuth users (no password set)
-const buildSteps = (user) => {
-  const isOAuth = user?.auth_provider && user.auth_provider !== 'local';
-  const phoneStep = isOAuth ? ['phone'] : [];
-  if (user?.tipo_usuario === 'trabajador') {
-    return ['welcome', 'photo', ...phoneStep, 'profile', 'skills', 'rates', 'done'];
+// Step identifiers — userType + phone steps injected for OAuth users (no password set)
+const buildSteps = (tipoUsuario, isOAuth) => {
+  const userTypeStep = isOAuth ? ['userType'] : [];
+  const phoneStep    = isOAuth ? ['phone']    : [];
+  if (tipoUsuario === 'trabajador') {
+    return ['welcome', ...userTypeStep, 'photo', ...phoneStep, 'profile', 'skills', 'rates', 'done'];
   }
-  return ['welcome', 'photo', ...phoneStep, 'profile', 'done'];
+  return ['welcome', ...userTypeStep, 'photo', ...phoneStep, 'profile', 'done'];
 };
 
 // ─── image cropping helpers ──────────────────────────────────────────────────
@@ -84,7 +84,16 @@ const Onboarding = () => {
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
 
-  const steps = buildSteps(user);
+  // Whether this session was started via Google / OAuth (no password set)
+  const isOAuth = !!(user?.auth_provider && user.auth_provider !== 'local');
+
+  // For OAuth users, tipo_usuario defaults to 'cliente' on creation;
+  // selectedUserType is the source of truth for flow branching.
+  const [selectedUserType, setSelectedUserType] = useState(user?.tipo_usuario || 'cliente');
+
+  // steps is state so it can be rebuilt after the userType selection
+  const [steps, setSteps] = useState(() => buildSteps(user?.tipo_usuario || 'cliente', isOAuth));
+
   const [currentIdx, setCurrentIdx] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -135,9 +144,9 @@ const Onboarding = () => {
   // Whether the image cropper is currently active
   const cropperActive = currentStep === 'photo' && imageSrc !== null;
 
-  // ── Load initial data for worker ──────────────────────────────────────
+  // ── Load data for worker (fires when selectedUserType changes to 'trabajador') ──
   useEffect(() => {
-    if (user?.tipo_usuario === 'trabajador') {
+    if (selectedUserType === 'trabajador') {
       profileService.getAvailableSkills()
         .then((res) => setAvailableSkills(res?.data || []))
         .catch(() => {});
@@ -160,7 +169,7 @@ const Onboarding = () => {
         })
         .catch(() => {});
     }
-  }, [user]);
+  }, [selectedUserType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Photo handlers ────────────────────────────────────────────────────
   const handleFileSelect = (e) => {
@@ -232,6 +241,16 @@ const Onboarding = () => {
   const handleNext = async () => {
     setError(null);
 
+    // userType step — save choice, rebuild steps, then advance
+    if (currentStep === 'userType') {
+      const ok = await saveUserType();
+      if (!ok) return;
+      const newSteps = buildSteps(selectedUserType, true);
+      setSteps(newSteps);
+      setCurrentIdx((i) => i + 1);
+      return;
+    }
+
     if (currentStep === 'photo' && imageSrc && croppedAreaPixels) {
       const ok = await handleUploadPhoto();
       if (!ok) return; // stop if upload failed
@@ -297,11 +316,27 @@ const Onboarding = () => {
     if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
       navigate(returnUrl, { replace: true });
     } else {
-      navigate(user?.tipo_usuario === 'cliente' ? '/service' : '/dashboard', { replace: true });
+      // Use selectedUserType (not user.tipo_usuario) so OAuth users who just
+      // chose their type land on the right page before refreshUser() resolves.
+      navigate(selectedUserType === 'cliente' ? '/service' : '/dashboard', { replace: true });
     }
   };
 
   // ── Save helpers ──────────────────────────────────────────────────────
+  const saveUserType = async () => {
+    setSaving(true);
+    try {
+      await profileService.changeUserType(selectedUserType);
+      return true;
+    } catch (err) {
+      logger.error('Error saving user type:', err);
+      setError('Error al guardar el tipo de usuario. Intenta de nuevo.');
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const savePhone = async () => {
     const digits = telefono.replace(/\D/g, '');
     if (digits.length < 8) {
@@ -336,7 +371,7 @@ const Onboarding = () => {
         biografia,
         departamento,
         municipio,
-        ...(user?.tipo_usuario === 'trabajador' && { titulo_profesional: tituloProfesional }),
+        ...(selectedUserType === 'trabajador' && { titulo_profesional: tituloProfesional }),
       };
       await profileService.updateProfile(payload);
       // Don't await refreshUser() — it triggers ProtectedRoute to unmount
@@ -406,16 +441,17 @@ const Onboarding = () => {
 
       // ── Welcome ────────────────────────────────────────────────────
       case 'welcome': {
-        const isWorker = user?.tipo_usuario === 'trabajador';
-        const isOAuth  = user?.auth_provider && user.auth_provider !== 'local';
+        const isWorker = selectedUserType === 'trabajador';
         const items = isWorker
           ? [
+              ...(isOAuth ? [{ icon: <Briefcase size={18} />, title: 'Tu tipo de cuenta', desc: '¿Eres cliente o trabajador?' }] : []),
               { icon: <Camera   size={18} />, title: 'Foto de perfil',        desc: 'Una foto genera más confianza' },
               ...(isOAuth ? [{ icon: <Phone size={18} />, title: 'Número de WhatsApp', desc: 'Para recibir notificaciones de contratos' }] : []),
               { icon: <User     size={18} />, title: 'Tu presentación',        desc: 'Cuéntanos sobre tu experiencia' },
               { icon: <Briefcase size={18} />, title: 'Habilidades y tarifas', desc: 'Para que los clientes te encuentren' },
             ]
           : [
+              ...(isOAuth ? [{ icon: <Briefcase size={18} />, title: 'Tu tipo de cuenta', desc: '¿Eres cliente o trabajador?' }] : []),
               { icon: <Camera size={18} />, title: 'Foto de perfil',   desc: 'Opcional, pero mejora tu experiencia' },
               ...(isOAuth ? [{ icon: <Phone size={18} />, title: 'Número de WhatsApp', desc: 'Para recibir notificaciones importantes' }] : []),
               { icon: <MapPin size={18} />, title: 'Tu ubicación',     desc: 'Confirmamos dónde encontrarte' },
@@ -456,6 +492,70 @@ const Onboarding = () => {
           </div>
         );
       }
+
+      // ── User type (OAuth only) ─────────────────────────────────────
+      case 'userType':
+        return (
+          <div className="onboarding__step">
+            <div className="onboarding__step-icon">
+              <Briefcase size={30} strokeWidth={1.75} />
+            </div>
+            <h1 className="onboarding__step-title">¿Cómo usarás Chambing?</h1>
+            <p className="onboarding__step-subtitle">
+              Elige tu tipo de cuenta para personalizar tu experiencia.
+            </p>
+
+            {error && (
+              <div className="ob-alert ob-alert--error">
+                <X size={16} /> {error}
+              </div>
+            )}
+
+            <div className="ob-role-cards">
+              <button
+                type="button"
+                className={`ob-role-card ${selectedUserType === 'cliente' ? 'ob-role-card--active' : ''}`}
+                onClick={() => setSelectedUserType('cliente')}
+              >
+                <div className="ob-role-card__icon">
+                  <Search size={26} strokeWidth={2} />
+                </div>
+                <div className="ob-role-card__text">
+                  <strong>Soy Cliente</strong>
+                  <span>Busco profesionales</span>
+                </div>
+                {selectedUserType === 'cliente' && (
+                  <div className="ob-role-card__check">
+                    <CheckCircle size={13} />
+                  </div>
+                )}
+              </button>
+
+              <button
+                type="button"
+                className={`ob-role-card ${selectedUserType === 'trabajador' ? 'ob-role-card--active' : ''}`}
+                onClick={() => setSelectedUserType('trabajador')}
+              >
+                <div className="ob-role-card__icon">
+                  <Briefcase size={26} strokeWidth={2} />
+                </div>
+                <div className="ob-role-card__text">
+                  <strong>Soy Trabajador</strong>
+                  <span>Ofrezco mis servicios</span>
+                </div>
+                {selectedUserType === 'trabajador' && (
+                  <div className="ob-role-card__check">
+                    <CheckCircle size={13} />
+                  </div>
+                )}
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.8125rem', color: '#9CA3AF', textAlign: 'center', lineHeight: 1.5, marginTop: '0.25rem' }}>
+              Puedes cambiar esto más tarde desde tu perfil.
+            </p>
+          </div>
+        );
 
       // ── Photo ──────────────────────────────────────────────────────
       case 'photo':
@@ -643,7 +743,7 @@ const Onboarding = () => {
             </div>
             <h1 className="onboarding__step-title">Cuéntanos de ti</h1>
             <p className="onboarding__step-subtitle">
-              {user?.tipo_usuario === 'trabajador'
+              {selectedUserType === 'trabajador'
                 ? 'Una buena descripción te ayuda a conseguir más clientes.'
                 : 'Una breve descripción mejora tu experiencia en la plataforma.'}
             </p>
@@ -654,7 +754,7 @@ const Onboarding = () => {
               </div>
             )}
 
-            {user?.tipo_usuario === 'trabajador' && (
+            {selectedUserType === 'trabajador' && (
               <div className="ob-form-group">
                 <label className="ob-label" htmlFor="ob-titulo">
                   Título profesional
@@ -673,14 +773,14 @@ const Onboarding = () => {
 
             <div className="ob-form-group">
               <label className="ob-label" htmlFor="ob-bio">
-                {user?.tipo_usuario === 'trabajador' ? 'Sobre mí y mi trabajo' : 'Sobre mí'}
+                {selectedUserType === 'trabajador' ? 'Sobre mí y mi trabajo' : 'Sobre mí'}
                 <span className="ob-optional">(opcional)</span>
               </label>
               <textarea
                 id="ob-bio"
                 className="ob-textarea"
                 placeholder={
-                  user?.tipo_usuario === 'trabajador'
+                  selectedUserType === 'trabajador'
                     ? 'Ej: Soy electricista con 10 años de experiencia. Realizo instalaciones, reparaciones y revisiones eléctricas con garantía…'
                     : 'Cuéntanos un poco sobre ti…'
                 }
@@ -837,12 +937,12 @@ const Onboarding = () => {
               </div>
 
               <h1 className="onboarding__done-title">
-                {user?.tipo_usuario === 'trabajador'
+                {selectedUserType === 'trabajador'
                   ? '¡Tu perfil está listo!'
                   : '¡Todo configurado!'}
               </h1>
               <p className="onboarding__done-sub">
-                {user?.tipo_usuario === 'trabajador'
+                {selectedUserType === 'trabajador'
                   ? 'Los clientes ya pueden encontrarte. Puedes actualizar tu información en cualquier momento desde tu perfil.'
                   : 'Ya puedes buscar y contratar profesionales en El Salvador.'}
               </p>
@@ -858,7 +958,7 @@ const Onboarding = () => {
                 <div className="onboarding__done-info">
                   <strong>{user?.nombre} {user?.apellido}</strong>
                   <span>
-                    {user?.tipo_usuario === 'trabajador'
+                    {selectedUserType === 'trabajador'
                       ? tituloProfesional || 'Trabajador'
                       : 'Cliente'}
                     {departamento ? ` • ${departamento}` : ''}
@@ -900,7 +1000,7 @@ const Onboarding = () => {
     return <>Guardar y continuar <ChevronRight size={18} /></>;
   };
 
-  // ── Skip visibility ───────────────────────────────────────────────────
+  // ── Skip visibility (userType is mandatory — not skippable) ───────────
   const showSkip = ['photo', 'phone', 'profile', 'skills', 'rates'].includes(currentStep) && !cropperActive;
 
   // ── Nav button class ─────────────────────────────────────────────────
