@@ -93,6 +93,15 @@ export const profileService = {
     }
   },
 
+  async completeOnboarding() {
+    try {
+      const response = await api.patch('/users/complete-onboarding');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   // ===== MÉTHODES DELETE =====
 
   async deleteProfilePhoto() {

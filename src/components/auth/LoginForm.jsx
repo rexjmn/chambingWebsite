@@ -68,11 +68,21 @@ const LoginForm = () => {
       await login(sanitizedData);
       logger.form('Login exitoso, redirigiendo');
 
-      const pendingOnboarding = localStorage.getItem('chambing_pending_onboarding');
-      if (pendingOnboarding === sanitizedData.email) {
+      // Read the freshly stored user from localStorage (set by LOGIN_SUCCESS reducer)
+      const loggedUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+      if (loggedUser?.onboarding_completado === true) {
+        // Existing account that already completed onboarding — clear any stale key
         localStorage.removeItem('chambing_pending_onboarding');
-        navigate('/onboarding', { replace: true });
-        return;
+      } else {
+        // New account (onboarding_completado=false) or field not yet returned by API
+        // — fall back to the chambing_pending_onboarding key set by RegisterForm
+        const pendingOnboarding = localStorage.getItem('chambing_pending_onboarding');
+        if (pendingOnboarding === sanitizedData.email) {
+          localStorage.removeItem('chambing_pending_onboarding');
+          navigate('/onboarding', { replace: true });
+          return;
+        }
       }
 
       const returnUrl = sessionStorage.getItem('chambing_return_url');

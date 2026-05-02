@@ -25,8 +25,9 @@ const GoogleCallback = () => {
         return;
       }
 
-      const onboardingDone = localStorage.getItem(`chambing_onboarding_done_${user.id}`);
-      if (!onboardingDone) {
+      // Use server-side flag — not localStorage — so existing accounts on any
+      // browser/device are never wrongly sent to onboarding again.
+      if (!user.onboarding_completado) {
         navigate('/onboarding', { replace: true });
         return;
       }
