@@ -1,118 +1,105 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLoaderData } from 'react-router';
+import { X, SlidersHorizontal, Search } from 'lucide-react';
 import WorkerCard from '../components/WorkerCard';
 import { logger } from '../utils/logger';
 import '../styles/services.scss';
 
+const CATEGORIES = [
+  { id: 'limpieza_domestica', label: 'Limpieza', icon: '🧹' },
+  { id: 'plomeria',           label: 'Plomería',    icon: '🔧' },
+  { id: 'electricidad',       label: 'Electricidad', icon: '⚡' },
+  { id: 'jardineria',         label: 'Jardinería',  icon: '🌿' },
+  { id: 'carpinteria',        label: 'Carpintería', icon: '🪚' },
+  { id: 'construccion',       label: 'Construcción', icon: '🏗️' },
+  { id: 'pintura',            label: 'Pintura',     icon: '🖌️' },
+  { id: 'mecanica',           label: 'Mecánica',    icon: '🚗' },
+  { id: 'catering',           label: 'Cocina',      icon: '🍳' },
+  { id: 'seguridad',          label: 'Seguridad',   icon: '🛡️' },
+];
+
+const DEPARTMENTS = [
+  { id: '', name: 'Cualquier lugar' },
+  { id: 'ahuachapan',   name: 'Ahuachapán' },
+  { id: 'cabanas',      name: 'Cabañas' },
+  { id: 'chalatenango', name: 'Chalatenango' },
+  { id: 'cuscatlan',    name: 'Cuscatlán' },
+  { id: 'la_libertad',  name: 'La Libertad' },
+  { id: 'la_paz',       name: 'La Paz' },
+  { id: 'la_union',     name: 'La Unión' },
+  { id: 'morazan',      name: 'Morazán' },
+  { id: 'san_miguel',   name: 'San Miguel' },
+  { id: 'san_salvador', name: 'San Salvador' },
+  { id: 'san_vicente',  name: 'San Vicente' },
+  { id: 'santa_ana',    name: 'Santa Ana' },
+  { id: 'sonsonate',    name: 'Sonsonate' },
+  { id: 'usulutan',     name: 'Usulután' },
+];
+
+const MODALITIES = [
+  { id: '', name: 'Cualquier modalidad' },
+  { id: 'hora',     name: 'Por hora' },
+  { id: 'dia',      name: 'Por día' },
+  { id: 'semana',   name: 'Por semana' },
+  { id: 'mes',      name: 'Por mes' },
+  { id: 'proyecto', name: 'Por proyecto' },
+];
+
 const Service = () => {
-  const { t } = useTranslation();
   const loaderData = useLoaderData();
   const [workers, setWorkers] = useState(loaderData?.initialWorkers || []);
   const [loading, setLoading] = useState(!loaderData?.initialWorkers?.length);
   const [error, setError] = useState(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const [searchText, setSearchText] = useState('');
+  const [committedSearch, setCommittedSearch] = useState('');
+  const searchDebounce = useRef(null);
+
   const [filters, setFilters] = useState({
     categoria: '',
     departamento: '',
-    search: '',
-    fechaInicio: '', // ✅ Filtro de disponibilidad
-    fechaFin: '', // ✅ Filtro de disponibilidad
-    modalidad: '' // ✅ Filtro de modalidad
+    modalidad: '',
+    fechaInicio: '',
+    fechaFin: '',
   });
 
-  // Lista de categorías disponibles
-  const categories = [
-    { id: '', name: t('services.filters.selectCategory'), icon: '🔍' },
-    { id: 'limpieza_domestica', name: t('services.categories.domesticCleaning'), icon: '🧹' },
-    { id: 'plomeria', name: t('services.categories.plumbing'), icon: '🔧' },
-    { id: 'electricidad', name: t('services.categories.electricity'), icon: '⚡' },
-    { id: 'jardineria', name: t('services.categories.gardening'), icon: '🌱' },
-    { id: 'carpinteria', name: t('services.categories.carpentry'), icon: '🪚' },
-    { id: 'construccion', name: t('services.categories.construction'), icon: '🏗️' },
-    { id: 'pintura', name: t('services.categories.painting'), icon: '🎨' },
-    { id: 'mecanica', name: t('services.categories.mechanics'), icon: '🚗' },
-    { id: 'catering', name: t('services.categories.catering'), icon: '🍽️' },
-    { id: 'seguridad', name: t('services.categories.security'), icon: '🛡️' }
-  ];
-
-  // Lista de departamentos de El Salvador
-  const departments = [
-    { id: '', name: t('services.filters.selectDepartment') },
-    { id: 'ahuachapan', name: t('departments.ahuachapan') },
-    { id: 'cabanas', name: t('departments.cabanas') },
-    { id: 'chalatenango', name: t('departments.chalatenango') },
-    { id: 'cuscatlan', name: t('departments.cuscatlan') },
-    { id: 'la_libertad', name: t('departments.laLibertad') },
-    { id: 'la_paz', name: t('departments.laPaz') },
-    { id: 'la_union', name: t('departments.laUnion') },
-    { id: 'morazan', name: t('departments.morazan') },
-    { id: 'san_miguel', name: t('departments.sanMiguel') },
-    { id: 'san_salvador', name: t('departments.sanSalvador') },
-    { id: 'san_vicente', name: t('departments.sanVicente') },
-    { id: 'santa_ana', name: t('departments.santaAna') },
-    { id: 'sonsonate', name: t('departments.sonsonate') },
-    { id: 'usulutan', name: t('departments.usulutan') }
-  ];
-
-  // ✅ Lista de modalidades de contratación
-  const modalidades = [
-    { id: '', name: 'Todas las modalidades' },
-    { id: 'hora', name: 'Por Hora', icon: '⏰' },
-    { id: 'dia', name: 'Por Día', icon: '📅' },
-    { id: 'semana', name: 'Por Semana', icon: '📆' },
-    { id: 'mes', name: 'Por Mes', icon: '🗓️' },
-    { id: 'proyecto', name: 'Por Proyecto', icon: '📋' }
-  ];
+  useEffect(() => {
+    clearTimeout(searchDebounce.current);
+    searchDebounce.current = setTimeout(() => setCommittedSearch(searchText), 420);
+    return () => clearTimeout(searchDebounce.current);
+  }, [searchText]);
 
   useEffect(() => {
     fetchWorkers();
-  }, [filters]);
+  }, [filters, committedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchWorkers = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
-      const params = new URLSearchParams({
-        tipo_usuario: 'trabajador',
-        verificado: 'true',
-      });
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const params = new URLSearchParams({ tipo_usuario: 'trabajador', verificado: 'true' });
 
       if (filters.departamento) params.append('departamento', filters.departamento);
-      if (filters.search) params.append('search', filters.search);
-      if (filters.categoria) params.append('categoria', filters.categoria);
+      if (committedSearch.trim()) params.append('search', committedSearch.trim());
+      if (filters.categoria)    params.append('categoria', filters.categoria);
+      if (filters.fechaInicio)  params.append('fechaInicio', filters.fechaInicio);
+      if (filters.fechaFin)     params.append('fechaFin', filters.fechaFin);
+      if (filters.modalidad)    params.append('modalidad', filters.modalidad);
 
-      // ✅ Filtros de disponibilidad
-      if (filters.fechaInicio) params.append('fechaInicio', filters.fechaInicio);
-      if (filters.fechaFin) params.append('fechaFin', filters.fechaFin);
-      if (filters.modalidad) params.append('modalidad', filters.modalidad);
-
-      const url = `${API_BASE_URL}/users/workers?${params.toString()}`;
-
-      const response = await fetch(url, {
-        method: 'GET',
+      const response = await fetch(`${API_BASE_URL}/users/workers?${params}`, {
         headers: { 'Content-Type': 'application/json' },
       });
 
-      if (!response.ok) {
-        throw new Error(t('services.error'));
-      }
+      if (!response.ok) throw new Error('No se pudo cargar la lista de profesionales');
 
       const data = await response.json();
-
-      let workersArray = [];
-      if (data.status === 'success' && data.data) {
-        workersArray = data.data;
-      } else if (Array.isArray(data)) {
-        workersArray = data;
-      } else if (data.data && Array.isArray(data.data)) {
-        workersArray = data.data;
-      }
-
-      setWorkers(workersArray);
-
+      const arr = data.status === 'success' ? data.data
+        : Array.isArray(data) ? data
+        : data.data || [];
+      setWorkers(arr);
     } catch (err) {
       logger.error('Error fetching workers:', err);
       setError(err.message);
@@ -121,270 +108,229 @@ const Service = () => {
     }
   };
 
-  const handleFilterChange = (filterName, value) => {
-    setFilters(prev => ({ ...prev, [filterName]: value }));
+  const toggleCategory = (catId) =>
+    setFilters(prev => ({ ...prev, categoria: prev.categoria === catId ? '' : catId }));
+
+  const setFilter = (key, value) =>
+    setFilters(prev => ({ ...prev, [key]: value }));
+
+  const removeFilter = (key) => {
+    if (key === 'search') {
+      setSearchText('');
+      setCommittedSearch('');
+    } else {
+      setFilters(prev => ({ ...prev, [key]: '' }));
+    }
   };
 
-  const clearFilters = () => {
-    setFilters({ categoria: '', departamento: '', search: '' });
+  const clearAll = () => {
+    setSearchText('');
+    setCommittedSearch('');
+    setFilters({ categoria: '', departamento: '', modalidad: '', fechaInicio: '', fechaFin: '' });
   };
 
-  const hasActiveFilters = filters.categoria || filters.departamento || filters.search;
+  const chips = [
+    filters.categoria    && { key: 'categoria',    label: CATEGORIES.find(c => c.id === filters.categoria)?.label },
+    filters.departamento && { key: 'departamento', label: DEPARTMENTS.find(d => d.id === filters.departamento)?.name },
+    filters.modalidad    && { key: 'modalidad',    label: MODALITIES.find(m => m.id === filters.modalidad)?.name },
+    filters.fechaInicio  && { key: 'fechaInicio',  label: `Desde ${new Date(filters.fechaInicio).toLocaleDateString('es-SV', { month: 'short', day: 'numeric' })}` },
+    committedSearch      && { key: 'search',       label: `"${committedSearch}"` },
+  ].filter(Boolean);
 
-  // SEO Schema para Rich Snippets
-  const schemaData = {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "name": "ChambingApp",
-    "description": t('services.metaDescription'),
-    "provider": {
-      "@type": "Organization",
-      "name": "ChambingApp",
-      "url": "https://chambing.com"
-    },
-    "areaServed": {
-      "@type": "Country",
-      "name": "El Salvador"
-    },
-    "serviceType": [
-      t('services.categories.domesticCleaning'),
-      t('services.categories.plumbing'),
-      t('services.categories.electricity'),
-      t('services.categories.gardening')
-    ]
-  };
-
-  if (loading) {
-    return (
-      <>
-
-          <title>{t('services.loading')} | ChambingApp</title>
-       
-        <div className="services-page">
-          <div className="container">
-            <div className="loading-state">
-              <div className="spinner-container">
-                <div className="spinner"></div>
-                <div className="spinner-glow"></div>
-              </div>
-              <h3>{t('services.loading')}</h3>
-              <p>{t('services.loadingProfessionals')}</p>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (error) {
-    return (
-      <>
-       
-          <title>{t('services.error')} | ChambingApp</title>
-        
-        <div className="services-page">
-          <div className="container">
-            <div className="error-state">
-              <div className="error-icon">⚠️</div>
-              <h2>{t('services.error')}</h2>
-              <p>{error}</p>
-              <button onClick={fetchWorkers} className="retry-btn">
-                {t('services.retryButton')}
-              </button>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
+  const advancedCount = [filters.departamento, filters.modalidad, filters.fechaInicio].filter(Boolean).length;
 
   return (
     <>
-     
-        <title>{t('services.metaTitle')}</title>
-        <meta name="description" content={t('services.metaDescription')} />
-        <meta property="og:title" content={t('services.metaTitle')} />
-        <meta property="og:description" content={t('services.metaDescription')} />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={t('services.metaTitle')} />
-        <meta name="twitter:description" content={t('services.metaDescription')} />
-        <link rel="canonical" href="https://chambing.com/service" />
-        <script type="application/ld+json">
-          {JSON.stringify(schemaData)}
-        </script>
-      
+      <title>Profesionales | ChambingApp</title>
+      <meta name="description" content="Encuentra trabajadores verificados en El Salvador" />
+      <script type="application/ld+json">{JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        name: 'ChambingApp',
+        description: 'Encuentra trabajadores verificados en El Salvador',
+        provider: { '@type': 'Organization', name: 'ChambingApp', url: 'https://chambing.com' },
+        areaServed: { '@type': 'Country', name: 'El Salvador' },
+      })}</script>
 
       <div className="services-page">
-        <div className="container">
-          {/* Hero Header */}
-          <div className="page-header">
-            <div className="header-content">
-              <h1 className="page-title">{t('services.pageTitle')}</h1>
-              <p className="page-subtitle">{t('services.pageSubtitle')}</p>
-            </div>
+        <div className="svc-container">
 
-            {/* Trust Badges */}
-            <div className="trust-badges">
-              <div className="trust-badge">
-                <span className="badge-icon">✓</span>
-                <span className="badge-text">{t('services.trustBadges.verified')}</span>
-              </div>
-              <div className="trust-badge">
-                <span className="badge-icon">🛡️</span>
-                <span className="badge-text">{t('services.trustBadges.backgroundCheck')}</span>
-              </div>
-              <div className="trust-badge">
-                <span className="badge-icon">⭐</span>
-                <span className="badge-text">{t('services.trustBadges.topRated')}</span>
-              </div>
-            </div>
+          {/* Header */}
+          <header className="svc-header">
+            <h1>Encuentra la persona<br />que necesitas</h1>
+            <p>Trabajadores verificados en El Salvador, listos para chambear</p>
+          </header>
+
+          {/* Search */}
+          <div className="svc-search-wrap">
+            <Search size={18} className="svc-search-icon" aria-hidden="true" />
+            <input
+              className="svc-search-input"
+              type="text"
+              placeholder="Busca por nombre o tipo de trabajo…"
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              aria-label="Buscar profesional"
+            />
+            {searchText && (
+              <button
+                className="svc-search-clear"
+                onClick={() => { setSearchText(''); setCommittedSearch(''); }}
+                aria-label="Borrar búsqueda"
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
 
-          {/* Filters Section */}
-          <div className="filters-section">
-            <h2 className="filters-title">{t('services.filters.title')}</h2>
+          {/* Category pills */}
+          <nav className="svc-categories" aria-label="Categorías de servicio">
+            <div className="svc-cat-scroll">
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  className={`svc-cat-pill${filters.categoria === cat.id ? ' active' : ''}`}
+                  onClick={() => toggleCategory(cat.id)}
+                  aria-pressed={filters.categoria === cat.id}
+                >
+                  <span className="svc-cat-icon" aria-hidden="true">{cat.icon}</span>
+                  <span>{cat.label}</span>
+                </button>
+              ))}
+            </div>
+          </nav>
 
-            <div className="filters-grid">
-              {/* Search Input */}
-              <div className="filter-item filter-search">
-                <div className="input-wrapper">
-                  <span className="search-icon">🔍</span>
+          {/* Advanced filters toggle */}
+          <div className="svc-adv-toggle">
+            <button
+              className={`svc-adv-btn${showAdvanced ? ' open' : ''}`}
+              onClick={() => setShowAdvanced(v => !v)}
+              aria-expanded={showAdvanced}
+            >
+              <SlidersHorizontal size={15} aria-hidden="true" />
+              Más filtros
+              {advancedCount > 0 && (
+                <span className="svc-adv-count" aria-label={`${advancedCount} filtros activos`}>
+                  {advancedCount}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Advanced filters panel */}
+          {showAdvanced && (
+            <div className="svc-adv-panel">
+              <div className="svc-adv-grid">
+                <div className="svc-adv-field">
+                  <label htmlFor="filter-dept">Departamento</label>
+                  <select
+                    id="filter-dept"
+                    value={filters.departamento}
+                    onChange={e => setFilter('departamento', e.target.value)}
+                  >
+                    {DEPARTMENTS.map(d => (
+                      <option key={d.id} value={d.id}>{d.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="svc-adv-field">
+                  <label htmlFor="filter-mod">Modalidad de trabajo</label>
+                  <select
+                    id="filter-mod"
+                    value={filters.modalidad}
+                    onChange={e => setFilter('modalidad', e.target.value)}
+                  >
+                    {MODALITIES.map(m => (
+                      <option key={m.id} value={m.id}>{m.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="svc-adv-field">
+                  <label htmlFor="filter-start">Disponible desde</label>
                   <input
-                    type="text"
-                    className="filter-input"
-                    placeholder={t('services.filters.searchPlaceholder')}
-                    value={filters.search}
-                    onChange={(e) => handleFilterChange('search', e.target.value)}
+                    id="filter-start"
+                    type="datetime-local"
+                    value={filters.fechaInicio}
+                    onChange={e => setFilter('fechaInicio', e.target.value)}
+                  />
+                </div>
+
+                <div className="svc-adv-field">
+                  <label htmlFor="filter-end">Disponible hasta <span className="svc-optional">(opcional)</span></label>
+                  <input
+                    id="filter-end"
+                    type="datetime-local"
+                    value={filters.fechaFin}
+                    onChange={e => setFilter('fechaFin', e.target.value)}
+                    min={filters.fechaInicio || undefined}
                   />
                 </div>
               </div>
+            </div>
+          )}
 
-              {/* Category Filter */}
-              <div className="filter-item">
-                <select
-                  className="filter-select"
-                  value={filters.categoria}
-                  onChange={(e) => handleFilterChange('categoria', e.target.value)}
+          {/* Active filter chips */}
+          {chips.length > 0 && (
+            <div className="svc-chips" aria-label="Filtros activos">
+              {chips.map(chip => (
+                <button
+                  key={chip.key}
+                  className="svc-chip"
+                  onClick={() => removeFilter(chip.key)}
+                  aria-label={`Quitar filtro: ${chip.label}`}
                 >
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.icon} {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Department Filter */}
-              <div className="filter-item">
-                <select
-                  className="filter-select"
-                  value={filters.departamento}
-                  onChange={(e) => handleFilterChange('departamento', e.target.value)}
-                >
-                  {departments.map(dept => (
-                    <option key={dept.id} value={dept.id}>
-                      {dept.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* ✅ Filtro de Modalidad */}
-              <div className="filter-item">
-                <select
-                  className="filter-select"
-                  value={filters.modalidad}
-                  onChange={(e) => handleFilterChange('modalidad', e.target.value)}
-                >
-                  {modalidades.map(mod => (
-                    <option key={mod.id} value={mod.id}>
-                      {mod.icon && `${mod.icon} `}{mod.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* ✅ Filtro de Fecha de Inicio */}
-              <div className="filter-item">
-                <label className="filter-label" style={{ fontSize: '0.85rem', marginBottom: '0.25rem', display: 'block', color: '#555' }}>
-                  📅 Fecha Inicio
-                </label>
-                <input
-                  type="datetime-local"
-                  className="filter-input"
-                  value={filters.fechaInicio}
-                  onChange={(e) => handleFilterChange('fechaInicio', e.target.value)}
-                  style={{ fontSize: '0.9rem' }}
-                />
-              </div>
-
-              {/* ✅ Filtro de Fecha de Fin (Opcional) */}
-              <div className="filter-item">
-                <label className="filter-label" style={{ fontSize: '0.85rem', marginBottom: '0.25rem', display: 'block', color: '#555' }}>
-                  📅 Fecha Fin (opcional)
-                </label>
-                <input
-                  type="datetime-local"
-                  className="filter-input"
-                  value={filters.fechaFin}
-                  onChange={(e) => handleFilterChange('fechaFin', e.target.value)}
-                  style={{ fontSize: '0.9rem' }}
-                />
-              </div>
-
-              {/* Clear Filters Button */}
-              {hasActiveFilters && (
-                <button onClick={clearFilters} className="clear-filters-btn">
-                  <span>✕</span> {t('services.filters.clearFilters')}
+                  {chip.label}
+                  <X size={12} aria-hidden="true" />
+                </button>
+              ))}
+              {chips.length > 1 && (
+                <button className="svc-chip svc-chip-clear" onClick={clearAll}>
+                  Limpiar todo
                 </button>
               )}
             </div>
-          </div>
+          )}
 
-          {/* Results Section */}
-          <div className="results-section">
-            <div className="results-header">
-              <h2 className="results-count">
-                <span className="count-number">{workers.length}</span>{' '}
-                {workers.length === 1
-                  ? t('services.results.foundSingular')
-                  : t('services.results.found')
-                }
-              </h2>
-
-              {hasActiveFilters && (
-                <div className="active-filters-indicator">
-                  <span className="filter-badge">🔍 {t('services.filters.title')}</span>
-                </div>
-              )}
-            </div>
-
-            {workers.length > 0 ? (
-              <div className="workers-grid">
-                {workers.map(worker => (
-                  <WorkerCard
-                    key={worker.id}
-                    worker={worker}
-                  />
-                ))}
+          {/* Results */}
+          <section className={`svc-results${loading ? ' is-loading' : ''}`} aria-live="polite" aria-busy={loading}>
+            {error ? (
+              <div className="svc-error">
+                <p>Algo salió mal al cargar los profesionales.</p>
+                <button onClick={fetchWorkers} className="svc-retry-btn">Reintentar</button>
               </div>
             ) : (
-              <div className="empty-state">
-                <div className="empty-illustration">
-                  <span className="empty-icon">🔍</span>
-                  <div className="empty-bg-circle"></div>
+              <>
+                <div className="svc-results-meta">
+                  <span className="svc-results-count">
+                    {loading ? 'Buscando…' : `${workers.length} profesional${workers.length !== 1 ? 'es' : ''}`}
+                  </span>
+                  {!loading && chips.length > 0 && (
+                    <span className="svc-results-label">con filtros activos</span>
+                  )}
                 </div>
-                <h3>{t('services.results.noResults')}</h3>
-                <p>{t('services.results.noResultsDescription')}</p>
-                {hasActiveFilters && (
-                  <button onClick={clearFilters} className="view-all-btn">
-                    {t('services.results.viewAll')}
-                  </button>
+
+                {!loading && workers.length === 0 ? (
+                  <div className="svc-empty">
+                    <p>No encontramos profesionales con esos filtros.</p>
+                    {chips.length > 0 && (
+                      <button onClick={clearAll} className="svc-empty-btn">
+                        Ver todos los profesionales
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="svc-grid">
+                    {workers.map(worker => (
+                      <WorkerCard key={worker.id} worker={worker} />
+                    ))}
+                  </div>
                 )}
-              </div>
+              </>
             )}
-          </div>
+          </section>
+
         </div>
       </div>
     </>
