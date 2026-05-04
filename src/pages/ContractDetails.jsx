@@ -7,35 +7,19 @@ import { useAuth } from '../context/AuthContext';
 import ReviewModal from '../components/ReviewModal';
 import { logger } from '../utils/logger';
 import {
-  Box,
-  Container,
-  Card,
-  CardContent,
-  Typography,
-  Avatar,
-  Chip,
-  Button,
-  Divider,
-  Grid,
-  Paper,
-  CircularProgress,
-  TextField,
-} from '@mui/material';
-import {
-  ArrowBack as ArrowBackIcon,
-  Person as PersonIcon,
-  Phone as PhoneIcon,
-  Email as EmailIcon,
-  LocationOn as LocationIcon,
-  Category as CategoryIcon,
-  AttachMoney as MoneyIcon,
-  CalendarToday as CalendarIcon,
-  Description as DescriptionIcon,
-  CheckCircle as CheckCircleIcon,
-  Cancel as CancelIcon,
-  HourglassEmpty as HourglassIcon,
-  LockOpen as LockOpenIcon,
-} from '@mui/icons-material';
+  ArrowLeft,
+  User,
+  MapPin,
+  Tag,
+  CircleDollarSign,
+  Calendar,
+  FileText,
+  CheckCircle,
+  XCircle,
+  Hourglass,
+  KeyRound,
+  Loader2,
+} from 'lucide-react';
 import '../styles/contractDetails.scss';
 
 const ContractDetails = () => {
@@ -85,24 +69,22 @@ const ContractDetails = () => {
 
   const getStatusChip = (estado) => {
     const statusConfig = {
-      'oferta_pendiente': { color: 'warning', icon: <HourglassIcon />, label: 'Oferta pendiente' },
-      'confirmado':        { color: 'info',    icon: <HourglassIcon />, label: 'Confirmado' },
-      'en_camino':         { color: 'info',    icon: <HourglassIcon />, label: 'En camino' },
-      'activo':            { color: 'success', icon: <CheckCircleIcon />, label: t('contractDetails.status.active') || 'Activo' },
-      'completado':        { color: 'info',    icon: <CheckCircleIcon />, label: t('contractDetails.status.completed') || 'Completado' },
-      'cerrado':           { color: 'default', icon: <CheckCircleIcon />, label: t('contractDetails.status.closed') || 'Cerrado' },
-      'cancelado':         { color: 'error',   icon: <CancelIcon />,      label: t('contractDetails.status.cancelled') || 'Cancelado' },
+      'oferta_pendiente': { cls: 'warning', icon: <Hourglass size={15} />, label: 'Oferta pendiente' },
+      'confirmado': { cls: 'info', icon: <Hourglass size={15} />, label: 'Confirmado' },
+      'en_camino': { cls: 'info', icon: <Hourglass size={15} />, label: 'En camino' },
+      'activo': { cls: 'success', icon: <CheckCircle size={15} />, label: t('contractDetails.status.active') || 'Activo' },
+      'completado': { cls: 'info', icon: <CheckCircle size={15} />, label: t('contractDetails.status.completed') || 'Completado' },
+      'cerrado': { cls: 'neutral', icon: <CheckCircle size={15} />, label: t('contractDetails.status.closed') || 'Cerrado' },
+      'cancelado': { cls: 'error', icon: <XCircle size={15} />, label: t('contractDetails.status.cancelled') || 'Cancelado' },
     };
 
-    const config = statusConfig[estado] || { color: 'default', icon: <HourglassIcon />, label: estado };
+    const config = statusConfig[estado] || { cls: 'neutral', icon: <Hourglass size={15} />, label: estado };
 
     return (
-      <Chip
-        icon={config.icon}
-        label={config.label}
-        color={config.color}
-        sx={{ fontWeight: 600, fontSize: '0.9rem' }}
-      />
+      <span className={`contract-status-badge ${config.cls}`}>
+        {config.icon}
+        {config.label}
+      </span>
     );
   };
 
@@ -126,6 +108,16 @@ const ContractDetails = () => {
   // Determinar rol del usuario en este contrato
   const esEmpleador  = user && contract && String(user.id) === String(contract.empleador?.id);
   const esTrabajador = user && contract && String(user.id) === String(contract.trabajador?.id);
+  // MVP: no descontar comision de plataforma todavia.
+  // Cuando integremos pasarela de pago, volver a usar `contract.monto_trabajador`.
+  const montoTrabajadorMvp = contract?.monto_total ?? contract?.monto_trabajador ?? 0;
+  const direccionServicio =
+    contract?.detalles_servicio?.direccion ||
+    contract?.detallesServicio?.direccion ||
+    contract?.detalles_servicio?.direccion_servicio ||
+    contract?.detallesServicio?.direccion_servicio ||
+    contract?.direccion_servicio ||
+    '';
 
   const handleEnCamino = async () => {
     setActionLoading(true);
@@ -213,61 +205,52 @@ const ContractDetails = () => {
 
   if (loading) {
     return (
-      <Box className="contract-details-loading">
-        <CircularProgress size={60} />
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          {t('contractDetails.loading') || 'Cargando contrato...'}
-        </Typography>
-      </Box>
+      <div className="contract-details-loading">
+        <Loader2 size={52} className="spin" />
+        <p>{t('contractDetails.loading') || 'Cargando contrato...'}</p>
+      </div>
     );
   }
 
   if (error || !contract) {
     return (
-      <Container maxWidth="md" sx={{ py: 8, textAlign: 'center' }}>
-        <Typography variant="h5" color="error" gutterBottom>
-          {error}
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/dashboard')}
-          sx={{ mt: 2 }}
-        >
+      <div className="contract-details-error">
+        <h2>{error}</h2>
+        <button className="cd-btn cd-btn--primary" onClick={() => navigate('/dashboard')}>
+          <ArrowLeft size={16} />
           {t('contractDetails.backToDashboard') || 'Volver al Dashboard'}
-        </Button>
-      </Container>
+        </button>
+      </div>
     );
   }
 
   return (
-    <Box className="contract-details-page">
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+    <div className="contract-details-page">
+      <div className="contract-details-container">
         {/* Header */}
-        <Box sx={{ mb: 4 }}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/dashboard')}
-            sx={{ mb: 2 }}
-          >
+        <div className="contract-details-header">
+          <button onClick={() => navigate('/dashboard')} className="contract-back-btn">
+            <ArrowLeft size={16} />
             {t('contractDetails.back') || 'Volver'}
-          </Button>
+          </button>
 
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <div>
-              <Typography variant="h4" gutterBottom fontWeight={700}>
+          <div className="contract-details-header__main">
+            <div className="contract-details-header__meta">
+              <h1 className="contract-details-title">
                 {t('contractDetails.title') || 'Detalles del Contrato'}
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
+              </h1>
+              <p className="contract-details-subline">
                 {t('contractDetails.contractNumber') || 'Número de contrato'}: <strong>{contract.codigo_contrato}</strong>
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
+              </p>
+              <p className="contract-details-subline">
                 {t('contractDetails.creationDate') || 'Fecha de creación'}: {formatDate(contract.fecha_creacion)}
-              </Typography>
+              </p>
             </div>
-            {getStatusChip(contract.estado)}
-          </Box>
-        </Box>
+            <div className="contract-details-status">
+              {getStatusChip(contract.estado)}
+            </div>
+          </div>
+        </div>
 
         {/* ══════════════════════════════════════════════════
             ACCIONES REQUERIDAS — siempre visibles al tope
@@ -275,153 +258,144 @@ const ContractDetails = () => {
 
         {/* Oferta pendiente: cliente espera respuesta */}
         {contract.estado === 'oferta_pendiente' && esEmpleador && (
-          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#fff8e1', border: '2px solid #f9a825', borderRadius: 2 }}>
-            <Typography variant="h6" fontWeight={600}>⏳ Esperando respuesta del trabajador</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          <div className="contract-alert contract-alert--warning">
+            <h3>⏳ Esperando respuesta del trabajador</h3>
+            <p>
               La oferta expira en 72 horas. El trabajador recibirá un recordatorio.
-            </Typography>
-          </Box>
+            </p>
+          </div>
         )}
 
         {/* Confirmado: empleador espera que trabajador salga */}
         {contract.estado === 'confirmado' && esEmpleador && (
-          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#fff3e0', border: '2px solid #f57c00', borderRadius: 2 }}>
-            <Typography variant="h6" fontWeight={600}>✅ Oferta aceptada</Typography>
-            <Typography variant="body2" sx={{ mt: 0.5 }}>
+          <div className="contract-alert contract-alert--pending">
+            <h3>✅ Oferta aceptada</h3>
+            <p>
               El trabajador confirmó. Cuando salga hacia tu ubicación recibirás una notificación.
               Al llegar, <strong>pídele un código de 4 dígitos</strong> para confirmar su identidad.
-            </Typography>
-          </Box>
+            </p>
+          </div>
         )}
 
         {/* Confirmado: trabajador sale */}
         {contract.estado === 'confirmado' && esTrabajador && (
-          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#e3f2fd', border: '2px solid #1976d2', borderRadius: 2 }}>
-            <Typography variant="h6" fontWeight={600} gutterBottom>🚶 ¿Listo para salir?</Typography>
-            <Typography variant="body2" paragraph>
+          <div className="contract-alert contract-alert--info">
+            <h3>🚶 ¿Listo para salir?</h3>
+            <p>
               Pulsa el botón cuando estés en camino. Recibirás un código de 4 dígitos que deberás decirle al cliente al llegar.
-            </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
+            </p>
+            <button
+              className="cd-btn cd-btn--primary"
               onClick={handleEnCamino}
               disabled={actionLoading}
-              startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <LockOpenIcon />}
             >
+              {actionLoading ? <Loader2 size={16} className="spin" /> : <KeyRound size={16} />}
               {actionLoading ? 'Generando código...' : 'Estoy en camino'}
-            </Button>
-          </Box>
+            </button>
+          </div>
         )}
 
         {/* En camino: trabajador ve su código */}
         {contract.estado === 'en_camino' && esTrabajador && (
-          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#e3f2fd', border: '2px solid #1976d2', borderRadius: 2, textAlign: 'center' }}>
-            <Typography variant="h6" fontWeight={600} gutterBottom>🔑 Tu código de verificación</Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+          <div className="contract-alert contract-alert--code">
+            <h3>🔑 Tu código de verificación</h3>
+            <p>
               Díselo al cliente cuando llegues a su puerta
-            </Typography>
-            <Typography variant="h2" fontWeight={900} color="primary" letterSpacing={8} sx={{ my: 2 }}>
-              {codigoLlegada || contract.codigo_llegada}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
+            </p>
+            <div className="contract-code">{codigoLlegada || contract.codigo_llegada}</div>
+            <small>
               Válido por 4 horas · {contract.codigo_contrato}
-            </Typography>
-          </Box>
+            </small>
+          </div>
         )}
 
         {/* En camino: cliente confirma llegada */}
         {contract.estado === 'en_camino' && esEmpleador && (
-          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#e8f5e9', border: '2px solid #388e3c', borderRadius: 2 }}>
-            <Box display="flex" alignItems="center" gap={2} mb={2}>
-              <Avatar src={contract.trabajador?.foto_perfil} sx={{ width: 48, height: 48 }}>
-                {contract.trabajador?.nombre?.charAt(0)}
-              </Avatar>
-              <div>
-                <Typography variant="h6" fontWeight={600}>
-                  🚶 {contract.trabajador?.nombre} {contract.trabajador?.apellido} está en camino
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Cuando llegue, pídele su código de 4 dígitos y confírmalo aquí
-                </Typography>
+          <div className="contract-alert contract-alert--success">
+            <div className="contract-inline-user">
+              <div className="contract-avatar">
+                {contract.trabajador?.foto_perfil ? (
+                  <img src={contract.trabajador?.foto_perfil} alt={contract.trabajador?.nombre} />
+                ) : (
+                  contract.trabajador?.nombre?.charAt(0)
+                )}
               </div>
-            </Box>
-            <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
-              <TextField
-                label="Código del trabajador"
+              <div>
+                <h3>
+                  🚶 {contract.trabajador?.nombre} {contract.trabajador?.apellido} está en camino
+                </h3>
+                <p>
+                  Cuando llegue, pídele su código de 4 dígitos y confírmalo aquí
+                </p>
+              </div>
+            </div>
+            <div className="contract-code-row">
+              <input
                 value={codigoConfirmacion}
                 onChange={e => setCodigoConfirmacion(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                inputProps={{ maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
-                size="small"
-                sx={{ width: 140, bgcolor: 'white', borderRadius: 1 }}
+                maxLength={4}
+                inputMode="numeric"
+                pattern="[0-9]*"
                 placeholder="0000"
+                className="contract-code-input"
               />
-              <Button
-                variant="contained"
-                color="success"
-                size="large"
+              <button
+                className="cd-btn cd-btn--success"
                 onClick={handleConfirmarLlegada}
                 disabled={actionLoading || codigoConfirmacion.length !== 4}
-                startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <LockOpenIcon />}
               >
+                {actionLoading ? <Loader2 size={16} className="spin" /> : <KeyRound size={16} />}
                 {actionLoading ? 'Confirmando...' : 'Confirmar llegada'}
-              </Button>
-            </Box>
-          </Box>
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Activo: trabajador marca como completado */}
         {esTrabajador && contract.estado === 'activo' && (
-          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#f3e5f5', border: '2px solid #7b1fa2', borderRadius: 2 }}>
-            <Typography variant="h6" fontWeight={600} gutterBottom>🔨 Trabajo en progreso</Typography>
-            <Typography variant="body2" paragraph>
+          <div className="contract-alert contract-alert--active">
+            <h3>🔨 Trabajo en progreso</h3>
+            <p>
               Cuando hayas terminado el trabajo, márcalo como completado para notificar al cliente.
-            </Typography>
-            <Button
-              variant="contained"
-              color="success"
-              size="large"
+            </p>
+            <button
+              className="cd-btn cd-btn--success"
               onClick={handleCompletarContrato}
               disabled={actionLoading}
-              startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <CheckCircleIcon />}
             >
+              {actionLoading ? <Loader2 size={16} className="spin" /> : <CheckCircle size={16} />}
               {actionLoading ? 'Procesando...' : 'Marcar como completado'}
-            </Button>
-          </Box>
+            </button>
+          </div>
         )}
 
         {/* Completado: empleador cierra y reseña */}
         {esEmpleador && contract.estado === 'completado' && (
-          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#fce4ec', border: '2px solid #c62828', borderRadius: 2 }}>
-            <Typography variant="h6" fontWeight={600} gutterBottom>⭐ El trabajador terminó el trabajo</Typography>
-            <Typography variant="body2" paragraph>
+          <div className="contract-alert contract-alert--complete">
+            <h3>⭐ El trabajador terminó el trabajo</h3>
+            <p>
               Confirma que el trabajo fue realizado correctamente. Podrás dejar una reseña al cerrar.
-            </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
+            </p>
+            <button
+              className="cd-btn cd-btn--primary"
               onClick={handleCerrarContrato}
               disabled={actionLoading}
-              startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <CheckCircleIcon />}
             >
+              {actionLoading ? <Loader2 size={16} className="spin" /> : <CheckCircle size={16} />}
               {actionLoading ? 'Procesando...' : 'Cerrar contrato y dejar reseña'}
-            </Button>
-          </Box>
+            </button>
+          </div>
         )}
 
         {/* Cerrado: dejar reseña pendiente */}
         {contract.estado === 'cerrado' && (esEmpleador || esTrabajador) && !yaResene && (
-          <Box sx={{ mb: 3, p: 2.5, bgcolor: '#e8f5e9', border: '2px solid #2e7d32', borderRadius: 2 }}>
-            <Typography variant="h6" fontWeight={600} gutterBottom>⭐ Deja tu reseña</Typography>
-            <Typography variant="body2" paragraph>
+          <div className="contract-alert contract-alert--success">
+            <h3>⭐ Deja tu reseña</h3>
+            <p>
               Tu opinión ayuda a construir la confianza en la plataforma.
-            </Typography>
-            <Button
-              variant="outlined"
-              color="success"
-              size="large"
-              startIcon={<CheckCircleIcon />}
+            </p>
+            <button
+              className="cd-btn cd-btn--outline-success"
               onClick={() => {
                 const otro = esTrabajador ? contract.empleador : contract.trabajador;
                 setReviewTarget({
@@ -431,259 +405,205 @@ const ContractDetails = () => {
                 });
               }}
             >
+              <CheckCircle size={16} />
               Dejar reseña
-            </Button>
-          </Box>
+            </button>
+          </div>
         )}
 
         {contract.estado === 'cerrado' && (esEmpleador || esTrabajador) && yaResene && (
-          <Box sx={{ mb: 3, p: 2, bgcolor: 'success.light', borderRadius: 2 }}>
-            <Typography variant="body2" color="success.dark">✓ Ya dejaste tu reseña para este contrato.</Typography>
-          </Box>
+          <div className="contract-alert contract-alert--success">✓ Ya dejaste tu reseña para este contrato.</div>
         )}
 
         {actionError && (
-          <Box sx={{ mb: 3, p: 2, bgcolor: 'error.light', borderRadius: 2 }}>
-            <Typography color="error.dark" variant="body2">{actionError}</Typography>
-          </Box>
+          <div className="contract-alert contract-alert--error">{actionError}</div>
         )}
 
         {/* ══ Información del contrato ══ */}
-        <Grid container spacing={3}>
+        <div className="contract-sections">
           {/* Información de las Partes */}
-          <Grid item xs={12}>
-            <Card elevation={2}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom fontWeight={600}>
+          <section className="contract-card">
+            <div className="contract-card-body">
+              <h2 className="contract-card-title">
                   {t('contractDetails.parties.title') || '1. Información de las Partes'}
-                </Typography>
-                <Divider sx={{ my: 2 }} />
+              </h2>
+              <div className="contract-divider" />
 
-                <Grid container spacing={3}>
+                <div className="contract-two-cols">
                   {/* Cliente/Empleador */}
-                  <Grid item xs={12} md={6}>
-                    <Paper elevation={0} sx={{ p: 3, bgcolor: 'background.default', borderRadius: 2 }}>
-                      <Typography variant="subtitle1" fontWeight={600} gutterBottom color="primary">
+                  <div className="contract-person-card">
+                      <p className="contract-person-role contract-person-role--client">
                         {t('contractDetails.parties.client') || 'Cliente'}
-                      </Typography>
-                      <Box display="flex" alignItems="center" gap={2} mb={2}>
-                        <Avatar
-                          src={contract.empleador?.foto_perfil}
-                          sx={{ width: 60, height: 60 }}
-                        >
-                          {contract.empleador?.nombre?.charAt(0)}
-                        </Avatar>
-                        <div>
-                          <Typography variant="h6" fontWeight={600}>
-                            {contract.empleador?.nombre} {contract.empleador?.apellido}
-                          </Typography>
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            sx={{ mt: 0.5 }}
-                            onClick={() => navigate(`/profile/${contract.empleador?.id}`)}
-                          >
-                            Ver perfil
-                          </Button>
+                      </p>
+                      <div className="contract-person-main">
+                        <div className="contract-avatar contract-avatar--lg">
+                          {contract.empleador?.foto_perfil ? (
+                            <img src={contract.empleador?.foto_perfil} alt={contract.empleador?.nombre} />
+                          ) : (
+                            contract.empleador?.nombre?.charAt(0)
+                          )}
                         </div>
-                      </Box>
-                    </Paper>
-                  </Grid>
+                        <div>
+                          <h3 className="contract-person-name">
+                            {contract.empleador?.nombre} {contract.empleador?.apellido}
+                          </h3>
+                          <button className="cd-btn cd-btn--outline" onClick={() => navigate(`/profile/${contract.empleador?.id}`)}>
+                            Ver perfil
+                          </button>
+                        </div>
+                      </div>
+                  </div>
 
                   {/* Trabajador */}
-                  <Grid item xs={12} md={6}>
-                    <Paper elevation={0} sx={{ p: 3, bgcolor: 'background.default', borderRadius: 2 }}>
-                      <Typography variant="subtitle1" fontWeight={600} gutterBottom color="success.main">
+                  <div className="contract-person-card">
+                      <p className="contract-person-role contract-person-role--worker">
                         {t('contractDetails.parties.provider') || 'Prestador del Servicio'}
-                      </Typography>
-                      <Box display="flex" alignItems="center" gap={2} mb={2}>
-                        <Avatar
-                          src={contract.trabajador?.foto_perfil}
-                          sx={{ width: 60, height: 60 }}
-                        >
-                          {contract.trabajador?.nombre?.charAt(0)}
-                        </Avatar>
-                        <div>
-                          <Typography variant="h6" fontWeight={600}>
-                            {contract.trabajador?.nombre} {contract.trabajador?.apellido}
-                          </Typography>
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            color="success"
-                            sx={{ mt: 0.5 }}
-                            onClick={() => navigate(`/profile/${contract.trabajador?.id}`)}
-                          >
-                            Ver perfil
-                          </Button>
+                      </p>
+                      <div className="contract-person-main">
+                        <div className="contract-avatar contract-avatar--lg">
+                          {contract.trabajador?.foto_perfil ? (
+                            <img src={contract.trabajador?.foto_perfil} alt={contract.trabajador?.nombre} />
+                          ) : (
+                            contract.trabajador?.nombre?.charAt(0)
+                          )}
                         </div>
-                      </Box>
-                    </Paper>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
+                        <div>
+                          <h3 className="contract-person-name">
+                            {contract.trabajador?.nombre} {contract.trabajador?.apellido}
+                          </h3>
+                          <button className="cd-btn cd-btn--outline-success" onClick={() => navigate(`/profile/${contract.trabajador?.id}`)}>
+                            Ver perfil
+                          </button>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+            </div>
+          </section>
 
           {/* Detalles del Servicio */}
-          <Grid item xs={12}>
-            <Card elevation={2}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom fontWeight={600}>
+          <section className="contract-card">
+            <div className="contract-card-body">
+                <h2 className="contract-card-title">
                   {t('contractDetails.service.title') || '2. Detalles del Servicio'}
-                </Typography>
-                <Divider sx={{ my: 2 }} />
+                </h2>
+                <div className="contract-divider" />
 
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
-                    <Box display="flex" gap={2} mb={2}>
-                      <CategoryIcon color="action" />
+                <div className="contract-info-grid">
+                  <div className="contract-info-item">
+                      <Tag size={18} />
                       <div>
-                        <Typography variant="caption" color="text.secondary">
+                        <p className="label">
                           {t('contractDetails.service.category') || 'Categoría del servicio'}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600}>
+                        </p>
+                        <p className="value">
                           {contract.categoria?.nombre || t('contractDetails.notSpecified')}
-                        </Typography>
+                        </p>
                       </div>
-                    </Box>
-                  </Grid>
+                  </div>
 
-                  <Grid item xs={12} md={6}>
-                    <Box display="flex" gap={2} mb={2}>
-                      <LocationIcon color="action" />
+                  <div className="contract-info-item">
+                      <MapPin size={18} />
                       <div>
-                        <Typography variant="caption" color="text.secondary">
+                        <p className="label">
                           {t('contractDetails.service.address') || 'Dirección del servicio'}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600}>
-                          {contract.detalles_servicio?.direccion || t('contractDetails.notSpecified')}
-                        </Typography>
+                        </p>
+                        <p className="value">
+                          {direccionServicio || t('contractDetails.notSpecified')}
+                        </p>
                       </div>
-                    </Box>
-                  </Grid>
+                  </div>
 
-                  <Grid item xs={12}>
-                    <Box display="flex" gap={2} mb={2}>
-                      <DescriptionIcon color="action" />
+                  <div className="contract-info-item full">
+                      <FileText size={18} />
                       <div>
-                        <Typography variant="caption" color="text.secondary">
+                        <p className="label">
                           {t('contractDetails.service.description') || 'Descripción del servicio'}
-                        </Typography>
-                        <Typography variant="body1">
+                        </p>
+                        <p className="value">
                           {contract.detalles_servicio?.descripcion || t('contractDetails.notSpecified')}
-                        </Typography>
+                        </p>
                       </div>
-                    </Box>
-                  </Grid>
+                  </div>
 
-                  <Grid item xs={12} md={6}>
-                    <Box display="flex" gap={2} mb={2}>
-                      <CalendarIcon color="action" />
+                  <div className="contract-info-item">
+                      <Calendar size={18} />
                       <div>
-                        <Typography variant="caption" color="text.secondary">
+                        <p className="label">
                           {t('contractDetails.service.startDate') || 'Fecha de inicio'}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600}>
+                        </p>
+                        <p className="value">
                           {formatDate(contract.fecha_inicio_programada)}
-                        </Typography>
+                        </p>
                       </div>
-                    </Box>
-                  </Grid>
+                  </div>
 
-                  <Grid item xs={12} md={6}>
-                    <Box display="flex" gap={2} mb={2}>
-                      <CalendarIcon color="action" />
+                  <div className="contract-info-item">
+                      <Calendar size={18} />
                       <div>
-                        <Typography variant="caption" color="text.secondary">
+                        <p className="label">
                           {t('contractDetails.service.endDate') || 'Fecha de finalización'}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600}>
+                        </p>
+                        <p className="value">
                           {formatDate(contract.fecha_fin_programada)}
-                        </Typography>
+                        </p>
                       </div>
-                    </Box>
-                  </Grid>
+                  </div>
 
                   {contract.detalles_servicio?.notas_adicionales && (
-                    <Grid item xs={12}>
-                      <Box display="flex" gap={2} mb={2}>
-                        <DescriptionIcon color="action" />
+                    <div className="contract-info-item full">
+                        <FileText size={18} />
                         <div>
-                          <Typography variant="caption" color="text.secondary">
+                          <p className="label">
                             {t('contractDetails.service.notes') || 'Notas adicionales'}
-                          </Typography>
-                          <Typography variant="body1">
+                          </p>
+                          <p className="value">
                             {contract.detalles_servicio.notas_adicionales}
-                          </Typography>
+                          </p>
                         </div>
-                      </Box>
-                    </Grid>
+                    </div>
                   )}
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
+                </div>
+            </div>
+          </section>
 
           {/* Condiciones Económicas */}
-          <Grid item xs={12}>
-            <Card elevation={2}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom fontWeight={600}>
+          <section className="contract-card">
+            <div className="contract-card-body">
+                <h2 className="contract-card-title">
                   {t('contractDetails.payment.title') || '3. Condiciones Económicas'}
-                </Typography>
-                <Divider sx={{ my: 2 }} />
+                </h2>
+                <div className="contract-divider" />
 
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={4}>
-                    <Box display="flex" gap={2} mb={2}>
-                      <MoneyIcon color="action" />
+                <div className="contract-money-grid">
+                  <div className="contract-info-item">
+                      <CircleDollarSign size={18} />
                       <div>
-                        <Typography variant="caption" color="text.secondary">
+                        <p className="label">
                           {t('contractDetails.payment.totalAmount') || 'Monto total'}
-                        </Typography>
-                        <Typography variant="h5" fontWeight={700} color="primary">
+                        </p>
+                        <p className="value value--total">
                           {formatCurrency(contract.monto_total)}
-                        </Typography>
+                        </p>
                       </div>
-                    </Box>
-                  </Grid>
+                  </div>
 
-                  <Grid item xs={12} md={4}>
-                    <Box display="flex" gap={2} mb={2}>
-                      <MoneyIcon color="action" />
+                  <div className="contract-info-item">
+                      <CircleDollarSign size={18} />
                       <div>
-                        <Typography variant="caption" color="text.secondary">
+                        <p className="label">
                           {t('contractDetails.payment.workerAmount') || 'Monto trabajador'}
-                        </Typography>
-                        <Typography variant="h5" fontWeight={700} color="success.main">
-                          {formatCurrency(contract.monto_trabajador)}
-                        </Typography>
+                        </p>
+                        <p className="value value--worker">
+                          {formatCurrency(montoTrabajadorMvp)}
+                        </p>
                       </div>
-                    </Box>
-                  </Grid>
-
-                  <Grid item xs={12} md={4}>
-                    <Box display="flex" gap={2} mb={2}>
-                      <MoneyIcon color="action" />
-                      <div>
-                        <Typography variant="caption" color="text.secondary">
-                          {t('contractDetails.payment.platformFee') || 'Comisión plataforma'}
-                        </Typography>
-                        <Typography variant="h5" fontWeight={700}>
-                          {formatCurrency(contract.comision_plataforma || 0)}
-                        </Typography>
-                      </div>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
-
-        </Grid>
-
-      </Container>
+                  </div>
+                </div>
+            </div>
+          </section>
+        </div>
+      </div>
 
       {/* Modal de reseña — bidireccional */}
       <ReviewModal
@@ -697,7 +617,7 @@ const ContractDetails = () => {
         canSkip={true}
       />
 
-    </Box>
+    </div>
   );
 };
 

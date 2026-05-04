@@ -13,6 +13,7 @@ import {
   VerifiedUser as VerifiedUserIcon,
   Work as WorkIcon,
   Person as PersonIcon,
+  Edit as EditIcon,
   CheckCircle as CheckCircleIcon,
   HourglassEmpty as HourglassEmptyIcon,
   Info as InfoIcon,
@@ -202,6 +203,7 @@ const PublicProfile = () => {
   const displayRating = stats?.rating || 0;
   const displayReviewCount = stats?.total_reviews || reviews.length || 0;
   const displayJobsCompleted = stats?.trabajos_completados || 0;
+  const isOwnProfile = isAuthenticated && currentUser?.id && String(currentUser.id) === String(user?.id || userId);
 
   return (
     <div className="public-profile">
@@ -308,6 +310,16 @@ const PublicProfile = () => {
 
               {/* Botones de acción */}
               <div className="action-buttons">
+                {isOwnProfile && (
+                  <button
+                    onClick={() => navigate('/edit-profile')}
+                    className="edit-button"
+                  >
+                    <EditIcon />
+                    {t('common.edit') || 'Editar'}
+                  </button>
+                )}
+
                 {/* Botón de Contratar - Solo para trabajadores verificados */}
                 {isTrabajador && isVerified && (
                   <button

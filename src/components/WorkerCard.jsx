@@ -7,6 +7,12 @@ import { serviceService } from '../services/serviceService';
 import { logger } from '../utils/logger';
 import '../styles/components/WorkerCard.scss';
 
+const DEFAULT_COVER_IMAGE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 360'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23e8ecff'/%3E%3Cstop offset='100%25' stop-color='%23d9f3ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='360' fill='url(%23g)'/%3E%3C/svg%3E";
+
+const DEFAULT_AVATAR_IMAGE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23eef2ff'/%3E%3Ccircle cx='100' cy='76' r='34' fill='%23c7d2fe'/%3E%3Cpath d='M34 180c9-30 34-48 66-48s57 18 66 48' fill='%23c7d2fe'/%3E%3C/svg%3E";
+
 /* ─── Render star rating ─────────────────────────────────────── */
 const StarRating = ({ value = 0 }) => (
   <div className="wcard-stars" aria-label={`${value.toFixed(1)} de 5 estrellas`}>
@@ -113,10 +119,10 @@ const WorkerCard = memo(({ worker }) => {
         {/* ── Cover ──────────────────────────────────────────── */}
         <div className="wcard-cover">
           <img
-            src={worker.foto_portada || '/default-cover.jpg'}
+            src={worker.foto_portada || DEFAULT_COVER_IMAGE}
             alt=""
             aria-hidden="true"
-            onError={(e) => { e.target.src = '/default-cover.jpg'; }}
+            onError={(e) => { e.currentTarget.src = DEFAULT_COVER_IMAGE; }}
           />
           <div className="wcard-cover-gradient" aria-hidden="true" />
 
@@ -144,10 +150,10 @@ const WorkerCard = memo(({ worker }) => {
         <div className="wcard-avatar-wrap">
           <img
             className="wcard-avatar"
-            src={worker.foto_perfil || '/default-avatar.jpg'}
+            src={worker.foto_perfil || DEFAULT_AVATAR_IMAGE}
             alt={`${worker.nombre || ''} ${worker.apellido || ''}`}
             loading="lazy"
-            onError={(e) => { e.target.src = '/default-avatar.jpg'; }}
+            onError={(e) => { e.currentTarget.src = DEFAULT_AVATAR_IMAGE; }}
           />
         </div>
 

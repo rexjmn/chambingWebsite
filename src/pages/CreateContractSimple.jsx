@@ -230,7 +230,9 @@ const handleChange = (e) => {
         ...(formData.fecha_fin && formData.fecha_fin > formData.fecha_inicio && { fechaFin: formData.fecha_fin }),
         detallesServicio: {
           descripcion: formData.descripcion,
-          direccion: formData.direccion || 'Por definir',
+          // MVP: no persistir placeholder "Por definir".
+          // Si no hay dirección, enviamos vacío y el backend la acepta como opcional.
+          direccion: formData.direccion?.trim() || '',
           ...(formData.notas && { notas_adicionales: formData.notas }),
         },
         terminosCondiciones: 'Términos y condiciones estándar de ChambingApp',

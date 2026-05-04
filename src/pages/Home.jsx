@@ -556,8 +556,8 @@ const Home = () => {
                 <h3 className="cta-card-title">{t('home.cta.familyTitle')}</h3>
                 <p className="cta-card-desc">{t('home.cta.familyDesc')}</p>
                 <button
-                  className="custom-btn custom-btn-primary"
-                  onClick={() => navigate('/search')}
+                  className="custom-btn custom-btn-primary custom-btn-large"
+                  onClick={() => navigate('/service')}
                   type="button"
                 >
                   {t('home.cta.findProfessional')}
@@ -568,7 +568,7 @@ const Home = () => {
                 <h3 className="cta-card-title">{t('home.cta.workerTitle')}</h3>
                 <p className="cta-card-desc">{t('home.cta.workerDesc')}</p>
                 <button
-                  className="custom-btn cta-btn-outline-white"
+                  className="custom-btn cta-btn-outline-white custom-btn-large"
                   onClick={() => navigate('/register')}
                   type="button"
                 >

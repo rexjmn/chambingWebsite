@@ -372,25 +372,33 @@ $color-borde: #e9ecef;
       padding: 0.75rem 1.25rem;
       border-top: 1px solid $color-borde;
       display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      background: #fcfdff;
 
       .config-note {
         display: flex;
         align-items: center;
-        gap: 0.375rem;
-        font-size: 0.8125rem;
-        color: $color-texto-suave;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        line-height: 1.2;
+        color: color.adjust($color-texto-suave, $lightness: -6%);
+        background: #f5f7fb;
+        border: 1px solid $color-borde;
+        border-radius: 999px;
+        padding: 0.35rem 0.65rem;
 
         svg {
-          color: $color-texto-suave;
+          color: color.adjust($color-texto-suave, $lightness: -4%);
           flex-shrink: 0;
         }
 
         &.success {
-          color: $color-disponible;
+          color: color.adjust($color-disponible, $lightness: -6%);
+          background: rgba($color-disponible, 0.08);
+          border-color: rgba($color-disponible, 0.35);
 
-          svg { color: $color-disponible; }
+          svg { color: color.adjust($color-disponible, $lightness: -6%); }
         }
       }
     }
@@ -567,20 +575,28 @@ $color-borde: #e9ecef;
 
       // Panel de confirmación de slots seleccionados
       .tgrid-confirm-panel {
-        padding: 0.875rem 1rem;
-        background: #f0f4ff;
-        border-top: 2px solid $color-hoy;
+        margin: 0.55rem 0.75rem 0.75rem;
+        padding: 0.9rem 1rem;
+        background: linear-gradient(135deg, #f2f6ff 0%, #eef3ff 100%);
+        border: 1px solid rgba($color-hoy, 0.35);
+        border-left: 4px solid $color-hoy;
+        border-radius: 12px;
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
         display: flex;
         flex-direction: column;
-        gap: 0.625rem;
+        gap: 0.7rem;
 
         .tgrid-confirm-header {
           display: flex;
           align-items: center;
-          gap: 0.4rem;
-          font-size: 0.85rem;
-          font-weight: 600;
+          gap: 0.5rem;
+          font-size: 0.92rem;
+          font-weight: 700;
           color: $color-hoy;
+          background: rgba($color-hoy, 0.08);
+          border: 1px solid rgba($color-hoy, 0.18);
+          border-radius: 10px;
+          padding: 0.5rem 0.65rem;
 
           svg { flex-shrink: 0; }
         }
@@ -588,7 +604,13 @@ $color-borde: #e9ecef;
         .tgrid-selected-slots {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.4rem;
+          gap: 0.45rem;
+          background: rgba(255, 255, 255, 0.72);
+          border: 1px dashed rgba($color-hoy, 0.35);
+          border-radius: 10px;
+          padding: 0.5rem;
+          max-height: 124px;
+          overflow-y: auto;
         }
 
         .tgrid-slot-badge {
@@ -618,30 +640,67 @@ $color-borde: #e9ecef;
           }
         }
 
-        .tgrid-confirm-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.4rem;
-          padding: 0.5rem 1.1rem;
-          background: $color-hoy;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 0.875rem;
-          font-weight: 600;
-          cursor: pointer;
-          align-self: flex-start;
-          transition: all 0.2s ease;
+        @media (min-width: 900px) {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          grid-template-areas:
+            "header button"
+            "slots button";
+          align-items: start;
+          column-gap: 0.85rem;
+          row-gap: 0.55rem;
 
-          &:hover {
-            filter: brightness(0.9);
-            transform: translateY(-1px);
+          .tgrid-confirm-header {
+            grid-area: header;
           }
 
-          svg { flex-shrink: 0; }
+          .tgrid-selected-slots {
+            grid-area: slots;
+            max-height: 96px;
+          }
+
+          .tgrid-confirm-btn {
+            grid-area: button;
+            align-self: center;
+            justify-self: end;
+            min-width: 270px;
+          }
         }
       }
     }
+  }
+
+  .tgrid-confirm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 40px;
+    padding: 0.65rem 1.15rem;
+    background: linear-gradient(135deg, $color-hoy 0%, color.adjust($color-hoy, $lightness: -8%) 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.1px;
+    cursor: pointer;
+    align-self: flex-end;
+    box-shadow: 0 8px 18px rgba($color-hoy, 0.28);
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba($color-hoy, 0.34);
+      filter: brightness(0.97);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba($color-hoy, 0.24);
+    }
+
+    svg { flex-shrink: 0; }
   }
 
   // Hint en el header del detalle cuando se puede seleccionar horas
@@ -880,6 +939,17 @@ $color-borde: #e9ecef;
 
         .tgrid-confirm-panel {
           padding: 0.75rem;
+          margin: 0.5rem 0.5rem 0.625rem;
+
+          .tgrid-confirm-header {
+            padding: 0.45rem 0.55rem;
+            font-size: 0.85rem;
+          }
+
+          .tgrid-selected-slots {
+            max-height: 102px;
+            padding: 0.45rem;
+          }
 
           .tgrid-confirm-btn {
             width: 100%;
@@ -889,7 +959,7 @@ $color-borde: #e9ecef;
       }
 
       .detail-footer {
-        padding: 0.625rem 1rem;
+        padding: 0.625rem 0.75rem 0.75rem;
       }
     }
 

@@ -405,6 +405,38 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
   }
 }
 
+// Botón de editar perfil propio
+.edit-button {
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+  color: $white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  transition: all 0.3s ease;
+  box-shadow: $shadow-primary-sm;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  flex: 1;
+  min-width: 180px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-primary;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
 // Mensaje de información
 .info-message {
   display: flex;

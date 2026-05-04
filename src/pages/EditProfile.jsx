@@ -241,7 +241,23 @@ const EditProfile = () => {
         >
           ← Volver
         </button>
-        <h1>Editar Perfil</h1>
+        <div className="edit-profile__header-main">
+          <h1 className="edit-profile__title">Editar Perfil</h1>
+          <p className="edit-profile__subtitle">
+            Actualiza tu informacion para mantener tu perfil profesional al dia.
+          </p>
+        </div>
+        <div className="edit-profile__header-actions">
+          {user?.id && (
+            <button
+              className="edit-profile__btn edit-profile__btn--ghost"
+              type="button"
+              onClick={() => navigate(`/profile/${user.id}`)}
+            >
+              Ver perfil publico
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="edit-profile__container">
@@ -260,7 +276,10 @@ const EditProfile = () => {
 
         {/* Información Básica */}
         <section className="edit-profile__section">
-          <h2>Información Básica</h2>
+          <div className="edit-profile__section-header">
+            <h2>Informacion basica</h2>
+            <p>Datos de identidad y ubicacion visibles en tu perfil.</p>
+          </div>
           <div className="edit-profile__grid">
             <div className="edit-profile__field">
               <label htmlFor="nombre">Nombre *</label>
@@ -361,7 +380,10 @@ const EditProfile = () => {
 
         {/* Biografía */}
         <section className="edit-profile__section">
-          <h2>Biografía Profesional</h2>
+          <div className="edit-profile__section-header">
+            <h2>Biografia profesional</h2>
+            <p>Describe tu experiencia para generar confianza en clientes.</p>
+          </div>
           <div className="edit-profile__field edit-profile__field--full">
             <label htmlFor="biografia">
               Cuéntanos sobre ti y tu experiencia
@@ -384,10 +406,12 @@ const EditProfile = () => {
         {/* 🆕 NUEVO - Tarifas (solo para trabajadores) */}
         {user?.tipo_usuario === 'trabajador' && (
           <section className="edit-profile__section">
-            <h2>Mis Tarifas</h2>
-            <p className="edit-profile__hint">
+            <div className="edit-profile__section-header">
+              <h2>Mis tarifas</h2>
+              <p className="edit-profile__hint">
               Configura tus tarifas por hora, día, semana o mes. Puedes dejar en blanco las que no apliquen.
-            </p>
+              </p>
+            </div>
 
             <div className="edit-profile__tarifas-grid">
               <div className="edit-profile__field">
@@ -476,10 +500,12 @@ const EditProfile = () => {
         {/* Servicios - Solo para trabajadores */}
         {user?.tipo_usuario === 'trabajador' && (
           <section className="edit-profile__section">
-            <h2>Mis Servicios</h2>
-            <p className="edit-profile__hint">
+            <div className="edit-profile__section-header">
+              <h2>Mis servicios</h2>
+              <p className="edit-profile__hint">
               Selecciona todos los servicios que ofreces a tus clientes
-            </p>
+              </p>
+            </div>
 
             {/* Buscador */}
             <div className="edit-profile__search">
@@ -551,7 +577,6 @@ const EditProfile = () => {
                 type="button"
                 className="edit-profile__btn edit-profile__btn--secondary"
                 onClick={() => navigate('/availability')}
-                style={{ marginLeft: 'auto' }}
               >
                 Gestionar Disponibilidad
               </button>

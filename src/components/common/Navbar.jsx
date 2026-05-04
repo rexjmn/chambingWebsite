@@ -44,6 +44,7 @@ const Navbar = () => {
 
   const isActive = (path) => location.pathname === path;
   const closeMobile = () => setMobileOpen(false);
+  const publicProfilePath = user?.id ? `/profile/${user.id}` : '/perfil';
 
   const menuItems = [
     { label: nav.home,     path: '/',        icon: <Home size={18} /> },
@@ -131,7 +132,7 @@ const Navbar = () => {
                       </div>
                       <hr className="navbar__dropdown-divider" />
                       <Link
-                        to="/perfil"
+                        to={publicProfilePath}
                         className="navbar__dropdown-item"
                         onClick={() => setProfileOpen(false)}
                         role="menuitem"
@@ -233,7 +234,7 @@ const Navbar = () => {
 
             {isAuthenticated && (
               <Link
-                to="/perfil"
+                to={publicProfilePath}
                 onClick={closeMobile}
                 className="navbar__link navbar__link--mobile"
               >
