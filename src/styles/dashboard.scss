@@ -236,6 +236,25 @@ body {
     }
   }
 
+  &__notification-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: $error;
+    color: $white;
+    font-size: 0.68rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    line-height: 1;
+    box-shadow: 0 0 0 2px $white;
+  }
+
   &__menu {
     position: absolute;
     top: 60px;

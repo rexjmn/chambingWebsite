@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Snackbar,
   Alert
@@ -178,6 +178,8 @@ const Dashboard = () => {
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [coverPhotoModalOpen, setCoverPhotoModalOpen] = useState(false);
   const [showAllContracts, setShowAllContracts] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [dismissedNotifications, setDismissedNotifications] = useState([]);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -235,11 +237,38 @@ const Dashboard = () => {
   const handleMenuClose = () => setMenuOpen(false);
   const handleLogout = async () => { await logout(); handleMenuClose(); };
   const handleRefresh = () => setRefreshKey(prev => prev + 1);
+  const handleNotificationsToggle = () => setNotificationsOpen(v => !v);
+  const dismissNotification = (notificationId) => {
+    setDismissedNotifications(prev => [...prev, notificationId]);
+  };
 
   const formatDate = (dateString) => {
     try { return new Date(dateString).toLocaleDateString(); }
     catch { return dateString; }
   };
+
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat('es-SV', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount || 0);
+
+  const monthlyContractsTotal = contracts.reduce((total, contract) => {
+    if (!contract?.fecha_creacion) return total;
+
+    const createdAt = new Date(contract.fecha_creacion);
+    const now = new Date();
+    const isCurrentMonth =
+      createdAt.getMonth() === now.getMonth() &&
+      createdAt.getFullYear() === now.getFullYear();
+
+    if (!isCurrentMonth) return total;
+
+    const amount = Number(contract.monto_total) || 0;
+    return total + amount;
+  }, 0);
 
   const getActionBanner = (contract) => {
     const esEmpleador  = String(user?.id) === String(contract.empleador?.id);
@@ -257,6 +286,27 @@ const Dashboard = () => {
       return { color: '#fce4ec', border: '#c62828', icon: '⭐', text: 'El trabajador terminó — confirma y deja tu reseña' };
     return null;
   };
+
+  const dashboardNotifications = useMemo(() => {
+    const generated = contracts
+      .map((contract) => {
+        const banner = getActionBanner(contract);
+        if (!banner) return null;
+        return {
+          id: `contract-${contract.id}-${contract.estado}`,
+          contractId: contract.id,
+          text: banner.text,
+          icon: banner.icon,
+          color: banner.color,
+          border: banner.border,
+          contractCode: contract.codigo_contrato,
+          createdAt: contract.fecha_actualizacion || contract.fecha_creacion,
+        };
+      })
+      .filter(Boolean);
+
+    return generated.filter(n => !dismissedNotifications.includes(n.id));
+  }, [contracts, dismissedNotifications]);
 
   const renderProfileAvatar = () => {
     if (user?.foto_perfil) {
@@ -318,9 +368,13 @@ const Dashboard = () => {
             <button
               className="dashboard__icon-btn"
               aria-label="Notificaciones"
+              onClick={handleNotificationsToggle}
               type="button"
             >
               <NotificationsIcon />
+              {dashboardNotifications.length > 0 && (
+                <span className="dashboard__notification-count">{dashboardNotifications.length}</span>
+              )}
             </button>
 
             <button
@@ -514,8 +568,8 @@ const Dashboard = () => {
               <PaymentIcon />
             </div>
             <div className="dashboard__stat-card-content">
-              <h3>$10.00</h3>
-              <p>{t('dashboard.stats.availableBalance')}</p>
+              <h3>{formatCurrency(monthlyContractsTotal)}</h3>
+              <p>Monto contratos del mes</p>
             </div>
           </article>
 
@@ -524,11 +578,100 @@ const Dashboard = () => {
               <NotificationsIcon />
             </div>
             <div className="dashboard__stat-card-content">
-              <h3>0</h3>
+              <h3>{dashboardNotifications.length}</h3>
               <p>{t('dashboard.stats.notifications')}</p>
             </div>
           </article>
         </section>
+
+        {notificationsOpen && (
+          <section className="dashboard__section" aria-labelledby="notifications-heading">
+            <div className="dashboard__section-header">
+              <div>
+                <h2 id="notifications-heading">Notificaciones</h2>
+                <p className="dashboard__section-subtitle">
+                  {dashboardNotifications.length} alerta{dashboardNotifications.length !== 1 ? 's' : ''} activa{dashboardNotifications.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+            </div>
+
+            {dashboardNotifications.length > 0 ? (
+              <div className="dashboard__contracts">
+                {dashboardNotifications.map((notification) => (
+                  <article
+                    key={notification.id}
+                    className="dashboard__contract-card"
+                    style={{ border: `2px solid ${notification.border}` }}
+                  >
+                    <div style={{
+                      background: notification.color,
+                      borderBottom: `1px solid ${notification.border}`,
+                      padding: '8px 14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 8,
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: '#333',
+                      borderRadius: '6px 6px 0 0',
+                    }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 16 }}>{notification.icon}</span>
+                        {notification.text}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => dismissNotification(notification.id)}
+                        style={{
+                          border: 'none',
+                          background: 'transparent',
+                          cursor: 'pointer',
+                          fontSize: 16,
+                          lineHeight: 1,
+                          color: '#444',
+                        }}
+                        aria-label="Descartar notificación"
+                        title="Descartar"
+                      >
+                        ×
+                      </button>
+                    </div>
+
+                    <div className="dashboard__contract-details">
+                      <div className="dashboard__contract-row">
+                        <span className="dashboard__contract-label">Contrato</span>
+                        <span className="dashboard__contract-value">{notification.contractCode}</span>
+                      </div>
+                      <div className="dashboard__contract-row">
+                        <span className="dashboard__contract-label">Fecha</span>
+                        <span className="dashboard__contract-value">{formatDate(notification.createdAt)}</span>
+                      </div>
+                    </div>
+
+                    <div className="dashboard__contract-actions">
+                      <button
+                        className="dashboard__btn dashboard__btn--primary dashboard__btn--sm"
+                        onClick={() => navigate(`/contracts/${notification.contractId}`)}
+                        type="button"
+                      >
+                        Ver contrato
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="dashboard__empty-state">
+                <div className="dashboard__empty-state-icon" aria-hidden="true">
+                  <NotificationsIcon />
+                </div>
+                <h3>Sin notificaciones pendientes</h3>
+                <p>Cuando haya acciones importantes en tus contratos aparecerán aquí.</p>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* ── Services ────────────────────────────────────────────────────── */}
         <section className="dashboard__section" aria-labelledby="services-heading">

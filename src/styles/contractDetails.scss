@@ -86,9 +86,9 @@
   border: 1px solid transparent;
 
   &.warning {
-    background: #fff4d7;
-    color: #8d5f05;
-    border-color: #f4d48d;
+    background: rgba(245, 158, 11, 0.16);
+    color: #201501;
+    border-color: #f59e0b;
   }
   &.info {
     background: #eaf1ff;
@@ -131,8 +131,9 @@
   }
 
   &--warning {
-    background: #fff8e1;
-    border-color: #f2c34e;
+    background: rgba(245, 158, 11, 0.14);
+    border-color: #f59e0b;
+    color: #201501;
   }
 
   &--pending {
