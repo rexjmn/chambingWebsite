@@ -1,740 +1,644 @@
-@use './variables.scss' as *;
+// ============================================================
+// CREATE CONTRACT - Estilos del formulario multi-paso
+// ============================================================
+
+$primary: #4361ee;
+$primary-dark: #3451d1;
+$success: #1a8754;
+$danger: #dc3545;
+$muted: #6b7280;
+$border: #e5e7eb;
+$bg-page: #f3f4f6;
+$bg-card: #ffffff;
+$radius-lg: 16px;
+$radius-md: 12px;
 
 .create-contract-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #fafbfc 0%, #ffffff 100%);
-  padding: 2rem 1rem;
-  padding-top: calc(70px + 2rem); // Account for navbar
+  background: $bg-page;
+  padding: 2rem 1rem 4rem;
 
   .container {
-    max-width: 800px;
+    max-width: 760px;
     margin: 0 auto;
-  }
-
-  // Loading state
-  .loading-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    gap: 1rem;
+    gap: 1.25rem;
+  }
 
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid rgba($primary-color, 0.2);
-      border-top-color: $primary-color;
+  // ========== VOLVER ==========
+
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    background: none;
+    border: none;
+    color: $muted;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s;
+
+    &:hover { color: $primary; }
+
+    svg { font-size: 18px !important; }
+  }
+
+  // ========== TRABAJADOR ==========
+
+  .worker-info-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: $bg-card;
+    border-radius: $radius-md;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+    .worker-avatar {
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      background: rgba($primary, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      svg { color: $primary; font-size: 24px !important; }
     }
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
+    .worker-details {
+      flex: 1;
+      min-width: 0;
+
+      .worker-label {
+        margin: 0 0 0.125rem;
+        font-size: 0.75rem;
+        color: $muted;
+        font-weight: 500;
+      }
+
+      .worker-name {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1a1f36;
+      }
+
+      .worker-title {
+        margin: 0.125rem 0 0;
+        font-size: 0.8125rem;
+        color: $muted;
       }
     }
 
-    p {
-      color: $text-muted;
-      font-size: 1.125rem;
+    .worker-check-icon {
+      color: $success;
+      font-size: 24px !important;
+      flex-shrink: 0;
     }
   }
 
-  // ==========================================
-  // PAYMENT MODES — tarjetas unificadas con tarifa integrada
-  // ==========================================
-  .payment-modes {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 0.875rem;
-    margin-top: 0.5rem;
+  // ========== STEPPER ==========
 
-    .mode-card {
-      background: white;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      padding: 1.25rem 0.875rem;
+  .stepper {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    background: $bg-card;
+    border-radius: $radius-md;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar { height: 0; }
+
+    .step-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0.375rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-weight: 500;
-      color: #666;
-
-      svg {
-        font-size: 28px;
-        color: #999;
-        transition: all 0.2s ease;
-      }
-
-      .mode-rate {
-        font-size: 0.9rem;
-        font-weight: 700;
-        color: #27ae60;
-        margin-top: 0.125rem;
-
-        &.mode-rate-custom {
-          font-size: 0.72rem;
-          font-weight: 500;
-          color: #aaa;
-        }
-      }
-
-      &:hover {
-        border-color: #1976d2;
-        background: #f5f9ff;
-
-        svg { color: #1976d2; }
-        .mode-rate { color: #1565c0; }
-      }
-
-      &.selected {
-        border-color: #1976d2;
-        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
-
-        svg { color: white; }
-
-        .mode-rate {
-          color: rgba(255, 255, 255, 0.95);
-          &.mode-rate-custom { color: rgba(255, 255, 255, 0.7); }
-        }
-      }
-    }
-  }
-
-  // ==========================================
-  // INPUT DE MONEDA — prefijo $ tipo banco
-  // ==========================================
-  .currency-input-group {
-    display: flex;
-    align-items: stretch;
-
-    .currency-prefix {
-      display: flex;
-      align-items: center;
-      padding: 0 0.875rem;
-      background: #f8f9fa;
-      border: 2px solid #e2e8f0;
-      border-right: none;
-      border-radius: 8px 0 0 8px;
-      font-weight: 700;
-      color: #555;
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
-
-    .form-input {
-      border-radius: 0 8px 8px 0;
-      border-left-color: transparent;
       flex: 1;
+      min-width: 60px;
+      position: relative;
 
-      &:focus {
-        border-color: #1976d2;
-        border-left-color: #1976d2;
+      .step-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: 700;
+        background: #f3f4f6;
+        color: $muted;
+        border: 2px solid $border;
+        transition: all 0.3s;
+        z-index: 1;
+        flex-shrink: 0;
+      }
+
+      .step-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: $muted;
+        text-align: center;
+        line-height: 1.2;
+        white-space: nowrap;
+        transition: color 0.3s;
+      }
+
+      .step-connector {
+        position: absolute;
+        top: 18px;
+        left: calc(50% + 18px);
+        right: calc(-50% + 18px);
+        height: 2px;
+        background: $border;
+        transition: background 0.3s;
+      }
+
+      &.active {
+        .step-circle {
+          background: $primary;
+          border-color: $primary;
+          color: white;
+          box-shadow: 0 0 0 4px rgba($primary, 0.15);
+        }
+        .step-label { color: $primary; font-weight: 700; }
+      }
+
+      &.done {
+        .step-circle {
+          background: $success;
+          border-color: $success;
+          color: white;
+        }
+        .step-label { color: $success; }
+        .step-connector { background: $success; }
       }
     }
   }
 
-  // ==========================================
-  // FORM SECTIONS
-  // ==========================================
+  // ========== ERROR ==========
+
+  .error-message {
+    background: #fff5f5;
+    border: 1px solid #fecaca;
+    border-radius: $radius-md;
+    padding: 0.875rem 1.125rem;
+    color: $danger;
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    &.step-error {
+      background: #fffbeb;
+      border-color: #fde68a;
+      color: #92400e;
+    }
+  }
+
+  // ========== SECCIONES / TARJETA DE PASO ==========
+
   .form-section {
-    background: white;
-    border-radius: 12px;
+    background: $bg-card;
+    border-radius: $radius-lg;
     padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
 
-    &.optional-section {
-      border: 2px dashed #e0e0e0;
-      background: #fafafa;
-
-      .section-title {
-        color: #666;
-      }
+    &.step-content {
+      animation: fadeSlideIn 0.25s ease;
     }
 
     .section-title {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      margin: 0 0 1rem 0;
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: #333;
+      gap: 0.625rem;
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: #1a1f36;
+      margin: 0 0 1.25rem;
 
-      svg {
-        color: #1976d2;
-        font-size: 24px;
+      .step-badge {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: $primary;
+        color: white;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        &.optional { background: $muted; }
       }
+    }
+
+    .subsection-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $muted;
+      margin: 0 0 0.75rem;
     }
 
     .section-help {
       font-size: 0.875rem;
-      color: #666;
-      margin-bottom: 1rem;
+      color: $muted;
+      margin: 0 0 1rem;
+      line-height: 1.5;
     }
   }
 
-  // ==========================================
-  // FORM INPUTS MEJORADOS
-  // ==========================================
-  .form-select,
+  // ========== GRUPOS DE FORMULARIO ==========
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin-bottom: 1rem;
+
+    &:last-child { margin-bottom: 0; }
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+
+      svg { color: $muted; }
+    }
+
+    .optional-label {
+      font-weight: 400;
+      color: $muted;
+      font-size: 0.8125rem;
+    }
+  }
+
   .form-input,
+  .form-select,
   .form-textarea {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
+    padding: 0.625rem 0.875rem;
+    border: 1.5px solid $border;
+    border-radius: 10px;
+    font-size: 0.9375rem;
+    color: #1a1f36;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
     font-family: inherit;
-    transition: all 0.2s ease;
+    box-sizing: border-box;
 
     &:focus {
       outline: none;
-      border-color: #1976d2;
-      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.12);
     }
 
-    &::placeholder {
-      color: #999;
-    }
+    &::placeholder { color: #9ca3af; }
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.5;
+  }
+
+  .form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.875rem center;
+    padding-right: 2.5rem;
+    cursor: pointer;
   }
 
   .form-help {
-    display: block;
-    font-size: 0.75rem;
-    color: #999;
-    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: $muted;
+
+    &.help-ok { color: $success; font-weight: 500; }
   }
 
-  // ==========================================
-  // INPUT CON ICONO
-  // ==========================================
-  .input-with-icon {
-    position: relative;
+  // ========== MODOS DE PAGO ==========
 
-    .input-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #666;
-      font-weight: 600;
-      pointer-events: none;
-    }
+  .payment-modes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 0.625rem;
+    margin-bottom: 1.25rem;
 
-    input {
-      padding-left: 2.5rem;
+    .mode-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.875rem 0.5rem;
+      border: 2px solid $border;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+
+      svg { color: $muted; font-size: 22px !important; }
+
+      .mode-label {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #1a1f36;
+      }
+
+      .mode-desc {
+        font-size: 0.7rem;
+        color: $muted;
+        line-height: 1.3;
+      }
+
+      .mode-rate {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: $success;
+        margin-top: 0.125rem;
+
+        &.mode-rate-custom {
+          color: $muted;
+          font-weight: 500;
+          font-style: italic;
+        }
+      }
+
+      &:hover {
+        border-color: $primary;
+        background: rgba($primary, 0.04);
+      }
+
+      &.selected {
+        border-color: $primary;
+        background: rgba($primary, 0.07);
+        box-shadow: 0 0 0 3px rgba($primary, 0.12);
+
+        svg { color: $primary; }
+        .mode-label { color: $primary; }
+      }
     }
   }
 
-  // ==========================================
-  // FORM ROW (DOS COLUMNAS)
-  // ==========================================
+  // ========== FILA DE PRECIO ==========
+
   .form-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
+
+    &.amount-row {
+      grid-template-columns: 1fr 1fr;
+
+      @media (max-width: 480px) { grid-template-columns: 1fr; }
+    }
   }
 
-  // ==========================================
-  // TOTAL DISPLAY
-  // ==========================================
-  .total-display {
-    margin-top: 1rem;
-    padding: 1rem;
-    background: linear-gradient(135deg, #f5f9ff 0%, #e3f2fd 100%);
-    border-radius: 8px;
+  .currency-input-group {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    font-size: 1.125rem;
+    border: 1.5px solid $border;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
 
-    strong {
-      color: #333;
+    &:focus-within {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.12);
+    }
+
+    .currency-prefix {
+      padding: 0.625rem 0.75rem;
+      background: #f9fafb;
+      border-right: 1.5px solid $border;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: $muted;
+      flex-shrink: 0;
+    }
+
+    .form-input {
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+
+      &:focus { box-shadow: none; }
+    }
+  }
+
+  // ========== TOTAL ==========
+
+  .total-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f0faf5;
+    border: 1.5px solid #a7f3d0;
+    border-radius: 12px;
+    padding: 0.875rem 1.125rem;
+    margin-top: 0.5rem;
+
+    .total-label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+
+      strong {
+        font-size: 0.875rem;
+        color: #1a1f36;
+      }
+
+      .total-formula {
+        font-size: 0.8rem;
+        color: $muted;
+      }
     }
 
     .total-amount {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #1976d2;
+      font-size: 1.375rem;
+      font-weight: 800;
+      color: $success;
     }
   }
 
-  // ==========================================
-  // SUCCESS CONTAINER MEJORADO
-  // ==========================================
-  .success-container {
-    background: $white;
-    border-radius: 16px;
-    padding: 3rem 2rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    max-width: 600px;
-    margin: 2rem auto;
+  // ========== CALENDARIO ==========
 
-    .success-icon {
-      width: 80px;
-      height: 80px;
-      color: $success-color;
-      margin-bottom: 1.5rem;
-    }
-
-    h2 {
-      color: $text-primary;
-      margin-bottom: 2rem;
-      font-size: 1.875rem;
-    }
-
-    .contract-info {
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      text-align: left;
-
-      p {
-        margin-bottom: 1rem;
-        color: $text-secondary;
-
-        strong {
-          color: $text-primary;
-        }
-      }
-
-      .pin-code {
-        display: block;
-        font-size: 2rem;
-        font-weight: 700;
-        color: $primary-color;
-        background: $white;
-        border: 2px dashed $primary-color;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1rem 0;
-        text-align: center;
-        letter-spacing: 0.5rem;
-        font-family: 'Courier New', monospace;
-      }
-
-      .info-text {
-        font-size: 0.875rem;
-        color: $text-muted;
-        font-style: italic;
-      }
-    }
-  }
-
-  // Back button
-  .back-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: transparent;
-    border: none;
-    color: $primary-color;
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    margin-bottom: 1.5rem;
-
-    &:hover {
-      background: rgba($primary-color, 0.1);
-    }
-
-    svg {
-      width: 20px;
-      height: 20px;
-    }
-  }
-
-  // Page header
-  .page-header {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-
-    .header-icon {
-      width: 48px;
-      height: 48px;
-      color: $primary-color;
-    }
-
-    h1 {
-      color: $text-primary;
-      font-size: 2.25rem;
-      margin: 0;
-      font-weight: 700;
-    }
-
-    p {
-      color: $text-muted;
-      margin: 0.5rem 0 0 0;
-    }
-  }
-
-  // Worker info card
-  .worker-info-card {
-    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
-    color: $white;
+  .contract-calendar-wrapper {
+    margin-bottom: 1rem;
     border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: $shadow-primary-sm;
-
-    svg {
-      width: 40px;
-      height: 40px;
-    }
-
-    h3 {
-      margin: 0 0 0.5rem 0;
-      font-size: 0.875rem;
-      opacity: 0.9;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    p {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 600;
-
-      &.title {
-        font-size: 0.95rem;
-        opacity: 0.8;
-        font-weight: 400;
-        margin-top: 0.25rem;
-      }
-    }
+    overflow: hidden;
   }
 
-  // Error message
-  .error-message {
-    background: rgba($error-color, 0.1);
-    color: $error-color;
-    border: 1px solid rgba($error-color, 0.3);
-    border-radius: 8px;
-    padding: 1rem 1.5rem;
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
-  }
+  // ========== FECHA SELECCIONADA ==========
 
-  // Form
-  .contract-form {
-    background: $white;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: $shadow-md;
-    margin-bottom: 2rem;
-
-    .form-group {
-      margin-bottom: 1.5rem;
-
-      label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-weight: 600;
-        color: $text-primary;
-        margin-bottom: 0.5rem;
-        font-size: 0.95rem;
-
-        svg {
-          width: 18px;
-          height: 18px;
-          color: $primary-color;
-        }
-      }
-
-      input,
-      select,
-      textarea {
-        width: 100%;
-        padding: 0.875rem 1rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 1rem;
-        color: $text-primary;
-        transition: all 0.3s ease;
-        font-family: inherit;
-
-        &:focus {
-          outline: none;
-          border-color: $primary-color;
-          box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
-        }
-
-        &::placeholder {
-          color: $text-muted;
-        }
-      }
-
-      textarea {
-        resize: vertical;
-        min-height: 100px;
-      }
-
-      select {
-        cursor: pointer;
-        background-color: $white;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 1rem center;
-        padding-right: 3rem;
-      }
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 2rem;
-
-      @media (max-width: 576px) {
-        flex-direction: column;
-      }
-    }
-  }
-
-  // Buttons
-  .btn {
-    padding: 0.875rem 2rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    &.btn-primary {
-      background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
-      color: $white;
-      box-shadow: $shadow-primary-sm;
-
-      &:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: $shadow-primary;
-      }
-    }
-
-    &.btn-secondary {
-      background: $white;
-      color: $text-secondary;
-      border: 2px solid #e2e8f0;
-
-      &:hover:not(:disabled) {
-        background: #f8f9fa;
-        border-color: #cbd5e0;
-      }
-    }
-
-    @media (max-width: 576px) {
-      width: 100%;
-    }
-  }
-
-  // Info box
-  .info-box {
-    background: #f0f9ff;
-    border-left: 4px solid $primary-color;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-top: 2rem;
-
-    p {
-      margin: 0 0 1rem 0;
-      color: $text-primary;
-      font-weight: 600;
-    }
-
-    ul {
-      margin: 0;
-      padding-left: 1.5rem;
-      color: $text-secondary;
-
-      li {
-        margin-bottom: 0.5rem;
-        line-height: 1.6;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-    }
-  }
-
-  // ==========================================
-  // STEP BADGES
-  // ==========================================
-  .step-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: #1976d2;
-    color: white;
-    font-size: 0.8rem;
-    font-weight: 700;
-    flex-shrink: 0;
-
-    &.optional {
-      background: #9e9e9e;
-    }
-  }
-
-  // ==========================================
-  // PAYMENT MODE CARDS — extensión con desc
-  // ==========================================
-  .mode-card {
-    .mode-label {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .mode-desc {
-      font-size: 0.72rem;
-      line-height: 1.3;
-      opacity: 0.75;
-      text-align: center;
-    }
-
-    &.selected .mode-desc {
-      opacity: 0.9;
-    }
-  }
-
-  // ==========================================
-  // TOTAL DISPLAY — fórmula
-  // ==========================================
-  .total-label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-
-    .total-formula {
-      font-size: 0.8rem;
-      color: #666;
-      font-weight: 400;
-    }
-  }
-
-  // ==========================================
-  // WORKER CARD — estructura actualizada
-  // ==========================================
-  .worker-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    svg { width: 28px; height: 28px; }
-  }
-
-  .worker-details {
-    flex: 1;
-
-    .worker-label {
-      font-size: 0.75rem;
-      opacity: 0.8;
-      margin: 0 0 0.2rem;
-      font-weight: 400;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-
-    .worker-name {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    .worker-title {
-      font-size: 0.875rem;
-      opacity: 0.85;
-      margin: 0.2rem 0 0;
-      font-weight: 400;
-    }
-  }
-
-  .worker-check-icon {
-    width: 28px !important;
-    height: 28px !important;
-    opacity: 0.8;
-  }
-
-  // ==========================================
-  // SELECTED DATE BADGE — estructura 2 líneas
-  // ==========================================
   .selected-date-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f0faf5;
+    border: 1.5px solid #a7f3d0;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    margin: 0.75rem 0;
+
+    svg { color: $success; flex-shrink: 0; }
+
     .badge-label {
       display: block;
       font-size: 0.75rem;
-      opacity: 0.75;
+      color: $muted;
       font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
     }
 
     .badge-date {
-      display: block;
-      font-size: 1rem;
+      font-size: 0.9375rem;
+      color: #1a1f36;
     }
   }
 
-  // ==========================================
-  // FORM HELP — estado OK
-  // ==========================================
-  .form-help {
-    &.help-ok {
-      color: #27ae60;
-    }
-  }
+  // ========== SLOTS CONFIRMADOS ==========
 
-  // ==========================================
-  // CONTRACT SUMMARY
-  // ==========================================
-  .contract-summary {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e8f4fd 100%);
-    border: 2px solid #1976d2;
+  .confirmed-slots-panel {
+    background: #f0f4ff;
+    border: 1.5px solid rgba($primary, 0.3);
     border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 0.875rem 1rem;
+    margin-bottom: 1rem;
 
-    h4 {
-      margin: 0 0 1rem;
-      font-size: 1rem;
-      font-weight: 700;
-      color: #1565c0;
+    .confirmed-slots-header {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: $primary;
+      margin-bottom: 0.625rem;
+
+      svg { color: $primary; }
+    }
+
+    .confirmed-slots-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+    }
+
+    .confirmed-slot-chip {
+      display: inline-flex;
+      padding: 0.25rem 0.625rem;
+      background: white;
+      border: 1.5px solid rgba($primary, 0.3);
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: $primary;
+    }
+  }
+
+  .date-fin-wrapper { margin-top: 0.5rem; }
+
+  // ========== NAVEGACIÓN ENTRE PASOS ==========
+
+  .step-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    gap: 0.75rem;
+
+    &.final-nav {
+      flex-wrap: wrap;
+
+      .btn-large {
+        flex: 1;
+        justify-content: center;
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  // ========== RESUMEN FINAL ==========
+
+  .contract-summary {
+    background: #f9fafb;
+    border: 1.5px solid $border;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+
+    &.final-summary {
+      padding: 0;
+      background: transparent;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+    }
+
+    .summary-section {
+      background: #fff;
+      border: 1.5px solid $border;
+      border-radius: 12px;
+      overflow: hidden;
+
+      .summary-section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.75rem 1rem;
+        background: #f9fafb;
+        border-bottom: 1.5px solid $border;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #374151;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+
+        svg { color: $primary; }
+
+        .edit-step-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.2rem;
+          margin-left: auto;
+          background: none;
+          border: 1px solid $border;
+          border-radius: 6px;
+          padding: 0.2rem 0.5rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          color: $muted;
+          cursor: pointer;
+          text-transform: none;
+          letter-spacing: 0;
+          transition: all 0.2s;
+
+          &:hover {
+            color: $primary;
+            border-color: $primary;
+          }
+        }
+      }
+
+      .summary-grid {
+        padding: 0.875rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+      }
     }
 
     .summary-grid {
@@ -745,366 +649,297 @@
 
     .summary-item {
       display: flex;
+      align-items: flex-start;
       justify-content: space-between;
-      align-items: center;
-      padding: 0.375rem 0;
-      border-bottom: 1px solid rgba(25, 118, 210, 0.12);
-
-      &:last-child { border-bottom: none; }
+      gap: 1rem;
+      font-size: 0.875rem;
 
       &.summary-total-row {
+        padding-top: 0.625rem;
+        border-top: 1.5px solid $border;
         margin-top: 0.25rem;
-        padding-top: 0.75rem;
-        border-top: 2px solid rgba(25, 118, 210, 0.2);
-        border-bottom: none;
       }
-    }
 
-    .s-label {
-      font-size: 0.875rem;
-      color: #555;
-      font-weight: 500;
-    }
+      &.summary-desc {
+        flex-direction: column;
+        gap: 0.25rem;
+        align-items: flex-start;
+      }
 
-    .s-value {
-      font-size: 0.9rem;
-      color: #222;
-      font-weight: 600;
-      text-align: right;
-      max-width: 60%;
-    }
-
-    .s-total {
-      font-size: 1.25rem;
-      color: #1976d2;
-      font-weight: 700;
-    }
-  }
-
-  // ==========================================
-  // SUCCESS — estilos adicionales
-  // ==========================================
-  .success-subtitle {
-    color: #666;
-    font-size: 1rem;
-    margin: -1rem 0 1.5rem;
-  }
-
-  .info-label {
-    font-size: 0.8rem;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    font-weight: 500;
-  }
-
-  .info-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #e8e8e8;
-
-    &:last-child { border-bottom: none; }
-  }
-
-  // ==========================================
-  // SLOTS DE HORA CONFIRMADOS (Paso 2)
-  // ==========================================
-  .confirmed-slots-panel {
-    background: #f0f4ff;
-    border: 2px solid #4361ee;
-    border-radius: 10px;
-    padding: 0.875rem 1rem;
-    margin-bottom: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-
-    .confirmed-slots-header {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #4361ee;
-    }
-
-    .confirmed-slots-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-    }
-
-    .confirmed-slot-chip {
-      background: white;
-      border: 1.5px solid #4361ee;
-      border-radius: 20px;
-      padding: 0.2rem 0.75rem;
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: #2c3e8a;
-    }
-  }
-
-  // ==========================================
-  // TARIFAS PREDEFINIDAS DEL TRABAJADOR (Paso 3)
-  // ==========================================
-  .worker-rates-section {
-    margin-bottom: 1.25rem;
-    padding: 1rem;
-    background: #f8fdf4;
-    border: 1.5px solid #c8e6c9;
-    border-radius: 10px;
-
-    .rates-hint {
-      font-size: 0.8rem;
-      color: #388e3c;
-      font-weight: 500;
-      margin: 0 0 0.75rem;
-    }
-
-    .worker-rates {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .rate-chip {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0.5rem 0.875rem;
-      background: white;
-      border: 2px solid #c8e6c9;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.18s ease;
-      min-width: 90px;
-
-      .rate-chip-label {
-        font-size: 0.72rem;
-        color: #666;
+      .s-label {
+        color: $muted;
         font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
+        flex-shrink: 0;
+        min-width: 120px;
       }
 
-      .rate-chip-price {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #2e7d32;
-        margin-top: 0.1rem;
-      }
+      .s-value {
+        color: #1a1f36;
+        font-weight: 600;
+        text-align: right;
 
-      &:hover {
-        border-color: #388e3c;
-        background: #f1f8e9;
-      }
-
-      &.active {
-        border-color: #2e7d32;
-        background: #e8f5e9;
-        box-shadow: 0 2px 8px rgba(46, 125, 50, 0.25);
-
-        .rate-chip-label { color: #1b5e20; }
-        .rate-chip-price { color: #1b5e20; }
-      }
-
-      &.rate-chip-custom {
-        border-style: dashed;
-        border-color: #90a4ae;
-
-        .rate-chip-price {
-          font-size: 0.8rem;
-          font-weight: 500;
-          color: #607d8b;
+        &.s-total {
+          font-size: 1.1875rem;
+          font-weight: 800;
+          color: $success;
         }
 
-        &:hover {
-          border-color: #546e7a;
-          background: #eceff1;
-        }
-
-        &.active {
-          border-color: #1976d2;
-          background: #e3f2fd;
-          border-style: solid;
-          box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
-
-          .rate-chip-label { color: #0d47a1; }
-          .rate-chip-price { color: #0d47a1; }
+        &.s-empty {
+          color: $muted;
+          font-weight: 400;
+          font-style: italic;
         }
       }
     }
   }
 
-  // ==========================================
-  // DIVISOR DE SUB-SECCIÓN (paso combinado 2)
-  // ==========================================
-  .section-divider {
+  // ========== INFO BOX ==========
+
+  .info-box {
     display: flex;
-    align-items: center;
     gap: 0.75rem;
-    margin: 1.75rem 0 1rem;
-
-    &::before,
-    &::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: #e0e0e0;
-    }
-
-    span {
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: #555;
-      white-space: nowrap;
-      padding: 0.3rem 0.875rem;
-      background: #f5f5f5;
-      border-radius: 20px;
-      border: 1px solid #e0e0e0;
-    }
-  }
-
-  // Etiqueta de sub-sección dentro del paso combinado
-  .subsection-label {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #444;
-    margin-bottom: 0.875rem;
-  }
-
-  // ==========================================
-  // CALENDARIO DE DISPONIBILIDAD EMBEBIDO
-  // ==========================================
-  .contract-calendar-wrapper {
-    margin: 0.5rem 0 1.25rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
     border-radius: 12px;
-    overflow: hidden;
-    border: 2px solid #e2e8f0;
+    padding: 1rem 1.125rem;
+    margin-top: 1rem;
+    font-size: 0.8125rem;
+    color: #1e40af;
 
-    // El componente maneja su propio padding interno
-    .availability-calendar {
-      border-radius: 0;
-      box-shadow: none;
-      border: none;
+    svg { color: #3b82f6; flex-shrink: 0; margin-top: 2px; }
+
+    p { margin: 0 0 0.5rem; }
+
+    ul {
+      margin: 0;
+      padding: 0 0 0 0.5rem;
+      list-style: none;
+
+      li {
+        padding: 0.2rem 0;
+        line-height: 1.4;
+      }
     }
   }
 
-  .selected-date-badge {
+  // ========== BOTONES ==========
+
+  .btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, #e3f2fd 0%, #f5f9ff 100%);
-    border: 2px solid #1976d2;
-    border-radius: 8px;
-    padding: 0.625rem 1rem;
-    margin-bottom: 1.25rem;
-    font-size: 0.95rem;
-    color: #1565c0;
+    gap: 0.375rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-family: inherit;
 
-    strong {
-      color: #1565c0;
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
-  }
 
-  .date-fin-wrapper {
-    margin-top: 0.5rem;
-    margin-bottom: 1rem;
-
-    .optional-label {
-      font-weight: 400;
-      font-size: 0.85rem;
-      color: #999;
-    }
-  }
-
-  .availability-check-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-
-    .btn-check-availability {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.625rem 1.25rem;
-      background: #1976d2;
+    &.btn-primary {
+      background: $primary;
       color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      align-self: flex-start;
 
       &:hover:not(:disabled) {
-        background: #1565c0;
+        background: $primary-dark;
         transform: translateY(-1px);
-      }
-
-      &:disabled {
-        opacity: 0.55;
-        cursor: not-allowed;
+        box-shadow: 0 4px 12px rgba($primary, 0.35);
       }
     }
 
-    .availability-result {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.875rem 1rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
+    &.btn-secondary {
+      background: white;
+      color: #374151;
+      border: 1.5px solid $border;
 
-      &.available {
-        background: #d5f4e6;
-        border: 2px solid #27ae60;
-        color: #1e7e44;
-
-        strong { color: #1e7e44; }
+      &:hover:not(:disabled) {
+        background: #f9fafb;
+        border-color: #d1d5db;
       }
+    }
 
-      &.unavailable {
-        background: #fadbd8;
-        border: 2px solid #e74c3c;
-        color: #c0392b;
-
-        strong { color: #c0392b; }
-      }
-
-      p {
-        margin: 0.2rem 0 0;
-        font-size: 0.85rem;
-        color: #2c3e50;
-      }
+    .btn-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
     }
   }
 
-  // Responsive
-  @media (max-width: 768px) {
-    padding: 1.5rem 1rem;
-    padding-top: calc(70px + 1.5rem);
+  // ========== LOADING ==========
 
-    .page-header {
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 40vh;
+    gap: 1rem;
+    color: $muted;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e5e7eb;
+      border-top-color: $primary;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  }
+
+  // ========== ÉXITO ==========
+
+  .success-container {
+    max-width: 480px;
+    margin: 4rem auto;
+    text-align: center;
+    background: $bg-card;
+    border-radius: $radius-lg;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+
+    .success-icon {
+      font-size: 64px !important;
+      color: $success;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: 1.625rem;
+      font-weight: 800;
+      color: #1a1f36;
+      margin: 0;
+    }
+
+    .success-subtitle {
+      color: $muted;
+      margin: 0 0 1rem;
+    }
+
+    .contract-info {
+      width: 100%;
+      background: #f9fafb;
+      border: 1.5px solid $border;
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
+      gap: 0.75rem;
+      text-align: left;
+      margin-bottom: 0.5rem;
 
-      h1 {
-        font-size: 1.875rem;
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.875rem;
+        gap: 0.5rem;
+
+        .info-label { color: $muted; font-weight: 500; }
+
+        .contract-code {
+          background: #e0e7ff;
+          color: $primary;
+          border-radius: 6px;
+          padding: 0.25rem 0.5rem;
+          font-size: 0.8rem;
+          font-family: monospace;
+        }
+
+        .amount {
+          font-size: 1.125rem;
+          font-weight: 800;
+          color: $success;
+        }
       }
     }
 
-    .contract-form {
-      padding: 1.5rem;
+    .success-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+  }
+
+  // ========== RESPONSIVE ==========
+
+  @media (max-width: 640px) {
+    padding: 1rem 0.75rem 3rem;
+
+    .stepper {
+      padding: 0.875rem 0.75rem;
+      gap: 0;
+
+      .step-item {
+        min-width: 50px;
+
+        .step-circle {
+          width: 30px;
+          height: 30px;
+          font-size: 0.8rem;
+        }
+
+        .step-label { font-size: 0.625rem; }
+
+        .step-connector { top: 15px; }
+      }
+    }
+
+    .form-section { padding: 1.125rem 1rem; }
+
+    .payment-modes {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+
+    .step-nav {
+      flex-direction: column-reverse;
+      gap: 0.625rem;
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .summary-item {
+      .s-label { min-width: 90px; }
+    }
+
+    .success-container {
+      margin: 2rem auto;
+      padding: 1.75rem 1.25rem;
+    }
+  }
+
+  // ========== ANIMACIONES ==========
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes fadeSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }

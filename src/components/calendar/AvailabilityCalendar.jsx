@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import './availabilityCalendar.scss';
 
-// ── Pure helpers ─────────────────────────────────────────────────────────────
+// ── Pure helpers ─────────────────────────────────────────────────────────────────────────
 
 const timeToMinutes = (t) => {
   if (!t) return 0;
@@ -76,22 +76,17 @@ const getDayKey = (date) => {
   return `${y}-${m}-${d}`;
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────
 
 /**
  * Calendario visual de disponibilidad tipo Google Calendar
- * Props:
- *   trabajadorId   — ID del trabajador (requerido)
- *   onDateSelect   — callback(Date) cuando se hace clic en un día
- *   onSlotsConfirm — callback(slots[]) cuando se confirma la selección de horas
- *                    slots = [{ dateStr: "YYYY-MM-DD", hour: "HH:00" }, ...]
  */
 const AvailabilityCalendar = ({
   trabajadorId,
   onDateSelect,
   onSlotsConfirm,
-  selectionMode = 'hora', // 'hora' | 'dia' | 'semana' | 'mes' | 'proyecto'
-  onDaysConfirm = null,   // callback({ fechaInicio, fechaFin, count }) para modos dia/semana/mes
+  selectionMode = 'hora',
+  onDaysConfirm = null,
 }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
@@ -100,15 +95,10 @@ const AvailabilityCalendar = ({
   const [reservas, setReservas] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
-  const [viewMode, setViewMode] = useState('month'); // 'month' o 'week'
 
-  // Selección de slots en la grilla de 3 días — Set de claves "YYYY-MM-DD HH:00"
   const [selectedSlots, setSelectedSlots] = useState(new Set());
-
-  // Selección de días en modos dia/semana/mes — Set de claves "YYYY-MM-DD"
   const [selectedDays, setSelectedDays] = useState(new Set());
 
-  // Días y meses en español
   const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const diasSemanaCompletos = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   const meses = [
@@ -189,7 +179,7 @@ const AvailabilityCalendar = ({
 
   const getDisponibilidadDia = (fecha) => {
     const diaSemana = fecha.getDay();
-    const fechaStr = fecha.toISOString().split('T')[0];
+    const fechaStr = getDayKey(fecha);
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
@@ -212,10 +202,11 @@ const AvailabilityCalendar = ({
            b.dia_semana === diaSemana
     );
 
+    // Comparar fechas como strings YYYY-MM-DD para evitar errores de timezone
     const reservasFecha = reservas.filter(r => {
-      const reservaInicio = new Date(r.fecha_inicio);
-      const reservaFin = new Date(r.fecha_fin);
-      return fecha >= reservaInicio && fecha <= reservaFin;
+      const inicioStr = new Date(r.fecha_inicio).toISOString().split('T')[0];
+      const finStr = new Date(r.fecha_fin).toISOString().split('T')[0];
+      return fechaStr >= inicioStr && fechaStr <= finStr;
     });
 
     let horarios = [];
@@ -237,18 +228,35 @@ const AvailabilityCalendar = ({
     reservasFecha.forEach(r => {
       const inicio = new Date(r.fecha_inicio);
       const fin = new Date(r.fecha_fin);
-      horarios.push({ inicio: inicio.toTimeString().slice(0, 5), fin: fin.toTimeString().slice(0, 5), tipo: 'reservado', estado: r.estado });
+      const inicioHora = inicio.toTimeString().slice(0, 5);
+      const finHora = fin.toTimeString().slice(0, 5);
+      // Si la reserva cubre todo el día o son fechas sin hora, usar horario completo
+      const inicioEfectivo = inicioHora === '00:00' ? '00:00' : inicioHora;
+      const finEfectivo = finHora === '00:00' ? '23:59' : finHora;
+      horarios.push({ inicio: inicioEfectivo, fin: finEfectivo, tipo: 'reservado', estado: r.estado });
     });
 
     horarios.sort((a, b) => a.inicio.localeCompare(b.inicio));
 
-    let tipo = 'sin-disponibilidad';
-    if (horarios.some(h => h.tipo === 'disponible')) tipo = 'disponible';
-    if (horarios.every(h => h.tipo === 'reservado' || h.tipo === 'bloqueado')) tipo = 'ocupado';
-
     if ((diaSemana === 0 || diaSemana === 6) && config && !config.acepta_fines_semana) {
-      tipo = 'sin-disponibilidad';
-      horarios = [];
+      return { tipo: 'sin-disponibilidad', horarios: [] };
+    }
+
+    // Determinar tipo del día basado en disponibilidad real por slot
+    let tipo = 'sin-disponibilidad';
+    const dispHorarios = horarios.filter(h => h.tipo === 'disponible');
+
+    if (dispHorarios.length > 0) {
+      const bounds = getJornadaBounds(dispHorarios);
+      if (bounds) {
+        const hours = getHourRange(bounds.inicio, bounds.fin);
+        const tieneSlotLibre = hours.some(h => getSlotStatus(horarios, h) === 'disponible');
+        tipo = tieneSlotLibre ? 'disponible' : 'ocupado';
+      } else {
+        tipo = 'disponible';
+      }
+    } else if (horarios.some(h => h.tipo === 'reservado' || h.tipo === 'bloqueado')) {
+      tipo = 'ocupado';
     }
 
     return { tipo, horarios };
@@ -276,7 +284,6 @@ const AvailabilityCalendar = ({
     setSelectedDays(new Set());
   };
 
-  // Toggle de un slot disponible en la grilla
   const toggleSlot = (slotKey) => {
     setSelectedSlots(prev => {
       const next = new Set(prev);
@@ -302,12 +309,10 @@ const AvailabilityCalendar = ({
     onSlotsConfirm?.(slots);
   };
 
-  // ── Selección por día / semana / mes ──────────────────────────────────────────
-
   const getWeekDays = (fecha) => {
     const day = fecha.getDay();
     const monday = new Date(fecha);
-    monday.setDate(fecha.getDate() - ((day + 6) % 7)); // retroceder al lunes
+    monday.setDate(fecha.getDate() - ((day + 6) % 7));
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(monday);
       d.setDate(monday.getDate() + i);
@@ -370,15 +375,6 @@ const AvailabilityCalendar = ({
     if (!dateStr) return '';
     const d = new Date(dateStr + 'T12:00:00');
     return `${diasSemana[d.getDay()]} ${d.getDate()} ${meses[d.getMonth()].slice(0, 3)}.`;
-  };
-
-  const formatHora = (hora) => {
-    if (!hora) return '';
-    const [h, m] = hora.split(':');
-    const hour = parseInt(h);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const hour12 = hour % 12 || 12;
-    return `${hour12}:${m} ${ampm}`;
   };
 
   if (loading) {
@@ -484,7 +480,8 @@ const AvailabilityCalendar = ({
                 {esMesActual && disponibilidad.tipo !== 'pasado' && disponibilidad.tipo !== 'sin-disponibilidad' && (
                   <div className="day-indicator">
                     {(() => {
-                      const bounds = getJornadaBounds(disponibilidad.horarios);
+                      const dispH = disponibilidad.horarios.filter(h => h.tipo === 'disponible');
+                      const bounds = getJornadaBounds(dispH.length > 0 ? dispH : disponibilidad.horarios);
                       if (!bounds) return null;
                       const hours = getHourRange(bounds.inicio, bounds.fin);
                       return (
@@ -616,7 +613,6 @@ const AvailabilityCalendar = ({
                   </div>
                 </div>
 
-                {/* Panel de confirmación de slots — solo si onSlotsConfirm está presente */}
                 {onSlotsConfirm && selectedSlots.size > 0 && (
                   <div className="tgrid-confirm-panel">
                     <div className="tgrid-confirm-header">
@@ -656,7 +652,6 @@ const AvailabilityCalendar = ({
             );
           })()}
 
-          {/* Footer de configuración */}
           <div className="detail-footer">
             {config.dias_anticipacion_minima > 0 && (
               <div className="config-note">
