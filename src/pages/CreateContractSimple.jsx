@@ -17,13 +17,15 @@ import {
   CalendarToday as CalendarIcon,
   DateRange as DateRangeIcon,
   ArrowBack as ArrowBackIcon,
+  ArrowForward as ArrowForwardIcon,
   CheckCircle as CheckCircleIcon,
   Info as InfoIcon,
   LocationOn as LocationIcon,
   EventAvailable as EventAvailableIcon,
+  Edit as EditIcon,
 } from '@mui/icons-material';
 
-// ── Helpers de formato de fecha ───────────────────────────────────────────────
+// ── Helpers de formato de fecha ──────────────────────────────────────────────────────────────────────────
 const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
                'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -34,7 +36,7 @@ const formatFecha = (dateStr) => {
   return `${DIAS[d.getDay()]}, ${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;
 };
 
-// ── Constantes fuera del componente (no se recrean en cada render) ─────────────
+// ── Constantes fuera del componente ────────────────────────────────────────────────────────────────
 const PAYMENT_MODES = [
   { value: 'hora',     label: 'Por Hora',     desc: 'Pagas por cada hora trabajada',       icon: <TimeIcon />,        unit: '/hora' },
   { value: 'dia',      label: 'Por Día',      desc: 'Precio fijo por día completo',         icon: <CalendarIcon />,    unit: '/día' },
@@ -43,14 +45,20 @@ const PAYMENT_MODES = [
   { value: 'proyecto', label: 'Precio Total', desc: 'Un precio fijo por todo el trabajo',  icon: <AssignmentIcon />,  unit: 'total' },
 ];
 
-// Tarifa del trabajador para una modalidad (null si no aplica)
+const STEPS = [
+  { id: 1, label: '¿Qué necesitas?', icon: <CategoryIcon /> },
+  { id: 2, label: '¿Cómo pagas?',    icon: <TimeIcon /> },
+  { id: 3, label: '¿Cuándo?',         icon: <CalendarIcon /> },
+  { id: 4, label: 'Confirmar',       icon: <CheckCircleIcon /> },
+];
+
 const getWorkerRate = (modalidad, tarifas) => {
   if (!tarifas) return null;
   const map = { hora: tarifas.tarifa_hora, dia: tarifas.tarifa_dia, semana: tarifas.tarifa_semana, mes: tarifas.tarifa_mes };
   return map[modalidad] || null;
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────
 
 const CreateContractSimple = () => {
   useTranslation();
@@ -60,15 +68,16 @@ const CreateContractSimple = () => {
 
   const workerId = searchParams.get('workerId');
 
+  const [currentStep, setCurrentStep] = useState(1);
   const [worker, setWorker] = useState(null);
   const [workerTarifas, setWorkerTarifas] = useState(null);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [stepError, setStepError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [createdContract, setCreatedContract] = useState(null);
-  // Slots de hora confirmados desde el calendario
   const [confirmedSlots, setConfirmedSlots] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -101,7 +110,6 @@ const CreateContractSimple = () => {
           if (workerResponse.status === 'success') {
             setWorker(workerResponse.data);
           }
-          // Cargar tarifas predefinidas (puede no existir → null)
           try {
             const tarifas = await serviceService.getTarifasByWorker(workerId);
             setWorkerTarifas(tarifas);
@@ -120,22 +128,54 @@ const CreateContractSimple = () => {
     loadData();
   }, [isAuthenticated, workerId, navigate]);
 
-  // ── Cálculo del total ─────────────────────────────────────────────────────
-  const calculateTotal = () => {
+  // ── Cálculo del total ────────────────────────────────────────────────────────────────────────
+const calculateTotal = () => {
     const monto = parseFloat(formData.monto) || 0;
     const cantidad = parseInt(formData.cantidad) || 1;
     return formData.modalidad === 'proyecto' ? monto : monto * cantidad;
   };
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
-  const handleChange = (e) => {
+  // ── Validaciones por paso ──────────────────────────────────────────────────────────────────
+const validateStep = (step) => {
+    if (step === 1) {
+      if (!formData.categoria_id) return 'Selecciona el tipo de servicio';
+      if (!formData.descripcion || formData.descripcion.trim().length < 10)
+        return 'Describe el trabajo con al menos 10 caracteres';
+    }
+    if (step === 2) {
+      if (!formData.monto || parseFloat(formData.monto) <= 0)
+        return 'El precio debe ser mayor a $0';
+    }
+    return null;
+  };
+
+  const goToStep = (step) => {
+    const err = validateStep(currentStep);
+    if (err && step > currentStep) {
+      setStepError(err);
+      return;
+    }
+    setStepError(null);
+    setCurrentStep(step);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const nextStep = () => goToStep(currentStep + 1);
+  const prevStep = () => {
+    setStepError(null);
+    setCurrentStep(s => Math.max(1, s - 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // ── Handlers ───────────────────────────────────────────────────────────────────────────
+const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleModalidadChange = (modalidad) => {
     setFormData(prev => ({ ...prev, modalidad, cantidad: '1' }));
-    setConfirmedSlots([]); // limpiar selección previa al cambiar modo
+    setConfirmedSlots([]);
   };
 
   const handleDateSelect = (date) => {
@@ -146,7 +186,6 @@ const CreateContractSimple = () => {
     setConfirmedSlots([]);
   };
 
-  // Recibe días/semanas/meses confirmados desde el calendario (modos dia/semana/mes)
   const handleDaysConfirm = ({ fechaInicio, fechaFin, count }) => {
     setConfirmedSlots([]);
     setFormData(prev => ({
@@ -157,14 +196,12 @@ const CreateContractSimple = () => {
     }));
   };
 
-  // Recibe los slots confirmados desde el calendario y extrae fecha_inicio
   const handleSlotsConfirm = (slots) => {
     setConfirmedSlots(slots);
     if (slots.length > 0) {
       setFormData(prev => ({
         ...prev,
         fecha_inicio: slots[0].dateStr,
-        // Si todos los slots son del mismo día, calcular cantidad automáticamente
         cantidad: prev.modalidad === 'hora'
           ? String(slots.filter(s => s.dateStr === slots[0].dateStr).length)
           : prev.cantidad,
@@ -172,34 +209,15 @@ const CreateContractSimple = () => {
     }
   };
 
-  // Seleccionar una tarifa predefinida del trabajador
   const handleSelectTarifa = (modalidad, monto) => {
     setFormData(prev => ({ ...prev, modalidad, monto: String(monto), cantidad: '1' }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setSubmitting(true);
     setError(null);
 
     try {
-      if (!formData.trabajador_id) {
-        setError('Debes seleccionar un trabajador');
-        return;
-      }
-      if (!formData.categoria_id) {
-        setError('Debes seleccionar un tipo de servicio');
-        return;
-      }
-      if (!formData.descripcion || formData.descripcion.trim().length < 10) {
-        setError('Describe el trabajo con al menos 10 caracteres');
-        return;
-      }
-      if (!formData.monto || parseFloat(formData.monto) <= 0) {
-        setError('El precio debe ser mayor a $0');
-        return;
-      }
-
       const currentUser = user || JSON.parse(localStorage.getItem('user'));
 
       const contractData = {
@@ -240,8 +258,8 @@ const CreateContractSimple = () => {
     }
   };
 
-  // ── Loading ───────────────────────────────────────────────────────────────
-  if (loading) {
+  // ── Loading ───────────────────────────────────────────────────────────────────────────
+if (loading) {
     return (
       <div className="create-contract-page">
         <div className="loading-container">
@@ -252,8 +270,8 @@ const CreateContractSimple = () => {
     );
   }
 
-  // ── Pantalla de éxito ─────────────────────────────────────────────────────
-  if (success && createdContract) {
+  // ── Pantalla de éxito ───────────────────────────────────────────────────────────────────────
+if (success && createdContract) {
     const total = calculateTotal();
     return (
       <div className="create-contract-page">
@@ -281,7 +299,6 @@ const CreateContractSimple = () => {
                 <span>{formatFecha(formData.fecha_inicio)}</span>
               </div>
             )}
-
           </div>
 
           <div className="success-actions">
@@ -297,13 +314,12 @@ const CreateContractSimple = () => {
     );
   }
 
-  // ── Render principal ──────────────────────────────────────────────────────
   const selectedMode = PAYMENT_MODES.find(m => m.value === formData.modalidad);
   const total = calculateTotal();
   const descLen = formData.descripcion.length;
-  const formIsReady = formData.categoria_id && descLen >= 10 && formData.monto && parseFloat(formData.monto) > 0;
 
-  return (
+  // ── Render principal ─────────────────────────────────────────────────────────────────────────
+return (
     <div className="create-contract-page">
       <div className="container">
         <button onClick={() => navigate(-1)} className="back-button">
@@ -311,20 +327,10 @@ const CreateContractSimple = () => {
           Volver
         </button>
 
-        <div className="page-header">
-          <AssignmentIcon className="header-icon" />
-          <div>
-            <h1>Contratar Trabajador</h1>
-            <p>Completa los datos y crea tu contrato en segundos</p>
-          </div>
-        </div>
-
-        {/* Tarjeta del trabajador */}
+        {/* Trabajador */}
         {worker && (
           <div className="worker-info-card">
-            <div className="worker-avatar">
-              <PersonIcon />
-            </div>
+            <div className="worker-avatar"><PersonIcon /></div>
             <div className="worker-details">
               <p className="worker-label">Vas a contratar a</p>
               <p className="worker-name">{worker.nombre} {worker.apellido}</p>
@@ -336,14 +342,34 @@ const CreateContractSimple = () => {
           </div>
         )}
 
-        {error && (
-          <div className="error-message">⚠️ {error}</div>
-        )}
+        {/* ─ Stepper ─ */}
+        <div className="stepper">
+          {STEPS.map((step, idx) => {
+            const isDone = currentStep > step.id;
+            const isActive = currentStep === step.id;
+            return (
+              <div
+                key={step.id}
+                className={`step-item ${isActive ? 'active' : ''} ${isDone ? 'done' : ''}`}
+                onClick={() => isDone && goToStep(step.id)}
+                style={{ cursor: isDone ? 'pointer' : 'default' }}
+              >
+                <div className="step-circle">
+                  {isDone ? <CheckCircleIcon sx={{ fontSize: 18 }} /> : <span>{step.id}</span>}
+                </div>
+                <span className="step-label">{step.label}</span>
+                {idx < STEPS.length - 1 && <div className="step-connector" />}
+              </div>
+            );
+          })}
+        </div>
 
-        <form onSubmit={handleSubmit} className="contract-form">
+        {error && <div className="error-message">⚠️ {error}</div>}
+        {stepError && <div className="error-message step-error">⚠️ {stepError}</div>}
 
-          {/* ── PASO 1: ¿Qué necesitas? ── */}
-          <div className="form-section">
+        {/* ══ PASO 1: ¿Qué necesitas? ══ */}
+        {currentStep === 1 && (
+          <div className="form-section step-content">
             <h3 className="section-title">
               <span className="step-badge">1</span>
               ¿Qué necesitas?
@@ -358,7 +384,6 @@ const CreateContractSimple = () => {
                 onChange={handleChange}
                 placeholder="Ej: Necesito que arreglen la fuga del lavamanos del baño principal..."
                 rows="4"
-                required
                 className="form-textarea"
               />
               <small className={`form-help ${descLen >= 10 ? 'help-ok' : ''}`}>
@@ -378,7 +403,6 @@ const CreateContractSimple = () => {
                 name="categoria_id"
                 value={formData.categoria_id}
                 onChange={handleChange}
-                required
                 className="form-select"
               >
                 <option value="">Selecciona una categoría</option>
@@ -387,18 +411,27 @@ const CreateContractSimple = () => {
                 ))}
               </select>
             </div>
-          </div>
 
-          {/* ── PASO 2 (COMBINADO): ¿Cuándo y cuánto pagas? ── */}
-          {/* MEJORA: Precio + fecha unificados — elegir modalidad ANTES del calendario
-              permite que el auto-cálculo de horas/días funcione correctamente */}
-          <div className="form-section">
+            <div className="step-nav">
+              <button type="button" onClick={() => navigate(-1)} className="btn btn-secondary">
+                Cancelar
+              </button>
+              <button type="button" onClick={nextStep} className="btn btn-primary">
+                Siguiente
+                <ArrowForwardIcon sx={{ fontSize: 18 }} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ══ PASO 2: ¿Cómo quieres pagar? ══ */}
+        {currentStep === 2 && (
+          <div className="form-section step-content">
             <h3 className="section-title">
               <span className="step-badge">2</span>
-              ¿Cuándo y cuánto pagas?
+              ¿Cómo quieres pagar?
             </h3>
 
-            {/* ── SUB: PRECIO — tarjetas unificadas con tarifa integrada ── */}
             <p className="subsection-label">Elige cómo quieres pagar</p>
 
             <div className="payment-modes">
@@ -449,7 +482,6 @@ const CreateContractSimple = () => {
                     placeholder="0.00"
                     step="0.01"
                     min="0.01"
-                    required
                     className="form-input"
                   />
                 </div>
@@ -496,12 +528,27 @@ const CreateContractSimple = () => {
               </div>
             )}
 
-            {/* ── DIVISOR ── */}
-            <div className="section-divider">
-              <span>📅 Ahora elige la fecha</span>
+            <div className="step-nav">
+              <button type="button" onClick={prevStep} className="btn btn-secondary">
+                <ArrowBackIcon sx={{ fontSize: 18 }} />
+                Atrás
+              </button>
+              <button type="button" onClick={nextStep} className="btn btn-primary">
+                Siguiente
+                <ArrowForwardIcon sx={{ fontSize: 18 }} />
+              </button>
             </div>
+          </div>
+        )}
 
-            {/* ── SUB: FECHA ── */}
+        {/* ══ PASO 3: ¿Cuándo? ══ */}
+        {currentStep === 3 && (
+          <div className="form-section step-content">
+            <h3 className="section-title">
+              <span className="step-badge">3</span>
+              ¿Cuándo lo necesitas?
+            </h3>
+
             <p className="section-help">
               {workerId
                 ? formData.modalidad === 'hora'
@@ -545,7 +592,6 @@ const CreateContractSimple = () => {
               </div>
             )}
 
-            {/* Horas confirmadas desde el calendario — solo para modo hora */}
             {formData.modalidad === 'hora' && confirmedSlots.length > 0 && (
               <div className="confirmed-slots-panel">
                 <div className="confirmed-slots-header">
@@ -577,19 +623,11 @@ const CreateContractSimple = () => {
               />
               <small className="form-help">Solo si el trabajo tiene una fecha de término definida</small>
             </div>
-          </div>
-
-          {/* ── PASO 3: Detalles opcionales ── */}
-          <div className="form-section optional-section">
-            <h3 className="section-title">
-              <span className="step-badge optional">3</span>
-              Detalles opcionales
-            </h3>
 
             <div className="form-group">
               <label htmlFor="direccion">
                 <LocationIcon sx={{ fontSize: 18 }} />
-                Dirección del trabajo
+                Dirección del trabajo <span className="optional-label">(opcional)</span>
               </label>
               <input
                 type="text"
@@ -603,7 +641,7 @@ const CreateContractSimple = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="notas">Notas para el trabajador</label>
+              <label htmlFor="notas">Notas para el trabajador <span className="optional-label">(opcional)</span></label>
               <textarea
                 id="notas"
                 name="notas"
@@ -614,86 +652,191 @@ const CreateContractSimple = () => {
                 className="form-textarea"
               />
             </div>
-          </div>
 
-          {/* ── Resumen antes del submit ── */}
-          {formIsReady && (
-            <div className="contract-summary">
-              <h4>Resumen del contrato</h4>
-              <div className="summary-grid">
-                {worker && (
-                  <div className="summary-item">
-                    <span className="s-label">Trabajador</span>
-                    <span className="s-value">{worker.nombre} {worker.apellido}</span>
-                  </div>
-                )}
-                <div className="summary-item">
-                  <span className="s-label">Servicio</span>
-                  <span className="s-value">
-                    {categories.find(c => String(c.id) === String(formData.categoria_id))?.nombre || '—'}
-                  </span>
+            <div className="step-nav">
+              <button type="button" onClick={prevStep} className="btn btn-secondary">
+                <ArrowBackIcon sx={{ fontSize: 18 }} />
+                Atrás
+              </button>
+              <button type="button" onClick={nextStep} className="btn btn-primary">
+                Ver resumen
+                <ArrowForwardIcon sx={{ fontSize: 18 }} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ══ PASO 4: Resumen y Confirmar ══ */}
+        {currentStep === 4 && (
+          <div className="form-section step-content">
+            <h3 className="section-title">
+              <span className="step-badge">4</span>
+              Revisa tu contrato
+            </h3>
+
+            <div className="contract-summary final-summary">
+              <div className="summary-section">
+                <div className="summary-section-title">
+                  <CategoryIcon sx={{ fontSize: 16 }} />
+                  Servicio
+                  <button
+                    type="button"
+                    className="edit-step-btn"
+                    onClick={() => setCurrentStep(1)}
+                    title="Editar"
+                  >
+                    <EditIcon sx={{ fontSize: 14 }} /> Editar
+                  </button>
                 </div>
-                <div className="summary-item">
-                  <span className="s-label">Modalidad</span>
-                  <span className="s-value">{selectedMode?.label}</span>
-                </div>
-                {formData.fecha_inicio && (
+                <div className="summary-grid">
+                  {worker && (
+                    <div className="summary-item">
+                      <span className="s-label">Trabajador</span>
+                      <span className="s-value">{worker.nombre} {worker.apellido}</span>
+                    </div>
+                  )}
                   <div className="summary-item">
-                    <span className="s-label">Fecha inicio</span>
-                    <span className="s-value">{formatFecha(formData.fecha_inicio)}</span>
+                    <span className="s-label">Tipo de servicio</span>
+                    <span className="s-value">
+                      {categories.find(c => String(c.id) === String(formData.categoria_id))?.nombre || '—'}
+                    </span>
                   </div>
-                )}
-                <div className="summary-item summary-total-row">
-                  <span className="s-label">Total</span>
-                  <span className="s-value s-total">${total.toFixed(2)}</span>
+                  <div className="summary-item summary-desc">
+                    <span className="s-label">Descripción</span>
+                    <span className="s-value">{formData.descripcion}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="summary-section">
+                <div className="summary-section-title">
+                  <TimeIcon sx={{ fontSize: 16 }} />
+                  Precio
+                  <button
+                    type="button"
+                    className="edit-step-btn"
+                    onClick={() => setCurrentStep(2)}
+                    title="Editar"
+                  >
+                    <EditIcon sx={{ fontSize: 14 }} /> Editar
+                  </button>
+                </div>
+                <div className="summary-grid">
+                  <div className="summary-item">
+                    <span className="s-label">Modalidad</span>
+                    <span className="s-value">{selectedMode?.label}</span>
+                  </div>
+                  <div className="summary-item">
+                    <span className="s-label">Precio unitario</span>
+                    <span className="s-value">${parseFloat(formData.monto || 0).toFixed(2)}{selectedMode?.value !== 'proyecto' ? selectedMode?.unit : ''}</span>
+                  </div>
+                  {formData.modalidad !== 'proyecto' && (
+                    <div className="summary-item">
+                      <span className="s-label">Cantidad</span>
+                      <span className="s-value">{formData.cantidad} {formData.modalidad === 'hora' ? 'horas' : formData.modalidad === 'dia' ? 'días' : formData.modalidad === 'semana' ? 'semanas' : 'meses'}</span>
+                    </div>
+                  )}
+                  <div className="summary-item summary-total-row">
+                    <span className="s-label">Total</span>
+                    <span className="s-value s-total">${total.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="summary-section">
+                <div className="summary-section-title">
+                  <CalendarIcon sx={{ fontSize: 16 }} />
+                  Fechas y detalles
+                  <button
+                    type="button"
+                    className="edit-step-btn"
+                    onClick={() => setCurrentStep(3)}
+                    title="Editar"
+                  >
+                    <EditIcon sx={{ fontSize: 14 }} /> Editar
+                  </button>
+                </div>
+                <div className="summary-grid">
+                  {formData.fecha_inicio ? (
+                    <div className="summary-item">
+                      <span className="s-label">Fecha de inicio</span>
+                      <span className="s-value">{formatFecha(formData.fecha_inicio)}</span>
+                    </div>
+                  ) : (
+                    <div className="summary-item">
+                      <span className="s-label">Fecha de inicio</span>
+                      <span className="s-value s-empty">Por coordinar con el trabajador</span>
+                    </div>
+                  )}
+                  {formData.fecha_fin && (
+                    <div className="summary-item">
+                      <span className="s-label">Fecha de fin</span>
+                      <span className="s-value">{formatFecha(formData.fecha_fin)}</span>
+                    </div>
+                  )}
+                  {confirmedSlots.length > 0 && (
+                    <div className="summary-item">
+                      <span className="s-label">Horas reservadas</span>
+                      <div className="confirmed-slots-list">
+                        {confirmedSlots.map((s, i) => (
+                          <span key={i} className="confirmed-slot-chip">
+                            {DIAS[new Date(s.dateStr + 'T12:00:00').getDay()].slice(0, 3)} {new Date(s.dateStr + 'T12:00:00').getDate()} · {s.hour}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {formData.direccion && (
+                    <div className="summary-item">
+                      <span className="s-label">Dirección</span>
+                      <span className="s-value">{formData.direccion}</span>
+                    </div>
+                  )}
+                  {formData.notas && (
+                    <div className="summary-item">
+                      <span className="s-label">Notas</span>
+                      <span className="s-value">{formData.notas}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          )}
 
-          {/* ── Botones ── */}
-          <div className="form-actions">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="btn btn-secondary"
-              disabled={submitting}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={submitting}
-            >
-              {submitting ? (
-                <>
-                  <div className="btn-spinner" />
-                  Creando contrato...
-                </>
-              ) : (
-                <>
-                  <CheckCircleIcon />
-                  Crear Contrato
-                </>
-              )}
-            </button>
-          </div>
-        </form>
+            {error && <div className="error-message">⚠️ {error}</div>}
 
-        {/* Info box */}
-        <div className="info-box">
-          <InfoIcon />
-          <div>
-            <p><strong>¿Cómo funciona?</strong></p>
-            <ul>
-              <li>✅ El contrato se crea al instante</li>
-              <li>✅ El trabajador recibirá la solicitud y podrá aceptarla</li>
-              <li>✅ El pago se coordina directamente con el trabajador</li>
-              <li>✅ Puedes gestionar todo desde tu Dashboard</li>
-            </ul>
+            <div className="step-nav final-nav">
+              <button type="button" onClick={prevStep} className="btn btn-secondary" disabled={submitting}>
+                <ArrowBackIcon sx={{ fontSize: 18 }} />
+                Atrás
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="btn btn-primary btn-large"
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <><div className="btn-spinner" /> Creando contrato...</>
+                ) : (
+                  <><CheckCircleIcon /> Crear Contrato</>
+                )}
+              </button>
+            </div>
+
+            <div className="info-box">
+              <InfoIcon />
+              <div>
+                <p><strong>¿Cómo funciona?</strong></p>
+                <ul>
+                  <li>✅ El contrato se crea al instante</li>
+                  <li>✅ El trabajador recibirá la solicitud y podrá aceptarla</li>
+                  <li>✅ El pago se coordina directamente con el trabajador</li>
+                  <li>✅ Puedes gestionar todo desde tu Dashboard</li>
+                </ul>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
