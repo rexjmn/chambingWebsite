@@ -147,21 +147,23 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
 
   .verified-badge {
     position: absolute;
-    bottom: 8px;
-    right: 8px;
-    background: $white;
-    width: 40px;
-    height: 40px;
+    bottom: 6px;
+    right: 6px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    width: clamp(28px, 5vw, 40px);
+    height: clamp(28px, 5vw, 40px);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border: 2px solid #ffffff;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    z-index: 3;
 
     svg {
       color: #10b981;
-      width: 24px;
-      height: 24px;
+      width: clamp(16px, 2.8vw, 24px);
+      height: clamp(16px, 2.8vw, 24px);
     }
   }
 }
@@ -856,6 +858,12 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
     width: 120px;
     height: 120px;
     margin-top: -60px;
+
+    .verified-badge {
+      bottom: 4px;
+      right: 4px;
+      border-width: 1.5px;
+    }
   }
 
   .basic-info .name {
@@ -880,6 +888,16 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
   .profile-photo {
     width: 100px;
     height: 100px;
+
+    .verified-badge {
+      width: 28px;
+      height: 28px;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
   }
 
   .basic-info .name {
