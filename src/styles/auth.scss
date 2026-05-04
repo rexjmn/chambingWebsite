@@ -351,6 +351,15 @@ $auth-shadow-input: 0 0 0 4px rgba(37, 64, 255, 0.08);
       padding-top: 0.875rem;
     }
 
+    // Icono alineado arriba con la primera línea del textarea (evita “casita” centrada en vertical)
+    .input-wrapper:has(.form-textarea) {
+      align-items: flex-start;
+
+      .input-icon {
+        top: 0.9rem;
+      }
+    }
+
     .form-helper {
       font-size: 0.8125rem;
       color: $auth-text-muted;
@@ -1131,6 +1140,27 @@ $auth-shadow-input: 0 0 0 4px rgba(37, 64, 255, 0.08);
     @media (max-width: 540px) { grid-template-columns: 1fr; }
   }
 
+  .phone-field-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+
+    @media (max-width: 540px) {
+      flex-direction: column;
+    }
+
+    .form-select--phone-country {
+      flex: 0 0 min(11.5rem, 42vw);
+      min-width: 9.75rem;
+      padding-left: 0.875rem !important;
+    }
+
+    .input-wrapper--phone-national {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
   // ── Form groups + labels ───────────────────────────────────────────────
   .form-group {
     margin-bottom: 1rem;
@@ -1260,6 +1290,14 @@ $auth-shadow-input: 0 0 0 4px rgba(37, 64, 255, 0.08);
     min-height: 72px;
     padding-top: 0.8125rem !important;
     line-height: 1.6;
+  }
+
+  .input-wrapper:has(.form-textarea) {
+    align-items: flex-start;
+
+    .input-icon {
+      top: 0.8125rem;
+    }
   }
 
   // Helper text & errors

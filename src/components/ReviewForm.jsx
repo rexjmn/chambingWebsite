@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Star, StarOutline, Send, X } from '@mui/icons-material';
+import Star from '@mui/icons-material/Star';
+import StarOutline from '@mui/icons-material/StarOutline';
+import Send from '@mui/icons-material/Send';
+import X from '@mui/icons-material/X';
 import { reviewService } from '../services/reviewService';
 import { logger } from '../utils/logger';
 import '../styles/components/ReviewForm.scss';

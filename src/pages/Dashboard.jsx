@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslations } from '../hooks/useTranslations';
+import { useAdmin } from '../hooks/useAdmin';
 import { useAuth } from '../context/AuthContext';
 import { serviceService } from '../services/serviceService';
 import { contractService } from '../services/contractService';
@@ -71,6 +72,12 @@ const EyeIcon = () => (
 const CalendarIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  </svg>
+);
+
+const ShieldIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
   </svg>
 );
 
@@ -180,7 +187,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { t, translateService, translateUserType } = useTranslations();
+  const { t, nav, translateService, translateUserType } = useTranslations();
+  const { isAdmin } = useAdmin();
   const [categories, setCategories] = useState([]);
   const [verifiedWorkers, setVerifiedWorkers] = useState([]);
   const [contracts, setContracts] = useState([]);
@@ -442,6 +450,17 @@ const Dashboard = () => {
                   <EyeIcon />
                   <span>Perfil</span>
                 </button>
+
+                {isAdmin && (
+                  <button
+                    className="dashboard__action-btn dashboard__action-btn--admin"
+                    onClick={() => navigate('/admin')}
+                    type="button"
+                  >
+                    <ShieldIcon />
+                    <span>{nav.adminPanel}</span>
+                  </button>
+                )}
 
                 {user?.tipo_usuario === 'trabajador' && (
                   <button

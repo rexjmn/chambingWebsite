@@ -8,28 +8,25 @@ import { serviceService } from '../services/serviceService';
 import { logger } from '../utils/logger';
 import AvailabilityCalendar from '../components/calendar/AvailabilityCalendar';
 import '../styles/Public-profile.scss';
-// Iconos de Material UI
-import {
-  VerifiedUser as VerifiedUserIcon,
-  Work as WorkIcon,
-  Person as PersonIcon,
-  Edit as EditIcon,
-  CheckCircle as CheckCircleIcon,
-  HourglassEmpty as HourglassEmptyIcon,
-  Info as InfoIcon,
-  LocationOn as LocationOnIcon,
-  Star as StarIcon,
-  StarHalf as StarHalfIcon,
-  StarOutline as StarOutlineIcon,
-  WorkOutline as WorkOutlineIcon,
-  CalendarToday as CalendarTodayIcon,
-  DateRange as DateRangeIcon,
-  AccessTime as AccessTimeIcon,
-  AccountCircle as AccountCircleIcon,
-  Close as CloseIcon,
-  FormatQuote as FormatQuoteIcon,
-  Assignment as AssignmentIcon,
-} from '@mui/icons-material';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import WorkIcon from '@mui/icons-material/Work';
+import PersonIcon from '@mui/icons-material/Person';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import InfoIcon from '@mui/icons-material/Info';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import StarIcon from '@mui/icons-material/Star';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
+import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import DateRangeIcon from '@mui/icons-material/DateRange';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import CloseIcon from '@mui/icons-material/Close';
+import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 const PublicProfile = () => {
   const { t, i18n } = useTranslation();

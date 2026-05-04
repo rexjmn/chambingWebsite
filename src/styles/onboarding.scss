@@ -513,6 +513,27 @@
   cursor: pointer;
 }
 
+.ob-phone-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+
+  @media (max-width: 400px) {
+    flex-direction: column;
+  }
+
+  .ob-select--phone-country {
+    flex: 0 0 min(11.5rem, 42vw);
+    min-width: 9.5rem;
+    padding-left: 0.875rem;
+  }
+
+  .ob-input-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
 .ob-char-count {
   font-size: 0.75rem;
   color: var(--color-gray-400);

@@ -14,14 +14,12 @@ import {
   Slider,
   Stack,
 } from '@mui/material';
-import {
-  PhotoCamera,
-  AccountCircle,
-  Close,
-  ZoomIn,
-  ZoomOut,
-  RotateLeft,
-} from '@mui/icons-material';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Close from '@mui/icons-material/Close';
+import ZoomIn from '@mui/icons-material/ZoomIn';
+import ZoomOut from '@mui/icons-material/ZoomOut';
+import RotateLeft from '@mui/icons-material/RotateLeft';
 import Cropper from 'react-easy-crop';
 import { useAuth } from '../context/AuthContext';
 import { logger } from '../utils/logger';

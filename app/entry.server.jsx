@@ -18,11 +18,16 @@ if (typeof globalThis.sessionStorage === 'undefined') globalThis.sessionStorage 
 
 if (typeof globalThis.window === 'undefined') {
   globalThis.window = {
-    location: { search: '', href: '/', pathname: '/', hash: '', origin: '' },
+    location: {
+      search: '',
+      href: 'http://localhost:5173/',
+      pathname: '/',
+      hash: '',
+      origin: 'http://localhost:5173',
+    },
     navigator: { language: 'es', languages: ['es', 'en'], userAgent: '' },
     localStorage: _storage,
     sessionStorage: _storage,
-    document: { cookie: '' },
     history: { replaceState: () => {}, pushState: () => {}, state: null },
     screen: {},
     addEventListener: () => {},
@@ -35,10 +40,6 @@ if (typeof globalThis.window === 'undefined') {
 
 if (typeof globalThis.navigator === 'undefined') {
   globalThis.navigator = { language: 'es', languages: ['es', 'en'], userAgent: '' };
-}
-
-if (typeof globalThis.document === 'undefined') {
-  globalThis.document = { cookie: '', querySelector: () => null, getElementsByTagName: () => [] };
 }
 
 export default async function handleRequest(

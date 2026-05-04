@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useTranslation } from 'react-i18next';
-import './workerCalendar.scss';
+import { useAuth } from '../../context/AuthContext';
+import { contractService } from '../../services/contractService';
+import { publicProfileService } from '../../services/publicProfileService';
 import {
-  Event as EventIcon,
-  AccessTime as TimeIcon,
-  CheckCircle as AvailableIcon,
-  Cancel as UnavailableIcon,
-} from '@mui/icons-material';
+  normalizeAvailabilityReservasPayload,
+  contractsToReservasFromWorkerContracts,
+  mergeAvailabilityReservas,
+} from '../../utils/availabilityReservas';
+import './workerCalendar.scss';
+import EventIcon from '@mui/icons-material/Event';
+import TimeIcon from '@mui/icons-material/AccessTime';
+import AvailableIcon from '@mui/icons-material/CheckCircle';
+import UnavailableIcon from '@mui/icons-material/Cancel';
 
 /**
  * Componente para mostrar la disponibilidad de un trabajador en su perfil público
@@ -19,6 +25,7 @@ import {
  */
 const WorkerCalendar = ({ trabajadorId, showReservas = false }) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [config, setConfig] = useState(null);
   const [bloques, setBloques] = useState([]);
@@ -31,7 +38,7 @@ const WorkerCalendar = ({ trabajadorId, showReservas = false }) => {
     } else {
       setLoading(false);
     }
-  }, [trabajadorId]);
+  }, [trabajadorId, user?.id]);
 
   const cargarDisponibilidad = async () => {
     // ✅ Validación adicional
@@ -59,9 +66,39 @@ const WorkerCalendar = ({ trabajadorId, showReservas = false }) => {
 
         const reservasRes = await api.get(
           `/availability/reservas/${trabajadorId}`,
-          { params: { fecha_inicio: hoy.toISOString(), fecha_fin: treintaDias.toISOString(), estado: 'activo' } }
+          { params: { fecha_inicio: hoy.toISOString(), fecha_fin: treintaDias.toISOString() } }
         );
-        setReservas(reservasRes.data);
+        let list = normalizeAvailabilityReservasPayload(reservasRes.data);
+
+        if (user && String(user.id) === String(trabajadorId)) {
+          try {
+            const cp = await contractService.getMyContracts('trabajador');
+            const cl =
+              cp?.status === 'success' ? (cp.data || []) : Array.isArray(cp) ? cp : [];
+            const derived = contractsToReservasFromWorkerContracts(
+              cl,
+              trabajadorId,
+              hoy,
+              treintaDias
+            );
+            list = mergeAvailabilityReservas(list, derived);
+          } catch (e) {
+            console.warn('WorkerCalendar: contratos para agenda:', e.message);
+          }
+        } else {
+          try {
+            const raw = await publicProfileService.getPublicWorkerContractAgenda(trabajadorId, {
+              fecha_inicio: hoy.toISOString(),
+              fecha_fin: treintaDias.toISOString(),
+            });
+            const pub = normalizeAvailabilityReservasPayload(raw);
+            list = mergeAvailabilityReservas(list, pub);
+          } catch (e) {
+            console.warn('WorkerCalendar: agenda pública:', e.message);
+          }
+        }
+
+        setReservas(list);
       }
     } catch (error) {
       console.error('Error cargando disponibilidad:', error);

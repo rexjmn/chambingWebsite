@@ -7,14 +7,16 @@ import { logger } from '../../utils/logger';
 import LanguageSelector from './LanguageSelector';
 import {
   Menu, X, LayoutDashboard, Briefcase, Home,
-  User, LogOut, ChevronDown, Bell,
+  User, LogOut, ChevronDown, Bell, Shield,
 } from 'lucide-react';
+import { useAdmin } from '../../hooks/useAdmin';
 import '../../styles/navbar.scss';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const { nav } = useTranslations();
+  const { isAdmin } = useAdmin();
   const location = useLocation();
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -348,6 +350,17 @@ const Navbar = () => {
                         <User size={16} />
                         {nav.profile}
                       </Link>
+                      {isAdmin && (
+                        <Link
+                          to="/admin"
+                          className="navbar__dropdown-item"
+                          onClick={() => setProfileOpen(false)}
+                          role="menuitem"
+                        >
+                          <Shield size={16} />
+                          {nav.adminPanel}
+                        </Link>
+                      )}
                       <button
                         className="navbar__dropdown-item navbar__dropdown-item--danger"
                         onClick={handleLogout}
@@ -467,6 +480,16 @@ const Navbar = () => {
               >
                 <User size={18} />
                 {nav.profile}
+              </Link>
+            )}
+            {isAuthenticated && isAdmin && (
+              <Link
+                to="/admin"
+                onClick={closeMobile}
+                className="navbar__link navbar__link--mobile"
+              >
+                <Shield size={18} />
+                {nav.adminPanel}
               </Link>
             )}
           </nav>

@@ -9,21 +9,19 @@ import { serviceService } from '../services/serviceService';
 import { logger } from '../utils/logger';
 import AvailabilityCalendar from '../components/calendar/AvailabilityCalendar';
 import '../styles/createContract.scss';
-import {
-  Assignment as AssignmentIcon,
-  Person as PersonIcon,
-  Category as CategoryIcon,
-  AccessTime as TimeIcon,
-  CalendarToday as CalendarIcon,
-  DateRange as DateRangeIcon,
-  ArrowBack as ArrowBackIcon,
-  ArrowForward as ArrowForwardIcon,
-  CheckCircle as CheckCircleIcon,
-  Info as InfoIcon,
-  LocationOn as LocationIcon,
-  EventAvailable as EventAvailableIcon,
-  Edit as EditIcon,
-} from '@mui/icons-material';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import PersonIcon from '@mui/icons-material/Person';
+import CategoryIcon from '@mui/icons-material/Category';
+import TimeIcon from '@mui/icons-material/AccessTime';
+import CalendarIcon from '@mui/icons-material/CalendarToday';
+import DateRangeIcon from '@mui/icons-material/DateRange';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import InfoIcon from '@mui/icons-material/Info';
+import LocationIcon from '@mui/icons-material/LocationOn';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import EditIcon from '@mui/icons-material/Edit';
 
 // ── Helpers de formato de fecha ──────────────────────────────────────────────────────────────────────────
 const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];

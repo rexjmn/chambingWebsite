@@ -34,14 +34,22 @@ export default defineConfig({
     // Source maps solo en dev
     sourcemap: false,
   },
-  // ✅ OPTIMIZAR DEPENDENCIAS
+  // No incluir @mui/icons-material aquí: el barrel abre miles de archivos (EMFILE en Windows/SSR).
   optimizeDeps: {
     include: [
       'react',
       'react-dom',
       'react-router-dom',
       '@mui/material',
-      '@mui/icons-material'
-    ]
-  }
+    ],
+  },
+  // Empaquetar MUI en el bundle SSR reduce handles de archivos vs resolver cada icono suelto.
+  ssr: {
+    noExternal: [
+      '@mui/material',
+      '@mui/system',
+      '@emotion/react',
+      '@emotion/styled',
+    ],
+  },
 })

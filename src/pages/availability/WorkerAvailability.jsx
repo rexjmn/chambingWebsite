@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import './workerAvailability.scss';
+import { contractService } from '../../services/contractService';
 import {
-  AccessTime as TimeIcon,
-  Event as EventIcon,
-  Block as BlockIcon,
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Save as SaveIcon,
-  Cancel as CancelIcon,
-} from '@mui/icons-material';
+  normalizeAvailabilityReservasPayload,
+  contractsToReservasFromWorkerContracts,
+  mergeAvailabilityReservas,
+} from '../../utils/availabilityReservas';
+import './workerAvailability.scss';
+import TimeIcon from '@mui/icons-material/AccessTime';
+import EventIcon from '@mui/icons-material/Event';
+import BlockIcon from '@mui/icons-material/Block';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 
 /**
  * Componente de gestión de disponibilidad para trabajadores
@@ -26,9 +29,7 @@ import {
  * - Ver su calendario de reservas
  */
 const WorkerAvailability = () => {
-  const { t } = useTranslation();
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('configuracion'); // configuracion, bloques, reservas
@@ -45,7 +46,6 @@ const WorkerAvailability = () => {
 
   // Estado de bloques de disponibilidad
   const [bloques, setBloques] = useState([]);
-  const [editingBloque, setEditingBloque] = useState(null);
   const [showBloqueForm, setShowBloqueForm] = useState(false);
   const [nuevoBloque, setNuevoBloque] = useState({
     tipo_disponibilidad: 'recurrente',
@@ -127,7 +127,27 @@ const WorkerAvailability = () => {
             }
           }
         );
-        setReservas(reservasRes.data);
+        const apiReservas = normalizeAvailabilityReservasPayload(reservasRes.data);
+        let merged = apiReservas;
+        try {
+          const contractsPayload = await contractService.getMyContracts('trabajador');
+          const contractsList =
+            contractsPayload?.status === 'success'
+              ? (contractsPayload.data || [])
+              : Array.isArray(contractsPayload)
+                ? contractsPayload
+                : [];
+          const fromContracts = contractsToReservasFromWorkerContracts(
+            contractsList,
+            trabajadorId,
+            hoy,
+            treintaDias
+          );
+          merged = mergeAvailabilityReservas(apiReservas, fromContracts);
+        } catch (contractErr) {
+          console.warn('WorkerAvailability: no se pudieron fusionar contratos en agenda:', contractErr.message);
+        }
+        setReservas(merged);
       } catch (reservasError) {
         // Si falla solo reservas, no bloquear toda la carga
         console.warn('No se pudieron cargar las reservas:', reservasError.response?.data || reservasError.message);
@@ -233,7 +253,6 @@ const WorkerAvailability = () => {
         datos
       );
 
-      setEditingBloque(null);
       await cargarDatos();
       alert('Bloque actualizado exitosamente');
     } catch (error) {
@@ -309,106 +328,171 @@ const WorkerAvailability = () => {
 
   return (
     <div className="worker-availability">
-      <div className="availability-header">
-        <h1>
-          <EventIcon /> Gestión de Disponibilidad
-        </h1>
-        <p className="subtitle">
-          Configura tu horario y disponibilidad para recibir más oportunidades de trabajo
-        </p>
-      </div>
+      <header className="availability-hero">
+        <div className="availability-hero__mark" aria-hidden>
+          <EventIcon />
+        </div>
+        <div className="availability-hero__copy">
+          <p className="availability-hero__eyebrow">Tu agenda</p>
+          <h1 className="availability-hero__title">Disponibilidad</h1>
+          <p className="availability-hero__subtitle">
+            Define cuánto puedes trabajar y cuándo los clientes pueden reservarte. Los cambios se aplican a nuevas solicitudes.
+          </p>
+        </div>
+      </header>
 
-      {/* Tabs de navegación */}
-      <div className="availability-tabs">
-        <button
-          className={`tab ${activeTab === 'configuracion' ? 'active' : ''}`}
-          onClick={() => setActiveTab('configuracion')}
-        >
-          Configuración General
-        </button>
-        <button
-          className={`tab ${activeTab === 'bloques' ? 'active' : ''}`}
-          onClick={() => setActiveTab('bloques')}
-        >
-          Horarios Disponibles ({bloques.length})
-        </button>
-        <button
-          className={`tab ${activeTab === 'reservas' ? 'active' : ''}`}
-          onClick={() => setActiveTab('reservas')}
-        >
-          Calendario y Reservas ({reservas.length})
-        </button>
-      </div>
+      <nav className="availability-tabs" aria-label="Secciones de disponibilidad">
+        <div className="availability-tabs__track" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'configuracion'}
+            className={`availability-tabs__btn ${activeTab === 'configuracion' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('configuracion')}
+          >
+            <TuneOutlinedIcon className="availability-tabs__icon" fontSize="small" />
+            <span className="availability-tabs__label">Reglas generales</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'bloques'}
+            className={`availability-tabs__btn ${activeTab === 'bloques' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('bloques')}
+          >
+            <TimeIcon className="availability-tabs__icon" fontSize="small" />
+            <span className="availability-tabs__label">Horarios</span>
+            <span className="availability-tabs__badge">{bloques.length}</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'reservas'}
+            className={`availability-tabs__btn ${activeTab === 'reservas' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('reservas')}
+          >
+            <CalendarMonthOutlinedIcon className="availability-tabs__icon" fontSize="small" />
+            <span className="availability-tabs__label">Reservas</span>
+            <span className="availability-tabs__badge availability-tabs__badge--muted">{reservas.length}</span>
+          </button>
+        </div>
+      </nav>
 
       {/* PESTAÑA: CONFIGURACIÓN */}
       {activeTab === 'configuracion' && (
-        <div className="config-section">
-          <h2>Configuración General</h2>
+        <div className="config-panel">
+          <div className="config-grid">
+            <section className="config-card" aria-labelledby="config-card-plan">
+              <header className="config-card__head">
+                <h2 id="config-card-plan" className="config-card__title">Carga y aviso previo</h2>
+                <p className="config-card__hint">
+                  Ajusta tu tope semanal y el tiempo mínimo que necesitas antes de empezar un contrato.
+                </p>
+              </header>
+              <div className="config-card__body config-card__body--fields">
+                <div className="field-block">
+                  <label className="field-block__label" htmlFor="wa-horas-max">
+                    Horas máximas por semana
+                  </label>
+                  <input
+                    id="wa-horas-max"
+                    className="field-block__input"
+                    type="number"
+                    min="1"
+                    max="168"
+                    value={config.horas_semanales_maximas}
+                    onChange={(e) =>
+                      setConfig({ ...config, horas_semanales_maximas: parseInt(e.target.value, 10) })
+                    }
+                  />
+                  <p className="field-block__help">Incluye todas las modalidades (por hora, día, proyecto, etc.).</p>
+                </div>
+                <div className="field-block">
+                  <label className="field-block__label" htmlFor="wa-dias-anticipacion">
+                    Días de anticipación mínima
+                  </label>
+                  <input
+                    id="wa-dias-anticipacion"
+                    className="field-block__input"
+                    type="number"
+                    min="0"
+                    max="365"
+                    value={config.dias_anticipacion_minima}
+                    onChange={(e) =>
+                      setConfig({ ...config, dias_anticipacion_minima: parseInt(e.target.value, 10) })
+                    }
+                  />
+                  <p className="field-block__help">
+                    <strong>0</strong> permite que te contraten con poco margen; sube el valor si necesitas más tiempo para prepararte.
+                  </p>
+                </div>
+              </div>
+            </section>
 
-          <div className="config-form">
-            <div className="form-group">
-              <label>Horas semanales máximas</label>
-              <input
-                type="number"
-                min="1"
-                max="168"
-                value={config.horas_semanales_maximas}
-                onChange={(e) => setConfig({ ...config, horas_semanales_maximas: parseInt(e.target.value) })}
-              />
-              <small>Máximo de horas que puedes trabajar por semana</small>
-            </div>
+            <section className="config-card" aria-labelledby="config-card-prefs">
+              <header className="config-card__head">
+                <h2 id="config-card-prefs" className="config-card__title">Preferencias y visibilidad</h2>
+                <p className="config-card__hint">
+                  Indica cómo quieres trabajar y si tu perfil debe mostrarse como disponible.
+                </p>
+              </header>
+              <div className="config-card__body">
+                <ul className="toggle-list">
+                  <li>
+                    <label className="toggle-row">
+                      <input
+                        type="checkbox"
+                        className="toggle-row__input"
+                        checked={config.acepta_mismo_dia}
+                        onChange={(e) => setConfig({ ...config, acepta_mismo_dia: e.target.checked })}
+                      />
+                      <span className="toggle-row__text">
+                        <span className="toggle-row__title">Contratos el mismo día</span>
+                        <span className="toggle-row__desc">Permite reservas con inicio en las próximas 24 h si encaja con tu anticipación mínima.</span>
+                      </span>
+                    </label>
+                  </li>
+                  <li>
+                    <label className="toggle-row">
+                      <input
+                        type="checkbox"
+                        className="toggle-row__input"
+                        checked={config.acepta_fines_semana}
+                        onChange={(e) => setConfig({ ...config, acepta_fines_semana: e.target.checked })}
+                      />
+                      <span className="toggle-row__text">
+                        <span className="toggle-row__title">Fines de semana</span>
+                        <span className="toggle-row__desc">Sábados y domingos cuentan como días laborables para nuevas reservas.</span>
+                      </span>
+                    </label>
+                  </li>
+                  <li>
+                    <label className="toggle-row toggle-row--highlight">
+                      <input
+                        type="checkbox"
+                        className="toggle-row__input"
+                        checked={config.activo}
+                        onChange={(e) => setConfig({ ...config, activo: e.target.checked })}
+                      />
+                      <span className="toggle-row__text">
+                        <span className="toggle-row__title">Disponibilidad visible</span>
+                        <span className="toggle-row__desc">Si lo desactivas, los clientes no verán tus huecos aunque tengas horarios creados.</span>
+                      </span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </section>
+          </div>
 
-            <div className="form-group">
-              <label>Días de anticipación mínima</label>
-              <input
-                type="number"
-                min="0"
-                max="365"
-                value={config.dias_anticipacion_minima}
-                onChange={(e) => setConfig({ ...config, dias_anticipacion_minima: parseInt(e.target.value) })}
-              />
-              <small>0 = acepta contratos para el mismo día</small>
-            </div>
-
-            <div className="form-group checkbox-group">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={config.acepta_mismo_dia}
-                  onChange={(e) => setConfig({ ...config, acepta_mismo_dia: e.target.checked })}
-                />
-                Acepto contratos para el mismo día
-              </label>
-            </div>
-
-            <div className="form-group checkbox-group">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={config.acepta_fines_semana}
-                  onChange={(e) => setConfig({ ...config, acepta_fines_semana: e.target.checked })}
-                />
-                Trabajo fines de semana (Sábados y Domingos)
-              </label>
-            </div>
-
-            <div className="form-group checkbox-group">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={config.activo}
-                  onChange={(e) => setConfig({ ...config, activo: e.target.checked })}
-                />
-                Mi disponibilidad está activa (visible para clientes)
-              </label>
-            </div>
-
+          <div className="config-actions">
             <button
+              type="button"
               className="btn-primary"
               onClick={guardarConfiguracion}
               disabled={saving}
             >
-              <SaveIcon /> {saving ? 'Guardando...' : 'Guardar Configuración'}
+              <SaveIcon fontSize="small" /> {saving ? 'Guardando…' : 'Guardar cambios'}
             </button>
           </div>
         </div>
@@ -635,9 +719,12 @@ const WorkerAvailability = () => {
           ) : (
             <div className="reservas-list">
               {reservas.map((reserva) => (
-                <div key={reserva.id} className={`reserva-card tipo-${reserva.tipo_reserva} estado-${reserva.estado}`}>
+                <div
+                  key={reserva.id ?? `reserva-${reserva.contrato?.id}-${reserva.fecha_inicio}`}
+                  className={`reserva-card tipo-${reserva.tipo_reserva || 'contrato'} estado-${reserva.estado || 'sin-estado'}`}
+                >
                   <div className="reserva-header">
-                    <span className="tipo-badge">{tipoReservaLabels[reserva.tipo_reserva]}</span>
+                    <span className="tipo-badge">{tipoReservaLabels[reserva.tipo_reserva] || tipoReservaLabels.contrato}</span>
                     <span className="estado-badge">{reserva.estado}</span>
                   </div>
 

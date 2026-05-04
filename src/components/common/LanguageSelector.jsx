@@ -10,10 +10,8 @@ import {
   Box,
   Typography,
 } from '@mui/material';
-import {
-  Language as LanguageIcon,
-  Check as CheckIcon,
-} from '@mui/icons-material';
+import LanguageIcon from '@mui/icons-material/Language';
+import CheckIcon from '@mui/icons-material/Check';
 import { changeLanguage, getCurrentLanguage } from '../../i18n/config';
 import { logger } from '../../utils/logger';
 

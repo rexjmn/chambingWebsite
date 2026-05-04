@@ -4,6 +4,14 @@ import { useAuth } from '../context/AuthContext';
 import { profileService } from '../services/profileService';
 import { serviceService } from '../services/serviceService';
 import { logger } from '../utils/logger';
+import { isValidNationalPhone } from '../utils/security';
+import {
+  PHONE_COUNTRIES,
+  fetchDefaultPhoneCountryIso,
+  splitInternationalTelefono,
+  buildInternationalTelefonoDigits,
+  getCountryByIso,
+} from '../utils/phoneCountries';
 import api from '../services/api';
 import Cropper from 'react-easy-crop';
 import {
@@ -122,9 +130,30 @@ const Onboarding = () => {
   const [municipio, setMunicipio]           = useState(user?.municipio || '');
   const [tituloProfesional, setTituloProfesional] = useState(user?.titulo_profesional || '');
 
-  // Phone state (for OAuth users)
-  const [telefono, setTelefono]             = useState(user?.telefono || '');
-  const [telefonoError, setTelefonoError]   = useState('');
+  // Phone state (for OAuth users) — país + número nacional; guardado como código+nacional
+  const initialPhone = splitInternationalTelefono(user?.telefono || '');
+  const [phoneCountryIso, setPhoneCountryIso] = useState(initialPhone.iso);
+  const [telefono, setTelefono]               = useState(initialPhone.national);
+  const [telefonoError, setTelefonoError]     = useState('');
+
+  useEffect(() => {
+    if (!user?.telefono) return;
+    const p = splitInternationalTelefono(user.telefono);
+    setPhoneCountryIso(p.iso);
+    setTelefono(p.national);
+  }, [user?.telefono]);
+
+  useEffect(() => {
+    if (user?.telefono) return;
+    let cancelled = false;
+    fetchDefaultPhoneCountryIso().then((iso) => {
+      if (cancelled) return;
+      setPhoneCountryIso((prev) => (prev === 'SV' ? iso : prev));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.telefono, user?.id]);
 
   // Skills state
   const [availableSkills, setAvailableSkills] = useState([]);
@@ -137,7 +166,6 @@ const Onboarding = () => {
 
   const currentStep = steps[currentIdx];
   const isFirstStep = currentIdx === 0;
-  const isLastStep  = currentIdx === steps.length - 1;
   const progress    = Math.round((currentIdx / (steps.length - 1)) * 100);
 
   // Whether the image cropper is currently active
@@ -336,18 +364,19 @@ const Onboarding = () => {
   };
 
   const savePhone = async () => {
-    const digits = telefono.replace(/\D/g, '');
-    if (digits.length < 8) {
-      setTelefonoError('Ingresa un número válido de 8 dígitos');
+    const national = telefono.replace(/\D/g, '');
+    if (!isValidNationalPhone(national, phoneCountryIso)) {
+      setTelefonoError('Ingresa un número válido para el país seleccionado');
       return false;
     }
     setTelefonoError('');
+    const fullDigits = buildInternationalTelefonoDigits(phoneCountryIso, national).replace(/\D/g, '');
     setSaving(true);
     try {
       await profileService.updateProfile({
         nombre:   user?.nombre   || '',
         apellido: user?.apellido || '',
-        telefono: digits,
+        telefono: fullDigits,
       });
       return true;
     } catch (err) {
@@ -691,31 +720,44 @@ const Onboarding = () => {
 
             <div className="ob-form-group">
               <label className="ob-label" htmlFor="ob-telefono">
-                Número de teléfono (El Salvador)
+                Número de teléfono / WhatsApp
               </label>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <span style={{
-                  position: 'absolute', left: '0.875rem',
-                  color: '#9CA3AF', fontSize: '0.9375rem', fontWeight: 500,
-                  pointerEvents: 'none', zIndex: 1,
-                }}>
-                  +503
-                </span>
-                <input
-                  id="ob-telefono"
-                  className="ob-input"
-                  type="tel"
-                  inputMode="numeric"
-                  placeholder="7000-0000"
-                  value={telefono}
+              <div className="ob-phone-row">
+                <select
+                  id="ob-phone-country"
+                  className="ob-select ob-select--phone-country"
+                  value={phoneCountryIso}
                   onChange={(e) => {
                     setTelefonoError('');
-                    const v = e.target.value.replace(/[^\d\-\s]/g, '');
-                    setTelefono(v);
+                    setPhoneCountryIso(e.target.value);
                   }}
-                  maxLength={9}
-                  style={{ paddingLeft: '3.5rem' }}
-                />
+                  aria-label="Código de país"
+                >
+                  {[...PHONE_COUNTRIES]
+                    .sort((a, b) => a.name.localeCompare(b.name, 'es'))
+                    .map((c) => (
+                      <option key={c.iso} value={c.iso}>
+                        +{c.dial} {c.name}
+                      </option>
+                    ))}
+                </select>
+                <div className="ob-input-wrap">
+                  <input
+                    id="ob-telefono"
+                    className="ob-input"
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel-national"
+                    placeholder="Solo número local"
+                    value={telefono}
+                    onChange={(e) => {
+                      setTelefonoError('');
+                      const v = e.target.value.replace(/[^\d\-\s]/g, '');
+                      setTelefono(v);
+                    }}
+                    maxLength={getCountryByIso(phoneCountryIso).nsnMax + 2}
+                  />
+                </div>
               </div>
               {telefonoError && (
                 <div className="ob-alert ob-alert--error" style={{ marginTop: '0.5rem', padding: '0.5rem 0.75rem' }}>
@@ -723,7 +765,7 @@ const Onboarding = () => {
                 </div>
               )}
               <p style={{ fontSize: '0.8rem', color: '#9CA3AF', marginTop: '0.5rem', lineHeight: 1.5 }}>
-                Solo usamos tu numero para enviarte notificaciones importantes via WhatsApp. No lo compartimos con terceros.
+                El prefijo se elige según tu ubicación (puedes cambiarlo). Solo usamos tu número para notificaciones importantes por WhatsApp; no lo compartimos con terceros.
               </p>
             </div>
           </div>

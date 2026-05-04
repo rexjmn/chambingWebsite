@@ -54,4 +54,17 @@ export const publicProfileService = {
       };
     }
   },
+
+  /**
+   * Ocupación por contratos confirmados (vista pública del calendario).
+   * Si el backend aún no expone GET /users/public/:id/contract-agenda, devuelve [] sin error.
+   */
+  async getPublicWorkerContractAgenda(workerId, params) {
+    try {
+      const response = await api.get(`/users/public/${workerId}/contract-agenda`, { params });
+      return response.data;
+    } catch {
+      return [];
+    }
+  },
 };

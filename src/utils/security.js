@@ -2,6 +2,8 @@
 // UTILIDADES DE SEGURIDAD - VALIDACIÓN Y SANITIZACIÓN
 // ========================================================================
 
+import { getCountryByIso } from './phoneCountries';
+
 /**
  * Sanitiza el input del usuario removiendo caracteres peligrosos
  * Previene XSS y SQL Injection
@@ -74,11 +76,22 @@ export const isValidEmail = (email) => {
 };
 
 /**
- * Valida formato de teléfono de El Salvador (8 dígitos)
+ * Valida número nacional según país (sin prefijo internacional).
+ */
+export const isValidNationalPhone = (nationalDigits, iso) => {
+  const c = getCountryByIso(iso);
+  const d = String(nationalDigits || '').replace(/\D/g, '');
+  if (d.length < c.nsnMin || d.length > c.nsnMax) return false;
+  if (iso === 'SV') return /^[267]\d{7}$/.test(d);
+  return true;
+};
+
+/**
+ * Valida formato de teléfono de El Salvador (8 dígitos) — legacy / compat.
  */
 export const isValidPhone = (phone) => {
   const phoneRegex = /^[267]\d{7}$/;
-  return phoneRegex.test(phone.replace(/\D/g, ''));
+  return phoneRegex.test(String(phone || '').replace(/\D/g, ''));
 };
 
 /**
@@ -265,6 +278,7 @@ export default {
   sanitizeObject,
   isValidEmail,
   isValidPhone,
+  isValidNationalPhone,
   isValidDUI,
   validatePasswordStrength,
   detectSQLInjection,

@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../services/api';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
+import { contractService } from '../../services/contractService';
+import { publicProfileService } from '../../services/publicProfileService';
+import {
+  normalizeAvailabilityReservasPayload,
+  contractsToReservasFromWorkerContracts,
+  mergeAvailabilityReservas,
+} from '../../utils/availabilityReservas';
 import {
   ChevronLeft,
   ChevronRight,
@@ -89,6 +97,7 @@ const AvailabilityCalendar = ({
   onDaysConfirm = null,
 }) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [config, setConfig] = useState(null);
   const [bloques, setBloques] = useState([]);
@@ -112,7 +121,7 @@ const AvailabilityCalendar = ({
     } else {
       setLoading(false);
     }
-  }, [trabajadorId, currentDate]);
+  }, [trabajadorId, currentDate, user?.id]);
 
   const cargarDatos = async () => {
     if (!trabajadorId || trabajadorId === 'null' || trabajadorId === 'undefined') {
@@ -138,7 +147,37 @@ const AvailabilityCalendar = ({
           `/availability/reservas/${trabajadorId}`,
           { params: { fecha_inicio: inicioMes.toISOString(), fecha_fin: finMes.toISOString() } }
         );
-        setReservas(reservasRes.data || []);
+        let list = normalizeAvailabilityReservasPayload(reservasRes.data);
+
+        if (user && String(user.id) === String(trabajadorId)) {
+          try {
+            const cp = await contractService.getMyContracts('trabajador');
+            const cl =
+              cp?.status === 'success' ? (cp.data || []) : Array.isArray(cp) ? cp : [];
+            const derived = contractsToReservasFromWorkerContracts(
+              cl,
+              trabajadorId,
+              inicioMes,
+              finMes
+            );
+            list = mergeAvailabilityReservas(list, derived);
+          } catch (e) {
+            console.warn('AvailabilityCalendar: contratos para agenda:', e.message);
+          }
+        } else {
+          try {
+            const raw = await publicProfileService.getPublicWorkerContractAgenda(trabajadorId, {
+              fecha_inicio: inicioMes.toISOString(),
+              fecha_fin: finMes.toISOString(),
+            });
+            const pub = normalizeAvailabilityReservasPayload(raw);
+            list = mergeAvailabilityReservas(list, pub);
+          } catch (e) {
+            console.warn('AvailabilityCalendar: agenda pública:', e.message);
+          }
+        }
+
+        setReservas(list);
       } catch (reservasError) {
         console.warn('No se pudieron cargar las reservas:', reservasError.message);
         setReservas([]);

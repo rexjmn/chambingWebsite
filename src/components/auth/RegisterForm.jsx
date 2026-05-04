@@ -8,11 +8,16 @@ import * as yup from 'yup';
 import {
   sanitizeInput,
   isValidEmail,
-  isValidPhone,
+  isValidNationalPhone,
   validatePasswordStrength,
   detectSQLInjection,
   detectXSS
 } from '../../utils/security';
+import {
+  PHONE_COUNTRIES,
+  fetchDefaultPhoneCountryIso,
+  buildInternationalTelefonoDigits,
+} from '../../utils/phoneCountries';
 import { logger } from '../../utils/logger';
 import '../../styles/auth.scss';
 import {
@@ -21,6 +26,8 @@ import {
   Briefcase, Search, Shield, Star, ChevronRight
 } from 'lucide-react';
 import heroWomanImg from '../../assets/images/herowoman.png';
+
+const PHONE_ISO_VALUES = PHONE_COUNTRIES.map((c) => c.iso);
 
 const buildValidationSchema = (t) => yup.object().shape({
   nombre: yup.string()
@@ -39,9 +46,17 @@ const buildValidationSchema = (t) => yup.object().shape({
     .email(t('auth.register.validation.emailInvalid'))
     .required(t('auth.register.validation.emailRequired'))
     .test('is-valid-email', t('auth.register.validation.emailInvalid'), value => isValidEmail(value)),
-  telefono: yup.string()
+  phoneCountryIso: yup
+    .string()
+    .oneOf(PHONE_ISO_VALUES)
+    .required(t('auth.register.validation.phoneRequired')),
+  telefono: yup
+    .string()
     .required(t('auth.register.validation.phoneRequired'))
-    .test('is-valid-phone', t('auth.register.validation.phoneInvalid'), value => isValidPhone(value)),
+    .test('is-valid-phone', t('auth.register.validation.phoneInvalid'), function (value) {
+      const iso = this.parent.phoneCountryIso;
+      return isValidNationalPhone(value, iso);
+    }),
   departamento: yup.string().required(t('auth.register.validation.departmentRequired')),
   municipio: yup.string().required(t('auth.register.validation.municipalityRequired')),
   direccion_detalle: yup.string().optional().max(255, 'La dirección no puede exceder 255 caracteres'),
@@ -91,19 +106,39 @@ const RegisterForm = () => {
     handleSubmit,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(buildValidationSchema(t)),
-    defaultValues: { tipo_usuario: 'cliente' },
+    defaultValues: { tipo_usuario: 'cliente', phoneCountryIso: 'SV' },
   });
 
   const watchTipo = watch('tipo_usuario');
   const watchDepartamento = watch('departamento');
   const watchPassword = watch('password');
+  const watchPhoneIso = watch('phoneCountryIso') || 'SV';
 
   useEffect(() => {
     if (watchDepartamento) setValue('municipio', '');
   }, [watchDepartamento, setValue]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const iso = await fetchDefaultPhoneCountryIso();
+      if (cancelled) return;
+      const [cIso, tel] = getValues(['phoneCountryIso', 'telefono']);
+      const digitsEmpty = !String(tel || '').replace(/\D/g, '').length;
+      if (digitsEmpty && cIso === 'SV') {
+        setValue('phoneCountryIso', iso, { shouldValidate: false });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // Solo al montar: país sugerido por IP sin pisar elección manual
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (watchPassword) setPasswordStrength(validatePasswordStrength(watchPassword));
@@ -139,7 +174,10 @@ const RegisterForm = () => {
         nombre: sanitizeInput(data.nombre),
         apellido: sanitizeInput(data.apellido),
         email: sanitizeInput(data.email).toLowerCase(),
-        telefono: data.telefono.replace(/\D/g, ''),
+        telefono: buildInternationalTelefonoDigits(
+          data.phoneCountryIso,
+          data.telefono
+        ).replace(/\D/g, ''),
         departamento: data.departamento,
         municipio: data.municipio,
         direccion: sanitizeInput(data.direccion_detalle || ''),
@@ -405,31 +443,47 @@ const RegisterForm = () => {
                 )}
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">
-                    {t('auth.register.phone')} <span className="label-required">*</span>
-                  </label>
-                  <div className="input-wrapper">
+              <div className="form-group">
+                <label className="form-label" id="register-phone-label">
+                  {t('auth.register.phone')} <span className="label-required">*</span>
+                </label>
+                <div className="phone-field-row" role="group" aria-labelledby="register-phone-label">
+                  <select
+                    {...register('phoneCountryIso')}
+                    className={`form-select form-select--phone-country ${errors.phoneCountryIso ? 'input-error' : ''}`}
+                    aria-label={t('auth.register.phoneCountryAria')}
+                  >
+                    {[...PHONE_COUNTRIES]
+                      .sort((a, b) => a.name.localeCompare(b.name, 'es'))
+                      .map((c) => (
+                        <option key={c.iso} value={c.iso}>
+                          +{c.dial} {c.name}
+                        </option>
+                      ))}
+                  </select>
+                  <div className="input-wrapper input-wrapper--phone-national">
                     <Phone size={18} className="input-icon" />
                     <input
                       {...register('telefono')}
                       type="tel"
+                      inputMode="numeric"
+                      autoComplete="tel-national"
                       className={`form-input ${errors.telefono ? 'input-error' : ''}`}
                       placeholder={t('auth.register.placeholders.phone')}
-                      maxLength={8}
+                      maxLength={
+                        PHONE_COUNTRIES.find((c) => c.iso === watchPhoneIso)?.nsnMax ?? 15
+                      }
                     />
                   </div>
-                  {errors.telefono ? (
-                    <div className="form-error">
-                      <AlertCircle size={14} className="error-icon" />
-                      {errors.telefono.message}
-                    </div>
-                  ) : (
-                    <div className="form-helper">{t('auth.register.helperTexts.phone')}</div>
-                  )}
                 </div>
-
+                {(errors.telefono || errors.phoneCountryIso) ? (
+                  <div className="form-error">
+                    <AlertCircle size={14} className="error-icon" />
+                    {errors.telefono?.message || errors.phoneCountryIso?.message}
+                  </div>
+                ) : (
+                  <div className="form-helper">{t('auth.register.helperTexts.phoneIntl')}</div>
+                )}
               </div>
             </div>
 
@@ -500,14 +554,13 @@ const RegisterForm = () => {
                   {t('auth.register.address')} <span className="label-optional">(Opcional)</span>
                 </label>
                 <div className="input-wrapper">
-                  <Home size={18} className="input-icon" />
+                  <Home size={18} className="input-icon" aria-hidden />
                   <textarea
                     {...register('direccion_detalle')}
-                    className={`form-textarea form-input-no-icon ${errors.direccion_detalle ? 'input-error' : ''}`}
+                    className={`form-textarea ${errors.direccion_detalle ? 'input-error' : ''}`}
                     placeholder={t('auth.register.placeholders.address')}
                     rows={2}
                     maxLength={255}
-                    style={{ paddingLeft: '3rem' }}
                   />
                 </div>
               </div>
