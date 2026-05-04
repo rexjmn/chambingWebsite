@@ -698,9 +698,31 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
 
       .reviewer-info {
         .reviewer-name {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
           font-weight: 600;
           color: $text-primary;
           margin-bottom: 0.25rem;
+        }
+
+        .reviewer-avatar {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          object-fit: cover;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          border: 1px solid $border-color;
+
+          &--placeholder {
+            background: rgba($primary-color, 0.12);
+            color: $primary-color;
+            font-size: 0.72rem;
+            font-weight: 700;
+          }
         }
 
         .stars {

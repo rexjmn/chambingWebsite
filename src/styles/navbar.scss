@@ -103,6 +103,223 @@ $t             : all 0.3s $ease;
   margin-left: 24px;
 }
 
+.navbar__notifications {
+  position: relative;
+}
+
+.navbar__icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #1a1a1a;
+  background: rgba(0, 0, 0, 0.02);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  position: relative;
+  transition: $t;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &--active {
+    color: $primary-color;
+    border-color: rgba($primary-color, 0.35);
+    background: rgba($primary-color, 0.08);
+  }
+}
+
+.navbar__notification-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  padding: 0 4px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+.navbar__notifications-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: min(360px, 90vw);
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  z-index: 1200;
+}
+
+.navbar__notifications-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  p {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  span {
+    min-width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    padding: 0 6px;
+    background: rgba($primary-color, 0.12);
+    color: $primary-color;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.navbar__notifications-list {
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.navbar__notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.navbar__notification-actions {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__notification-action-btn {
+  border: 1px solid rgba($primary-color, 0.28);
+  background: rgba($primary-color, 0.08);
+  color: $primary-color;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: $t;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: rgba($primary-color, 0.16);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.navbar__notification-main {
+  flex: 1;
+  border: none;
+  background: none;
+  text-align: left;
+  border-radius: 10px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: $t;
+
+  strong {
+    display: block;
+    font-size: 0.82rem;
+    color: $primary-color;
+    margin-bottom: 2px;
+  }
+
+  p {
+    margin: 0 0 4px;
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: #1f2937;
+    line-height: 1.35;
+  }
+
+  small {
+    font-size: 0.76rem;
+    color: #6b7280;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.navbar__notification-dismiss {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: $t;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+  }
+}
+
+.navbar__notifications-empty {
+  margin: 0;
+  padding: 18px 16px;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.navbar__notifications-footer {
+  width: 100%;
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f9fafb;
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: $primary-color;
+  cursor: pointer;
+  transition: $t;
+
+  &:hover {
+    background: rgba($primary-color, 0.08);
+  }
+}
+
 // ── Nav links (desktop) ───────────────────────────────────────────────────────
 .navbar__link {
   position: relative;

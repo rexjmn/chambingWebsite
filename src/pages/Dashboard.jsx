@@ -3,11 +3,12 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslations } from '../hooks/useTranslations';
 import { useAuth } from '../context/AuthContext';
 import { serviceService } from '../services/serviceService';
 import { contractService } from '../services/contractService';
+import { workerService } from '../services/workerService';
 import ProfilePhotoModal from '../components/ProfilePhotoModal';
 import CoverPhotoModal from '../components/CoverPhotoModal';
 import { DashboardSkeleton } from '../components/SkeletonLoader';
@@ -17,27 +18,9 @@ import '../styles/components/SkeletonLoader.scss';
 
 // ── Icons ────────────────────────────────────────────────────────────────────
 
-const RefreshIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-  </svg>
-);
-
 const NotificationsIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-  </svg>
-);
-
-const AccountCircleIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-  </svg>
-);
-
-const LogoutIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
   </svg>
 );
 
@@ -149,32 +132,60 @@ const CATEGORY_COLORS = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const getGreeting = () => {
-  const h = new Date().getHours();
-  if (h < 12) return 'Buenos días';
-  if (h < 18) return 'Buenas tardes';
-  return 'Buenas noches';
+const normalizeText = (value = '') =>
+  String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
+const SERVICE_FILTER_CATEGORIES = [
+  { id: 'limpieza_domestica', label: 'Limpieza' },
+  { id: 'plomeria', label: 'Plomería' },
+  { id: 'electricidad', label: 'Electricidad' },
+  { id: 'jardineria', label: 'Jardinería' },
+  { id: 'carpinteria', label: 'Carpintería' },
+  { id: 'construccion', label: 'Construcción' },
+  { id: 'pintura', label: 'Pintura' },
+  { id: 'mecanica', label: 'Mecánica' },
+  { id: 'catering', label: 'Cocina' },
+  { id: 'seguridad', label: 'Seguridad' },
+];
+
+const CATEGORY_ALIASES = {
+  limpieza_domestica: ['limpieza domestica', 'limpieza', 'lavanderia', 'limpieza de oficinas'],
+  plomeria: ['plomeria', 'instalacion sanitarios', 'destapes', 'fontaneria'],
+  electricidad: ['electricidad', 'instalacion electrica', 'electrico', 'reparacion electrodomesticos'],
+  jardineria: ['jardineria', 'jardin', 'paisajismo', 'poda'],
+  carpinteria: ['carpinteria', 'muebles', 'ebanisteria'],
+  construccion: ['construccion', 'albanileria', 'albanilería', 'obra', 'obras'],
+  pintura: ['pintura', 'pintor', 'pintar'],
+  mecanica: ['mecanica', 'mecanica automotriz', 'mecánico', 'mecanico'],
+  catering: ['cocina', 'catering', 'chef', 'comida'],
+  seguridad: ['seguridad', 'vigilancia', 'guardia'],
 };
 
-const formatDateLong = () =>
-  new Date().toLocaleDateString('es-ES', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+const getWorkerSkillNames = (worker) => {
+  const source = worker?.skills || worker?.habilidades || [];
+  if (!Array.isArray(source)) return [];
+  return source
+    .map((skill) => (typeof skill === 'string' ? skill : (skill?.nombre || skill?.name || '')))
+    .filter(Boolean)
+    .map(normalizeText);
+};
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
   const { t, translateService, translateUserType } = useTranslations();
   const [categories, setCategories] = useState([]);
+  const [verifiedWorkers, setVerifiedWorkers] = useState([]);
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [coverPhotoModalOpen, setCoverPhotoModalOpen] = useState(false);
   const [showAllContracts, setShowAllContracts] = useState(false);
@@ -201,6 +212,10 @@ const Dashboard = () => {
               { id: 6, nombre: 'construction', descripcion: 'Obras' },
             ];
           }),
+          workerService.getVerifiedWorkers({ verificado: true }).catch(err => {
+            logger.error('Error cargando trabajadores verificados:', err);
+            return { status: 'success', data: [] };
+          }),
           contractService.getMyContracts().catch(err => {
             logger.error('Error cargando contratos:', err);
             return { status: 'success', data: [] };
@@ -208,9 +223,14 @@ const Dashboard = () => {
         ]);
 
         const [results] = await Promise.all([dataPromises, minLoadingTime]);
-        const [categoriesData, contractsResponse] = results;
+        const [categoriesData, workersResponse, contractsResponse] = results;
 
         setCategories(categoriesData);
+        setVerifiedWorkers(
+          workersResponse?.status === 'success'
+            ? (workersResponse.data || [])
+            : (Array.isArray(workersResponse) ? workersResponse : [])
+        );
 
         if (contractsResponse.status === 'success') {
           setContracts(contractsResponse.data || []);
@@ -231,13 +251,49 @@ const Dashboard = () => {
     loadDashboardData();
   }, [refreshKey]);
 
-  const handleViewWorkers = (categoryId) => navigate(`/workers?category=${categoryId}`);
+  useEffect(() => {
+    if (location.hash === '#notifications') {
+      setNotificationsOpen(true);
+    }
+  }, [location.hash]);
 
-  const handleMenuToggle = () => setMenuOpen(v => !v);
-  const handleMenuClose = () => setMenuOpen(false);
-  const handleLogout = async () => { await logout(); handleMenuClose(); };
+  const serviceCategories = useMemo(() => {
+    const workers = Array.isArray(verifiedWorkers) ? verifiedWorkers : [];
+
+    const result = SERVICE_FILTER_CATEGORIES.map((category) => {
+      const aliases = (CATEGORY_ALIASES[category.id] || []).map(normalizeText);
+      const workersCount = workers.reduce((acc, worker) => {
+        const skills = getWorkerSkillNames(worker);
+        const matches = skills.some((skill) =>
+          aliases.some((alias) => skill.includes(alias) || alias.includes(skill))
+        );
+        return acc + (matches ? 1 : 0);
+      }, 0);
+
+      return {
+        id: category.id,
+        nombre: category.label,
+        descripcion: `${workersCount} trabajador${workersCount === 1 ? '' : 'es'} disponible${workersCount === 1 ? '' : 's'}`,
+        workersCount,
+      };
+    })
+      .filter((category) => category.workersCount > 0)
+      .sort((a, b) => b.workersCount - a.workersCount);
+
+    return result.length > 0 ? result : categories;
+  }, [verifiedWorkers, categories]);
+
+  const handleViewWorkers = (category) => {
+    const categoryId = category?.id || '';
+    if (categoryId) {
+      navigate(`/service?categoria=${encodeURIComponent(categoryId)}`);
+      return;
+    }
+    const categoryLabel = category?.nombre || '';
+    navigate(`/service?search=${encodeURIComponent(categoryLabel)}`);
+  };
+
   const handleRefresh = () => setRefreshKey(prev => prev + 1);
-  const handleNotificationsToggle = () => setNotificationsOpen(v => !v);
   const dismissNotification = (notificationId) => {
     setDismissedNotifications(prev => [...prev, notificationId]);
   };
@@ -331,107 +387,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
 
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <header className="dashboard__header" role="banner">
-        <div className="dashboard__header-toolbar">
-
-          <div className="dashboard__header-brand">
-            <div className="dashboard__header-logo">C</div>
-            <h1 className="dashboard__header-title">Chambing</h1>
-          </div>
-
-          <nav className="dashboard__header-actions" role="navigation" aria-label="Navegación principal">
-            {(user?.tipo_usuario === 'admin' || user?.tipo_usuario === 'super_admin') && (
-              <button
-                className="dashboard__icon-btn dashboard__icon-btn--admin"
-                onClick={() => navigate('/admin')}
-                aria-label="Panel de Administración"
-                type="button"
-                title="Ir al Panel de Administración"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </button>
-            )}
-
-            <button
-              className="dashboard__icon-btn"
-              onClick={handleRefresh}
-              aria-label="Actualizar página"
-              type="button"
-            >
-              <RefreshIcon />
-            </button>
-
-            <button
-              className="dashboard__icon-btn"
-              aria-label="Notificaciones"
-              onClick={handleNotificationsToggle}
-              type="button"
-            >
-              <NotificationsIcon />
-              {dashboardNotifications.length > 0 && (
-                <span className="dashboard__notification-count">{dashboardNotifications.length}</span>
-              )}
-            </button>
-
-            <button
-              className="dashboard__icon-btn"
-              onClick={handleMenuToggle}
-              aria-label="Menú de usuario"
-              aria-expanded={menuOpen}
-              aria-haspopup="true"
-              type="button"
-            >
-              {user?.foto_perfil ? (
-                <img
-                  src={user.foto_perfil}
-                  alt=""
-                  style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
-                />
-              ) : (
-                <AccountCircleIcon />
-              )}
-            </button>
-          </nav>
-
-          {menuOpen && (
-            <>
-              <div
-                className="dashboard__menu-overlay"
-                onClick={handleMenuClose}
-                aria-hidden="true"
-                style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999 }}
-              />
-              <div className="dashboard__menu" role="menu">
-                <button className="dashboard__menu-item" onClick={handleMenuClose} role="menuitem" type="button">
-                  <AccountCircleIcon />
-                  {t('nav.profile')}
-                </button>
-                <button className="dashboard__menu-item" onClick={handleLogout} role="menuitem" type="button">
-                  <LogoutIcon />
-                  {t('nav.logout')}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </header>
-
       <main className="dashboard__container">
-
-        {/* ── Greeting banner ─────────────────────────────────────────────── */}
-        <div className="dashboard__greeting">
-          <div className="dashboard__greeting-text">
-            <span className="dashboard__greeting-time">{getGreeting()},</span>
-            <strong className="dashboard__greeting-name">
-              {user?.nombre?.split(' ')[0] || 'Usuario'}
-            </strong>
-          </div>
-          <span className="dashboard__greeting-date">{formatDateLong()}</span>
-        </div>
 
         {/* ── Profile card ────────────────────────────────────────────────── */}
         <article className="dashboard__profile-card" aria-labelledby="profile-heading">
@@ -548,7 +504,7 @@ const Dashboard = () => {
               <WorkIcon />
             </div>
             <div className="dashboard__stat-card-content">
-              <h3>{categories.length}</h3>
+              <h3>{serviceCategories.length}</h3>
               <p>{t('dashboard.stats.availableServices')}</p>
             </div>
           </article>
@@ -585,7 +541,7 @@ const Dashboard = () => {
         </section>
 
         {notificationsOpen && (
-          <section className="dashboard__section" aria-labelledby="notifications-heading">
+          <section id="notifications" className="dashboard__section" aria-labelledby="notifications-heading">
             <div className="dashboard__section-header">
               <div>
                 <h2 id="notifications-heading">Notificaciones</h2>
@@ -672,40 +628,6 @@ const Dashboard = () => {
             )}
           </section>
         )}
-
-        {/* ── Services ────────────────────────────────────────────────────── */}
-        <section className="dashboard__section" aria-labelledby="services-heading">
-          <div className="dashboard__section-header">
-            <div>
-              <h2 id="services-heading">{t('dashboard.availableServices')}</h2>
-              <p className="dashboard__section-subtitle">Explora los servicios disponibles en tu área</p>
-            </div>
-          </div>
-
-          <div className="dashboard__services">
-            {categories.map((category) => {
-              const CategoryIcon = CATEGORY_ICONS[category.nombre] || DefaultCategoryIcon;
-              const color = CATEGORY_COLORS[category.nombre] || 'blue';
-              return (
-                <article key={category.id} className={`dashboard__service-card dashboard__service-card--${color}`}>
-                  <div className="dashboard__service-icon">
-                    <CategoryIcon />
-                  </div>
-                  <h3>{translateService(category.nombre)}</h3>
-                  <p>{category.descripcion}</p>
-                  <button
-                    className="dashboard__service-btn"
-                    onClick={() => handleViewWorkers(category.id)}
-                    type="button"
-                  >
-                    {t('dashboard.viewWorkers')}
-                    <ArrowRightIcon />
-                  </button>
-                </article>
-              );
-            })}
-          </div>
-        </section>
 
         {/* ── Contracts ───────────────────────────────────────────────────── */}
         <section className="dashboard__section" aria-labelledby="contracts-heading">
@@ -826,6 +748,40 @@ const Dashboard = () => {
               </button>
             </div>
           )}
+        </section>
+
+        {/* ── Services ────────────────────────────────────────────────────── */}
+        <section className="dashboard__section" aria-labelledby="services-heading">
+          <div className="dashboard__section-header">
+            <div>
+              <h2 id="services-heading">{t('dashboard.availableServices')}</h2>
+              <p className="dashboard__section-subtitle">Explora los servicios disponibles en tu área</p>
+            </div>
+          </div>
+
+          <div className="dashboard__services">
+            {serviceCategories.map((category) => {
+              const CategoryIcon = CATEGORY_ICONS[category.nombre] || DefaultCategoryIcon;
+              const color = CATEGORY_COLORS[category.nombre] || 'blue';
+              return (
+                <article key={category.id} className={`dashboard__service-card dashboard__service-card--${color}`}>
+                  <div className="dashboard__service-icon">
+                    <CategoryIcon />
+                  </div>
+                  <h3>{translateService(category.nombre)}</h3>
+                  <p>{category.descripcion}</p>
+                  <button
+                    className="dashboard__service-btn"
+                    onClick={() => handleViewWorkers(category)}
+                    type="button"
+                  >
+                    {t('dashboard.viewWorkers')}
+                    <ArrowRightIcon />
+                  </button>
+                </article>
+              );
+            })}
+          </div>
         </section>
 
       </main>

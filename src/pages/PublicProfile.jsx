@@ -111,8 +111,12 @@ const PublicProfile = () => {
   }, [userId]);
 
   const renderStars = (rating) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
+    const safeRating = Number.isFinite(Number(rating)) ? Number(rating) : 0;
+    const boundedRating = Math.min(5, Math.max(0, safeRating));
+    // Redondeo visual al 0.5 más cercano: 4.8 -> 5 estrellas, 4.2 -> 4 estrellas.
+    const roundedRating = Math.round(boundedRating * 2) / 2;
+    const fullStars = Math.floor(roundedRating);
+    const hasHalfStar = roundedRating % 1 !== 0;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
     return (
@@ -469,7 +473,17 @@ const PublicProfile = () => {
                   <div className="review-header">
                     <div className="reviewer-info">
                       <div className="reviewer-name">
-                        <AccountCircleIcon sx={{ marginRight: 1, verticalAlign: 'middle' }} />
+                        {review.calificador?.foto_perfil ? (
+                          <img
+                            src={review.calificador.foto_perfil}
+                            alt={`Foto de ${review.calificador?.nombre || 'usuario'}`}
+                            className="reviewer-avatar"
+                          />
+                        ) : (
+                          <span className="reviewer-avatar reviewer-avatar--placeholder" aria-hidden="true">
+                            {(review.calificador?.nombre?.charAt(0) || '?').toUpperCase()}
+                          </span>
+                        )}
                         {review.calificador?.nombre} {review.calificador?.apellido}
                       </div>
                       <div className="stars">

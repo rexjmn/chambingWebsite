@@ -1,23 +1,32 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslations } from '../../hooks/useTranslations';
 import { useAuth } from '../../context/AuthContext';
+import { contractService } from '../../services/contractService';
+import { logger } from '../../utils/logger';
 import LanguageSelector from './LanguageSelector';
 import {
   Menu, X, LayoutDashboard, Briefcase, Home,
-  User, LogOut, ChevronDown,
+  User, LogOut, ChevronDown, Bell,
 } from 'lucide-react';
 import '../../styles/navbar.scss';
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const { nav } = useTranslations();
   const location = useLocation();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [actionableNotifications, setActionableNotifications] = useState([]);
+  const [dismissedNotificationIds, setDismissedNotificationIds] = useState([]);
+  const [notificationActionLoading, setNotificationActionLoading] = useState({});
   const profileRef = useRef(null);
+  const notificationsRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -31,6 +40,9 @@ const Navbar = () => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setProfileOpen(false);
       }
+      if (notificationsRef.current && !notificationsRef.current.contains(e.target)) {
+        setNotificationsOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -41,6 +53,71 @@ const Navbar = () => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setNotificationCount(0);
+      setActionableNotifications([]);
+      return;
+    }
+
+    const getActionBanner = (contract) => {
+      const esEmpleador = String(user?.id) === String(contract.empleador?.id);
+      const esTrabajador = String(user?.id) === String(contract.trabajador?.id);
+
+      if (contract.estado === 'oferta_pendiente' && esTrabajador) {
+        return { message: 'Tienes una oferta pendiente por responder', actionLabel: 'Responder oferta', actionType: 'view' };
+      }
+      if (contract.estado === 'en_camino' && esEmpleador) {
+        return { message: 'El trabajador está en camino', actionLabel: 'Ver código', actionType: 'view' };
+      }
+      if (contract.estado === 'en_camino' && esTrabajador) {
+        return { message: 'Te diriges al servicio: muestra tu código al llegar', actionLabel: 'Ver contrato', actionType: 'view' };
+      }
+      if (contract.estado === 'activo' && esTrabajador) {
+        return { message: 'Contrato activo: marca como completado al finalizar', actionLabel: 'Marcar completado', actionType: 'complete' };
+      }
+      if (contract.estado === 'completado' && esEmpleador) {
+        return { message: 'Contrato completado: falta tu cierre y reseña', actionLabel: 'Cerrar contrato', actionType: 'close' };
+      }
+      return null;
+    };
+
+    const loadNotificationsCount = async () => {
+      try {
+        const contractsResponse = await contractService.getMyContracts();
+        const contracts = contractsResponse?.status === 'success'
+          ? (contractsResponse.data || [])
+          : (Array.isArray(contractsResponse) ? contractsResponse : []);
+
+        const generatedNotifications = contracts
+          .map((contract) => {
+            const actionData = getActionBanner(contract);
+            if (!actionData) return null;
+            return {
+              id: `contract-${contract.id}-${contract.estado}`,
+              contractId: contract.id,
+              contractCode: contract.codigo_contrato || `#${contract.id}`,
+              message: actionData.message,
+              actionLabel: actionData.actionLabel,
+              actionType: actionData.actionType,
+              createdAt: contract.fecha_actualizacion || contract.fecha_creacion,
+            };
+          })
+          .filter(Boolean)
+          .filter((notification) => !dismissedNotificationIds.includes(notification.id));
+
+        setActionableNotifications(generatedNotifications);
+        setNotificationCount(generatedNotifications.length);
+      } catch (error) {
+        logger.error('Error cargando contador de notificaciones en navbar:', error);
+        setNotificationCount(0);
+        setActionableNotifications([]);
+      }
+    };
+
+    loadNotificationsCount();
+  }, [isAuthenticated, user?.id, location.pathname, dismissedNotificationIds]);
 
   const isActive = (path) => location.pathname === path;
   const closeMobile = () => setMobileOpen(false);
@@ -58,7 +135,59 @@ const Navbar = () => {
   const handleLogout = async () => {
     await logout();
     setProfileOpen(false);
+    setNotificationsOpen(false);
     setMobileOpen(false);
+  };
+
+  const toggleNotifications = () => {
+    setNotificationsOpen((current) => !current);
+    setProfileOpen(false);
+  };
+
+  const dismissNotification = (notificationId) => {
+    setDismissedNotificationIds((prev) => [...prev, notificationId]);
+  };
+
+  const openNotificationContract = (contractId) => {
+    setNotificationsOpen(false);
+    navigate(`/contracts/${contractId}`);
+  };
+
+  const runNotificationAction = async (notification) => {
+    if (!notification?.actionType) return;
+    if (notification.actionType === 'view') {
+      openNotificationContract(notification.contractId);
+      return;
+    }
+
+    try {
+      setNotificationActionLoading((prev) => ({ ...prev, [notification.id]: true }));
+
+      if (notification.actionType === 'complete') {
+        await contractService.completarContrato(notification.contractId);
+      } else if (notification.actionType === 'close') {
+        await contractService.cerrarContrato(notification.contractId);
+      }
+
+      setDismissedNotificationIds((prev) => [...prev, notification.id]);
+      navigate(`/contracts/${notification.contractId}`, {
+        state: notification.actionType === 'close' ? { openReview: true } : undefined,
+      });
+    } catch (error) {
+      logger.error('Error ejecutando acción rápida de notificación:', error);
+      openNotificationContract(notification.contractId);
+    } finally {
+      setNotificationActionLoading((prev) => ({ ...prev, [notification.id]: false }));
+    }
+  };
+
+  const formatNotificationDate = (dateString) => {
+    if (!dateString) return '';
+    try {
+      return new Date(dateString).toLocaleDateString('es-SV');
+    } catch {
+      return '';
+    }
   };
 
   const UserAvatar = ({ size = 36 }) => (
@@ -104,6 +233,85 @@ const Navbar = () => {
 
             <div className="navbar__actions">
               <LanguageSelector variant="icon" size="small" />
+              {isAuthenticated && (
+                <div className="navbar__notifications" ref={notificationsRef}>
+                  <button
+                    type="button"
+                    className={`navbar__icon-btn${notificationsOpen ? ' navbar__icon-btn--active' : ''}`}
+                    aria-label={nav.notifications}
+                    title={nav.notifications}
+                    aria-haspopup="menu"
+                    aria-expanded={notificationsOpen}
+                    onClick={toggleNotifications}
+                  >
+                    <Bell size={18} />
+                    {notificationCount > 0 && (
+                      <span className="navbar__notification-count">
+                        {notificationCount > 99 ? '99+' : notificationCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {notificationsOpen && (
+                    <div className="navbar__notifications-dropdown" role="menu">
+                      <div className="navbar__notifications-header">
+                        <p>{nav.notifications}</p>
+                        <span>{notificationCount}</span>
+                      </div>
+
+                      {actionableNotifications.length > 0 ? (
+                        <div className="navbar__notifications-list">
+                          {actionableNotifications.slice(0, 6).map((notification) => (
+                            <article key={notification.id} className="navbar__notification-item">
+                              <button
+                                type="button"
+                                className="navbar__notification-main"
+                                onClick={() => openNotificationContract(notification.contractId)}
+                              >
+                                <strong>{notification.contractCode}</strong>
+                                <p>{notification.message}</p>
+                                <small>{formatNotificationDate(notification.createdAt)}</small>
+                              </button>
+                              <div className="navbar__notification-actions">
+                                <button
+                                  type="button"
+                                  className="navbar__notification-action-btn"
+                                  onClick={() => runNotificationAction(notification)}
+                                  disabled={Boolean(notificationActionLoading[notification.id])}
+                                >
+                                  {notificationActionLoading[notification.id] ? 'Procesando...' : notification.actionLabel}
+                                </button>
+                              </div>
+                              <button
+                                type="button"
+                                className="navbar__notification-dismiss"
+                                onClick={() => dismissNotification(notification.id)}
+                                aria-label="Descartar notificación"
+                                title="Descartar"
+                              >
+                                ×
+                              </button>
+                            </article>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="navbar__notifications-empty">No tienes notificaciones pendientes</p>
+                      )}
+
+                      <button
+                        type="button"
+                        className="navbar__notifications-footer"
+                        onClick={() => {
+                          setNotificationsOpen(false);
+                          navigate('/dashboard#notifications');
+                        }}
+                      >
+                        Ver todas en dashboard
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {isAuthenticated ? (
                 <div className="navbar__profile" ref={profileRef}>
@@ -163,6 +371,25 @@ const Navbar = () => {
           {/* ── Mobile actions ── */}
           <div className="navbar__mobile-actions">
             <LanguageSelector variant="icon" size="small" />
+            {isAuthenticated && (
+              <button
+                type="button"
+                className="navbar__icon-btn"
+                aria-label={nav.notifications}
+                title={nav.notifications}
+                onClick={() => {
+                  closeMobile();
+                  navigate('/dashboard#notifications');
+                }}
+              >
+                <Bell size={18} />
+                {notificationCount > 0 && (
+                  <span className="navbar__notification-count">
+                    {notificationCount > 99 ? '99+' : notificationCount}
+                  </span>
+                )}
+              </button>
+            )}
             <button
               className="navbar__hamburger"
               onClick={() => setMobileOpen(true)}

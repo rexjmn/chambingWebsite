@@ -2,27 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import adminService from '../../services/adminService';
 import { logger } from '../../utils/logger';
 
-const CATEGORIES = [
-  'Electricidad',
-  'Plomeria',
-  'Carpinteria',
-  'Pintura',
-  'Jardineria',
-  'Limpieza',
-  'Construccion y Reformas',
-  'Electrodomesticos',
-  'Cuidado de Personas Mayores',
-  'Ninos y Educacion',
-  'Mecanica Automotriz',
-  'Tecnologia',
-  'Transporte y Mudanzas',
-  'Otros',
-];
-
 const emptyForm = { nombre: '', categoria: '', descripcion: '', activo: true };
 
 const SkillsManager = () => {
   const [skills, setSkills] = useState([]);
+  const [managedCategories, setManagedCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -39,8 +23,20 @@ const SkillsManager = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await adminService.getSkills(showInactive);
-      setSkills(Array.isArray(data) ? data : []);
+      const [skillsData, categoriesData] = await Promise.all([
+        adminService.getSkills(showInactive),
+        adminService.getCategories().catch((err) => {
+          logger.warn('No se pudieron cargar categorías administradas:', err);
+          return [];
+        }),
+      ]);
+      setSkills(Array.isArray(skillsData) ? skillsData : []);
+      setManagedCategories(
+        (Array.isArray(categoriesData) ? categoriesData : [])
+          .filter((category) => category?.activo !== false)
+          .map((category) => category?.nombre)
+          .filter(Boolean)
+      );
     } catch (err) {
       logger.error('Error cargando servicios:', err);
       setError('No se pudieron cargar los servicios.');
@@ -125,6 +121,11 @@ const SkillsManager = () => {
     return [...cats].sort();
   }, [skills]);
 
+  const availableCategories = useMemo(() => {
+    const merged = new Set([...managedCategories, ...existingCategories]);
+    return [...merged].sort((a, b) => a.localeCompare(b, 'es'));
+  }, [managedCategories, existingCategories]);
+
   const filtered = useMemo(() => {
     return skills.filter((s) => {
       const matchSearch =
@@ -198,7 +199,7 @@ const SkillsManager = () => {
           style={{ minWidth: '160px' }}
         >
           <option value="">Todas las categorias</option>
-          {existingCategories.map((cat) => (
+          {availableCategories.map((cat) => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
@@ -330,14 +331,9 @@ const SkillsManager = () => {
                   onChange={(e) => setForm((p) => ({ ...p, categoria: e.target.value }))}
                 >
                   <option value="">Sin categoria</option>
-                  {CATEGORIES.map((cat) => (
+                  {availableCategories.map((cat) => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
-                  {existingCategories
-                    .filter((c) => !CATEGORIES.includes(c))
-                    .map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
                 </select>
               </div>
 

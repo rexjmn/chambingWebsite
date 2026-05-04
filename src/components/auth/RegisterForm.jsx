@@ -188,12 +188,6 @@ const RegisterForm = () => {
         <div className="register-brand__orb register-brand__orb--3" />
 
         <div className="register-brand__inner">
-          {/* Logo */}
-          <div className="register-brand__logo">
-            <span className="register-brand__logo-mark">C</span>
-            <span className="register-brand__logo-name">Chambing</span>
-          </div>
-
           {/* Headline + trust */}
           <div className="register-brand__text-area">
             <h2 className="register-brand__headline">
@@ -239,12 +233,6 @@ const RegisterForm = () => {
       {/* ── Right form panel ── */}
       <div className="register-form-panel">
         <div className="register-form-panel__scroll">
-
-          {/* Mobile logo */}
-          <div className="register-mobile-logo">
-            <span className="register-brand__logo-mark">C</span>
-            <span className="register-brand__logo-name">Chambing</span>
-          </div>
 
           <div className="register-header">
             <h1 className="register-title">{t('auth.register.title')}</h1>

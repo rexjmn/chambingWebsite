@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { contractService } from '../services/contractService';
 import { reviewService } from '../services/reviewService';
@@ -26,12 +26,15 @@ const ContractDetails = () => {
   const { t } = useTranslation();
   const { contractId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviewTarget, setReviewTarget] = useState(null); // { calificadoId, calificadoNombre, titulo }
   const [contractReviews, setContractReviews] = useState([]);
+  const [reviewsLoaded, setReviewsLoaded] = useState(false);
+  const [autoReviewPrompted, setAutoReviewPrompted] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState(null);
   const [codigoConfirmacion, setCodigoConfirmacion] = useState('');
@@ -61,9 +64,14 @@ const ContractDetails = () => {
 
   useEffect(() => {
     if (contract?.estado === 'cerrado') {
+      setReviewsLoaded(false);
       reviewService.getContractReviews(contractId)
         .then(res => setContractReviews(res.data || []))
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => setReviewsLoaded(true));
+    } else {
+      setContractReviews([]);
+      setReviewsLoaded(false);
     }
   }, [contract?.estado, contractId]);
 
@@ -202,6 +210,36 @@ const ContractDetails = () => {
 
   // Determina si el usuario actual ya dejó una reseña en este contrato
   const yaResene = contractReviews.some(r => String(r.calificador?.id) === String(user?.id));
+
+  useEffect(() => {
+    if (!contract || !user) return;
+    if (contract.estado !== 'cerrado') return;
+    if (!reviewsLoaded) return;
+    if (yaResene) return;
+    if (reviewTarget || autoReviewPrompted) return;
+
+    const otro = esTrabajador ? contract.empleador : contract.trabajador;
+    if (!otro?.id) return;
+
+    const shouldAutoOpen = Boolean(location.state?.openReview) || true;
+    if (!shouldAutoOpen) return;
+
+    setReviewTarget({
+      calificadoId: otro.id,
+      calificadoNombre: `${otro?.nombre || ''} ${otro?.apellido || ''}`.trim(),
+      titulo: esTrabajador ? 'Califica al cliente' : 'Califica al trabajador',
+    });
+    setAutoReviewPrompted(true);
+  }, [
+    contract,
+    user,
+    reviewsLoaded,
+    yaResene,
+    reviewTarget,
+    autoReviewPrompted,
+    esTrabajador,
+    location.state,
+  ]);
 
   if (loading) {
     return (

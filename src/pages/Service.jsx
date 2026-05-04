@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLoaderData } from 'react-router';
+import { useSearchParams } from 'react-router-dom';
 import { X, SlidersHorizontal, Search } from 'lucide-react';
 import WorkerCard from '../components/WorkerCard';
 import { logger } from '../utils/logger';
@@ -17,6 +18,47 @@ const CATEGORIES = [
   { id: 'catering',           label: 'Cocina',      icon: '🍳' },
   { id: 'seguridad',          label: 'Seguridad',   icon: '🛡️' },
 ];
+
+const CATEGORY_ALIASES = {
+  limpieza_domestica: ['limpieza domestica', 'limpieza', 'lavanderia', 'limpieza de oficinas'],
+  plomeria: ['plomeria', 'instalacion sanitarios', 'destapes', 'fontaneria'],
+  electricidad: ['electricidad', 'instalacion electrica', 'electrico', 'reparacion electrodomesticos'],
+  jardineria: ['jardineria', 'jardin', 'paisajismo', 'poda'],
+  carpinteria: ['carpinteria', 'muebles', 'ebanisteria'],
+  construccion: ['construccion', 'albanileria', 'albanilería', 'obra', 'obras'],
+  pintura: ['pintura', 'pintor', 'pintar'],
+  mecanica: ['mecanica', 'mecanica automotriz', 'mecánico', 'mecanico'],
+  catering: ['cocina', 'catering', 'chef', 'comida'],
+  seguridad: ['seguridad', 'vigilancia', 'guardia'],
+};
+
+const normalizeText = (value = '') =>
+  String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
+const getWorkerSkillNames = (worker) => {
+  const source = worker?.skills || worker?.habilidades || [];
+  if (!Array.isArray(source)) return [];
+  return source
+    .map((skill) => {
+      if (typeof skill === 'string') return skill;
+      return skill?.nombre || skill?.name || '';
+    })
+    .filter(Boolean)
+    .map(normalizeText);
+};
+
+const workerMatchesCategory = (worker, categoryId) => {
+  if (!categoryId) return true;
+  const aliases = CATEGORY_ALIASES[categoryId] || [];
+  if (aliases.length === 0) return true;
+  const normalizedAliases = aliases.map(normalizeText);
+  const skills = getWorkerSkillNames(worker);
+  return skills.some((skill) => normalizedAliases.some((alias) => skill.includes(alias) || alias.includes(skill)));
+};
 
 const DEPARTMENTS = [
   { id: '', name: 'Cualquier lugar' },
@@ -47,17 +89,20 @@ const MODALITIES = [
 
 const Service = () => {
   const loaderData = useLoaderData();
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get('search') || '';
+  const initialCategory = searchParams.get('categoria') || '';
   const [workers, setWorkers] = useState(loaderData?.initialWorkers || []);
   const [loading, setLoading] = useState(!loaderData?.initialWorkers?.length);
   const [error, setError] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  const [searchText, setSearchText] = useState('');
-  const [committedSearch, setCommittedSearch] = useState('');
+  const [searchText, setSearchText] = useState(initialSearch);
+  const [committedSearch, setCommittedSearch] = useState(initialSearch);
   const searchDebounce = useRef(null);
 
   const [filters, setFilters] = useState({
-    categoria: '',
+    categoria: initialCategory,
     departamento: '',
     modalidad: '',
     fechaInicio: '',
@@ -84,7 +129,8 @@ const Service = () => {
 
       if (filters.departamento) params.append('departamento', filters.departamento);
       if (committedSearch.trim()) params.append('search', committedSearch.trim());
-      if (filters.categoria)    params.append('categoria', filters.categoria);
+      // Nota: el backend no siempre mapea categoria->skills de forma consistente.
+      // Hacemos filtro robusto en frontend con habilidades reales del trabajador.
       if (filters.fechaInicio)  params.append('fechaInicio', filters.fechaInicio);
       if (filters.fechaFin)     params.append('fechaFin', filters.fechaFin);
       if (filters.modalidad)    params.append('modalidad', filters.modalidad);
@@ -99,7 +145,12 @@ const Service = () => {
       const arr = data.status === 'success' ? data.data
         : Array.isArray(data) ? data
         : data.data || [];
-      setWorkers(arr);
+
+      const filteredByCategory = filters.categoria
+        ? arr.filter((worker) => workerMatchesCategory(worker, filters.categoria))
+        : arr;
+
+      setWorkers(filteredByCategory);
     } catch (err) {
       logger.error('Error fetching workers:', err);
       setError(err.message);
