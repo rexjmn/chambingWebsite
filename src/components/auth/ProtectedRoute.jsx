@@ -6,6 +6,11 @@ const ProtectedRoute = ({ children, requiredRoles = [] }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
+  const userRoles = [
+    ...(Array.isArray(user?.roles) ? user.roles : []),
+    ...(user?.tipo_usuario ? [String(user.tipo_usuario)] : []),
+  ].map((role) => role.toLowerCase());
+
   // Mostrar loading mientras verifica autenticación
   if (loading) {
     return (
@@ -37,7 +42,9 @@ const ProtectedRoute = ({ children, requiredRoles = [] }) => {
 
   // Si se requieren roles específicos, verificar
   if (requiredRoles.length > 0) {
-    const hasRequiredRole = requiredRoles.includes(user.tipo_usuario);
+    const hasRequiredRole = requiredRoles.some((role) =>
+      userRoles.includes(String(role).toLowerCase()),
+    );
     
     if (!hasRequiredRole) {
       // Si no tiene el rol requerido, redirigir al dashboard normal

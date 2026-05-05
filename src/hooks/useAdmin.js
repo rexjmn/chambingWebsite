@@ -8,9 +8,14 @@ export const useAdmin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const userRoles = [
+    ...(Array.isArray(user?.roles) ? user.roles : []),
+    ...(user?.tipo_usuario ? [user.tipo_usuario] : []),
+  ].map((role) => String(role).toLowerCase());
+
   // Verificar si el usuario es admin o super admin
-  const isAdmin = user?.tipo_usuario === 'admin' || user?.tipo_usuario === 'super_admin';
-  const isSuperAdmin = user?.tipo_usuario === 'super_admin';
+  const isSuperAdmin = userRoles.includes('super_admin');
+  const isAdmin = isSuperAdmin || userRoles.includes('admin');
 
   // Wrapper genérico para manejar operaciones async con loading y error
   const executeAdminOperation = useCallback(async (operation) => {

@@ -28,9 +28,13 @@ export const AdminProvider = ({ children }) => {
       };
     }
 
-    const userRole = user.tipo_usuario?.toLowerCase();
-    const isSuperAdmin = userRole === 'super_admin' || userRole === 'superadmin';
-    const isAdmin = isSuperAdmin || userRole === 'admin';
+    const userRoles = [
+      ...(Array.isArray(user?.roles) ? user.roles : []),
+      ...(user?.tipo_usuario ? [user.tipo_usuario] : []),
+    ].map((role) => String(role).toLowerCase());
+
+    const isSuperAdmin = userRoles.includes('super_admin') || userRoles.includes('superadmin');
+    const isAdmin = isSuperAdmin || userRoles.includes('admin');
 
     return {
       isAdmin,

@@ -1678,6 +1678,215 @@ $sidebar-collapsed-width: 68px;
   }
 }
 
+// Roles manager
+.admin-roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.admin-role-card {
+  background: $admin-white;
+  border: 1px solid $admin-border;
+  border-radius: 14px;
+  box-shadow: $admin-shadow;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 260px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $admin-shadow-lg;
+    border-color: rgba($admin-primary, 0.2);
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.875rem;
+    padding: 1rem 1rem 0.75rem;
+    border-bottom: 1px solid rgba($admin-border, 0.75);
+
+    h3 {
+      margin: 0.5rem 0 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: $admin-text;
+      line-height: 1.35;
+    }
+  }
+
+  &__level {
+    align-self: flex-start;
+    background: rgba($admin-primary, 0.08);
+    color: $admin-primary;
+    border: 1px solid rgba($admin-primary, 0.2);
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.28rem 0.65rem;
+    white-space: nowrap;
+  }
+
+  &__body {
+    padding: 0.875rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+
+    h4 {
+      margin: 0;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: $admin-text-light;
+    }
+  }
+
+  &__empty {
+    margin: 0;
+    padding: 0.875rem;
+    border-radius: 10px;
+    background: rgba($admin-info, 0.06);
+    border: 1px dashed rgba($admin-info, 0.25);
+    color: $admin-text-light;
+    font-size: 0.875rem;
+  }
+
+  &__footer {
+    margin-top: auto;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid rgba($admin-border, 0.75);
+    background: rgba($admin-primary, 0.02);
+
+    small {
+      color: $admin-text-light;
+      font-size: 0.75rem;
+    }
+  }
+}
+
+.admin-role-users {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.admin-role-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba($admin-border, 0.85);
+  background: rgba($admin-bg, 0.8);
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+
+    strong {
+      display: block;
+      color: $admin-text;
+      font-size: 0.875rem;
+      line-height: 1.25;
+    }
+
+    span {
+      display: block;
+      color: $admin-text-light;
+      font-size: 0.75rem;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 190px;
+    }
+  }
+
+  &__avatar,
+  &__avatar-placeholder {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, $admin-primary, $admin-primary-dark);
+    color: $admin-white;
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+}
+
+.admin-permissions-info {
+  background: $admin-white;
+  border: 1px solid $admin-border;
+  border-radius: 14px;
+  box-shadow: $admin-shadow;
+  padding: 1.25rem;
+
+  h3 {
+    margin: 0 0 1rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: $admin-text;
+  }
+}
+
+.admin-permissions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.875rem;
+}
+
+.admin-permission-card {
+  border: 1px solid rgba($admin-border, 0.85);
+  border-radius: 12px;
+  padding: 0.95rem;
+  background: linear-gradient(180deg, rgba($admin-primary, 0.025), rgba($admin-primary, 0));
+
+  h4 {
+    margin: 0 0 0.55rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $admin-text;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  li {
+    color: $admin-text-light;
+    font-size: 0.85rem;
+    line-height: 1.35;
+  }
+}
+
+.admin-modal {
+  .admin-form {
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+}
+
 // Animations
 @keyframes spin {
   to {
