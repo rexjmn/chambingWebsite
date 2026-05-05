@@ -2,7 +2,7 @@
   "common": {
     "loading": "Cargando...",
     "error": "Error",
-    "success": "Éxito",
+    "success": "Ã‰xito",
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "save": "Guardar",
@@ -26,12 +26,12 @@
   "admin": {
     "dashboard": {
       "title": "Panel Administrativo",
-      "welcome": "Bienvenido al Panel de Administración",
-      "stats": "Estadísticas Generales",
+      "welcome": "Bienvenido al Panel de AdministraciÃ³n",
+      "stats": "EstadÃ­sticas Generales",
       "filters": {
         "week": "Semana",
         "month": "Mes",
-        "year": "Año"
+        "year": "AÃ±o"
       }
     },
     "stats": {
@@ -41,10 +41,10 @@
       "monthlyRevenue": "Ingresos del Mes",
       "vsPreviousMonth": "vs mes anterior",
       "inProgress": "en progreso",
-      "requireAttention": "requieren atención",
+      "requireAttention": "requieren atenciÃ³n",
       "userGrowth": "Crecimiento de Usuarios",
       "recentActivity": "Actividad Reciente",
-      "requiresAttention": "⚠️ Requieren Atención",
+      "requiresAttention": "âš ï¸ Requieren AtenciÃ³n",
       "documentsToVerify": "Documentos por verificar",
       "pendingContracts": "Contratos pendientes",
       "unresolvedReports": "Reportes sin resolver",
@@ -61,20 +61,20 @@
       }
     },
     "users": {
-      "title": "Gestión de Usuarios",
+      "title": "GestiÃ³n de Usuarios",
       "subtitle": "Administra todos los usuarios de la plataforma",
       "searchPlaceholder": "Buscar por nombre o email...",
       "filters": {
         "all": "Todos",
-        "employers": "💼 Empleadores",
-        "workers": "👷 Trabajadores",
-        "admins": "👨‍💼 Admins"
+        "employers": "ðŸ’¼ Empleadores",
+        "workers": "ðŸ‘· Trabajadores",
+        "admins": "ðŸ‘¨â€ðŸ’¼ Admins"
       },
       "table": {
         "user": "Usuario",
         "email": "Email",
         "type": "Tipo",
-        "location": "Ubicación",
+        "location": "UbicaciÃ³n",
         "registrationDate": "Registro",
         "actions": "Acciones"
       },
@@ -91,17 +91,17 @@
       },
       "details": {
         "title": "Detalles del Usuario",
-        "phone": "Teléfono",
+        "phone": "TelÃ©fono",
         "dui": "DUI",
-        "location": "Ubicación",
-        "address": "Dirección",
+        "location": "UbicaciÃ³n",
+        "address": "DirecciÃ³n",
         "registrationDate": "Fecha de registro",
         "notRegistered": "No registrado",
         "notRegisteredAddress": "No registrada"
       },
       "confirmations": {
-        "delete": "⚠️ ¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.",
-        "suspendReason": "Motivo de la suspensión:"
+        "delete": "âš ï¸ Â¿EstÃ¡s seguro de eliminar este usuario? Esta acciÃ³n no se puede deshacer.",
+        "suspendReason": "Motivo de la suspensiÃ³n:"
       },
       "messages": {
         "deleteSuccess": "Usuario eliminado exitosamente",
@@ -112,7 +112,7 @@
       },
       "empty": {
         "title": "No se encontraron usuarios",
-        "subtitle": "Intenta con otros filtros de búsqueda"
+        "subtitle": "Intenta con otros filtros de bÃºsqueda"
       },
       "stats": {
         "total": "Total de usuarios",
@@ -122,14 +122,14 @@
       }
     },
     "contracts": {
-      "title": "Gestión de Contratos",
+      "title": "GestiÃ³n de Contratos",
       "subtitle": "Supervisa y gestiona todos los contratos de la plataforma",
       "filters": {
         "all": "Todos",
-        "pending": "⏳ Pendientes",
-        "inProgress": "🔄 En Progreso",
-        "completed": "✅ Completados",
-        "cancelled": "❌ Cancelados"
+        "pending": "â³ Pendientes",
+        "inProgress": "ðŸ”„ En Progreso",
+        "completed": "âœ… Completados",
+        "cancelled": "âŒ Cancelados"
       },
       "stats": {
         "total": "Total de contratos",
@@ -140,7 +140,7 @@
       "card": {
         "employer": "Empleador:",
         "worker": "Trabajador:",
-        "category": "Categoría:",
+        "category": "CategorÃ­a:",
         "amount": "Monto:",
         "startDate": "Inicio:",
         "endDate": "Fin:",
@@ -157,24 +157,24 @@
       },
       "details": {
         "title": "Detalles del Contrato {{code}}",
-        "generalInfo": "Información General",
-        "code": "Código:",
+        "generalInfo": "InformaciÃ³n General",
+        "code": "CÃ³digo:",
         "status": "Estado:",
         "amount": "Monto:",
-        "category": "Categoría:",
+        "category": "CategorÃ­a:",
         "parties": "Partes del Contrato",
-        "employer": "💼 Empleador",
-        "worker": "👷 Trabajador",
+        "employer": "ðŸ’¼ Empleador",
+        "worker": "ðŸ‘· Trabajador",
         "history": "Historial de Estados",
         "changeStatus": "Cambiar Estado",
         "markAs": "Marcar como {{status}}",
         "createdWith": "Contrato creado con estado \"{{status}}\"",
         "changedFrom": "Cambio de \"{{from}}\" a \"{{to}}\"",
         "by": "Por: {{user}}",
-        "notes": "💬 {{notes}}"
+        "notes": "ðŸ’¬ {{notes}}"
       },
       "confirmations": {
-        "changeStatus": "¿Cambiar estado del contrato a \"{{status}}\"?"
+        "changeStatus": "Â¿Cambiar estado del contrato a \"{{status}}\"?"
       },
       "messages": {
         "statusUpdateSuccess": "Estado actualizado exitosamente",
@@ -184,11 +184,11 @@
       },
       "empty": {
         "title": "No hay contratos {{status}}",
-        "subtitle": "Los contratos aparecerán aquí cuando sean creados"
+        "subtitle": "Los contratos aparecerÃ¡n aquÃ­ cuando sean creados"
       }
     },
     "roles": {
-      "title": "Gestión de Roles Administrativos",
+      "title": "GestiÃ³n de Roles Administrativos",
       "subtitle": "Asigna y gestiona roles especiales para usuarios",
       "assignRole": "Asignar Rol",
       "stats": {
@@ -213,35 +213,35 @@
         "selectUserPlaceholder": "-- Selecciona un usuario --",
         "selectRole": "Seleccionar Rol *",
         "selectRolePlaceholder": "-- Selecciona un rol --",
-        "warning": "⚠️ Importante:",
-        "warningText": "Los roles administrativos otorgan permisos especiales. Asegúrate de asignarlos solo a usuarios de confianza.",
+        "warning": "âš ï¸ Importante:",
+        "warningText": "Los roles administrativos otorgan permisos especiales. AsegÃºrate de asignarlos solo a usuarios de confianza.",
         "assignButton": "Asignar Rol"
       },
       "permissions": {
-        "title": "📋 Información sobre Roles",
+        "title": "ðŸ“‹ InformaciÃ³n sobre Roles",
         "superAdmin": {
-          "title": "👑 Super Admin",
+          "title": "ðŸ‘‘ Super Admin",
           "perm1": "Acceso total a todas las funciones",
           "perm2": "Puede asignar y remover cualquier rol",
           "perm3": "Puede eliminar administradores",
-          "perm4": "Gestión completa de la plataforma"
+          "perm4": "GestiÃ³n completa de la plataforma"
         },
         "admin": {
-          "title": "👨‍💼 Admin",
-          "perm1": "Gestionar categorías y servicios",
+          "title": "ðŸ‘¨â€ðŸ’¼ Admin",
+          "perm1": "Gestionar categorÃ­as y servicios",
           "perm2": "Verificar documentos",
           "perm3": "Gestionar contratos",
           "perm4": "Administrar usuarios regulares"
         },
         "verifier": {
-          "title": "✓ Verificador",
+          "title": "âœ“ Verificador",
           "perm1": "Verificar documentos de trabajadores",
-          "perm2": "Revisar información de usuarios",
-          "perm3": "Aprobar o rechazar documentación"
+          "perm2": "Revisar informaciÃ³n de usuarios",
+          "perm3": "Aprobar o rechazar documentaciÃ³n"
         }
       },
       "confirmations": {
-        "removeRole": "¿Estás seguro de remover este rol del usuario?"
+        "removeRole": "Â¿EstÃ¡s seguro de remover este rol del usuario?"
       },
       "messages": {
         "assignSuccess": "Rol asignado exitosamente",
@@ -256,30 +256,30 @@
       "users": "Cargando usuarios...",
       "contracts": "Cargando contratos...",
       "roles": "Cargando roles...",
-      "stats": "Cargando estadísticas..."
+      "stats": "Cargando estadÃ­sticas..."
     }
   },
   "nav": {
     "home": "Inicio",
     "services": "Servicios",
     "dashboard": "Dashboard",
-    "adminPanel": "Administración",
+    "adminPanel": "AdministraciÃ³n",
     "notifications": "Notificaciones",
     "profile": "Mi Perfil",
-    "login": "Iniciar Sesión",
+    "login": "Iniciar SesiÃ³n",
     "register": "Registrarse",
-    "logout": "Cerrar Sesión"
+    "logout": "Cerrar SesiÃ³n"
   },
   "auth": {
     "login": {
-      "title": "Iniciar Sesión",
+      "title": "Iniciar SesiÃ³n",
       "subtitle": "Accede a tu cuenta de ChambingApp",
       "email": "Email",
-      "password": "Contraseña",
-      "loginButton": "Iniciar Sesión",
-      "loginButtonLoading": "Iniciando sesión...",
-      "noAccount": "¿No tienes cuenta?",
-      "registerHere": "Regístrate aquí",
+      "password": "ContraseÃ±a",
+      "loginButton": "Iniciar SesiÃ³n",
+      "loginButtonLoading": "Iniciando sesiÃ³n...",
+      "noAccount": "Â¿No tienes cuenta?",
+      "registerHere": "RegÃ­strate aquÃ­",
       "testData": "Datos de prueba para testing:",
       "clientUser": "Usuario Cliente",
       "workerUser": "Usuario Trabajador",
@@ -287,111 +287,111 @@
     },
     "register": {
       "title": "Crear Cuenta",
-      "subtitle": "Únete a la comunidad de ChambingApp",
+      "subtitle": "Ãšnete a la comunidad de ChambingApp",
       "name": "Nombre",
       "lastName": "Apellido",
       "email": "Email",
-      "phone": "Teléfono",
-      "phoneCountryAria": "Código de país",
+      "phone": "TelÃ©fono",
+      "phoneCountryAria": "CÃ³digo de paÃ­s",
       "dui": "DUI",
       "department": "Departamento",
       "municipality": "Municipio",
-      "address": "Dirección",
-      "password": "Contraseña",
-      "confirmPassword": "Confirmar Contraseña",
+      "address": "DirecciÃ³n",
+      "password": "ContraseÃ±a",
+      "confirmPassword": "Confirmar ContraseÃ±a",
       "userType": "Tipo de Usuario",
       "client": "Cliente - Busco servicios",
       "worker": "Trabajador - Ofrezco servicios",
-      "clientHelp": "Podrás contratar servicios",
-      "workerHelp": "Podrás ofrecer tus servicios",
+      "clientHelp": "PodrÃ¡s contratar servicios",
+      "workerHelp": "PodrÃ¡s ofrecer tus servicios",
       "registerButton": "Crear Cuenta",
       "registerButtonLoading": "Creando cuenta...",
-      "haveAccount": "¿Ya tienes cuenta?",
-      "loginHere": "Inicia sesión aquí",
+      "haveAccount": "Â¿Ya tienes cuenta?",
+      "loginHere": "Inicia sesiÃ³n aquÃ­",
       "sections": {
-        "personalInfo": "Información Personal",
-        "location": "Ubicación",
+        "personalInfo": "InformaciÃ³n Personal",
+        "location": "UbicaciÃ³n",
         "security": "Seguridad"
       },
       "placeholders": {
         "name": "Tu nombre",
         "lastName": "Tu apellido",
         "email": "tu@email.com",
-        "phone": "Número local",
+        "phone": "NÃºmero local",
         "dui": "12345678-9",
         "department": "Selecciona tu departamento",
         "municipality": "Selecciona tu municipio",
-        "address": "Tu dirección completa",
-        "password": "Mínimo 8 caracteres",
-        "confirmPassword": "Repite tu contraseña"
+        "address": "Tu direcciÃ³n completa",
+        "password": "MÃ­nimo 8 caracteres",
+        "confirmPassword": "Repite tu contraseÃ±a"
       },
       "helperTexts": {
-        "phone": "8 dígitos sin espacios",
-        "phoneIntl": "Elige el país y escribe solo tu número local (sin +). Por defecto sugerimos el prefijo según tu conexión; puedes cambiarlo.",
+        "phone": "8 dÃ­gitos sin espacios",
+        "phoneIntl": "Elige el paÃ­s y escribe solo tu nÃºmero local (sin +). Por defecto sugerimos el prefijo segÃºn tu conexiÃ³n; puedes cambiarlo.",
         "dui": "Formato: 12345678-9",
-        "duiOptional": "Opcional - Solo para trabajadores que desean verificación",
-        "workerInfo": "Como trabajador, podrás crear tu perfil profesional y recibir ofertas de trabajo"
+        "duiOptional": "Opcional - Solo para trabajadores que desean verificaciÃ³n",
+        "workerInfo": "Como trabajador, podrÃ¡s crear tu perfil profesional y recibir ofertas de trabajo"
       },
       "passwordStrength": {
         "label": "Fortaleza",
-        "weak": "Débil",
+        "weak": "DÃ©bil",
         "medium": "Media",
         "strong": "Fuerte",
-        "requirements": "Requisitos de contraseña:",
-        "minLength": "Mínimo 8 caracteres",
-        "hasUpperCase": "Una letra mayúscula",
-        "hasLowerCase": "Una letra minúscula",
-        "hasNumber": "Un número",
-        "hasSpecialChar": "Un carácter especial (!@#$%)"
+        "requirements": "Requisitos de contraseÃ±a:",
+        "minLength": "MÃ­nimo 8 caracteres",
+        "hasUpperCase": "Una letra mayÃºscula",
+        "hasLowerCase": "Una letra minÃºscula",
+        "hasNumber": "Un nÃºmero",
+        "hasSpecialChar": "Un carÃ¡cter especial (!@#$%)"
       },
       "validation": {
         "nameRequired": "El nombre es requerido",
         "lastNameRequired": "El apellido es requerido",
         "emailRequired": "El email es requerido",
-        "emailInvalid": "Email inválido",
-        "phoneRequired": "El teléfono es requerido",
-        "phoneInvalid": "Teléfono inválido para el país seleccionado",
-        "duiInvalid": "DUI inválido. Formato: 12345678-9",
+        "emailInvalid": "Email invÃ¡lido",
+        "phoneRequired": "El telÃ©fono es requerido",
+        "phoneInvalid": "TelÃ©fono invÃ¡lido para el paÃ­s seleccionado",
+        "duiInvalid": "DUI invÃ¡lido. Formato: 12345678-9",
         "departmentRequired": "El departamento es requerido",
         "municipalityRequired": "El municipio es requerido",
-        "addressRequired": "La dirección es requerida",
-        "passwordRequired": "La contraseña es requerida",
-        "passwordMin": "La contraseña debe tener al menos 8 caracteres",
-        "passwordStrength": "La contraseña debe ser más fuerte",
-        "confirmPasswordRequired": "Debes confirmar tu contraseña",
-        "passwordMatch": "Las contraseñas no coinciden",
+        "addressRequired": "La direcciÃ³n es requerida",
+        "passwordRequired": "La contraseÃ±a es requerida",
+        "passwordMin": "La contraseÃ±a debe tener al menos 8 caracteres",
+        "passwordStrength": "La contraseÃ±a debe ser mÃ¡s fuerte",
+        "confirmPasswordRequired": "Debes confirmar tu contraseÃ±a",
+        "passwordMatch": "Las contraseÃ±as no coinciden",
         "invalidCharacters": "Caracteres no permitidos detectados",
         "userTypeRequired": "Debes seleccionar un tipo de usuario"
       }
     },
     "validation": {
       "required": "Este campo es requerido",
-      "emailInvalid": "Email inválido",
-      "passwordMin": "La contraseña debe tener al menos 6 caracteres",
-      "passwordMatch": "Las contraseñas deben coincidir"
+      "emailInvalid": "Email invÃ¡lido",
+      "passwordMin": "La contraseÃ±a debe tener al menos 6 caracteres",
+      "passwordMatch": "Las contraseÃ±as deben coincidir"
     }
   },
   "home": {
     "hero": {
       "title": "Conectamos talento con oportunidades",
-      "subtitle": "Encuentra profesionales calificados para tu hogar o únete como trabajador independiente",
+      "subtitle": "Encuentra profesionales calificados para tu hogar o Ãºnete como trabajador independiente",
       "startNow": "Comenzar Ahora",
-      "login": "Iniciar Sesión",
+      "login": "Iniciar SesiÃ³n",
       "dashboard": "Ir a Dashboard"
     },
     "search": {
       "placeholder": "Buscar servicios...",
-      "placeholderLong": "¿Qué servicio necesitas? Ej: limpieza, plomería, electricista...",
+      "placeholderLong": "Â¿QuÃ© servicio necesitas? Ej: limpieza, plomerÃ­a, electricista...",
       "searchNow": "Buscar Ahora",
-      "mostRequested": "Más solicitados:",
+      "mostRequested": "MÃ¡s solicitados:",
       "servicesCompleted": "+2,500 servicios completados este mes",
       "popularTags": {
-        "domesticCleaning": "Limpieza Doméstica",
-        "plumbing247": "Plomería 24/7",
+        "domesticCleaning": "Limpieza DomÃ©stica",
+        "plumbing247": "PlomerÃ­a 24/7",
         "electrician": "Electricista",
-        "gardening": "Jardinería",
-        "carpentry": "Carpintería",
-        "construction": "Construcción"
+        "gardening": "JardinerÃ­a",
+        "carpentry": "CarpinterÃ­a",
+        "construction": "ConstrucciÃ³n"
       }
     },
     "services": {
@@ -402,30 +402,30 @@
     "workers": {
       "loading": "Cargando profesionales...",
       "featured": "Profesionales Destacados",
-      "featuredSubtitle": "Los más solicitados de la semana",
+      "featuredSubtitle": "Los mÃ¡s solicitados de la semana",
       "topRated": "Mejor Valorados",
       "topRatedSubtitle": "Calidad garantizada por nuestros usuarios"
     },
     "stats": {
       "verifiedProfessionals": "Profesionales Verificados",
       "completedServices": "Servicios Completados",
-      "averageRating": "Calificación Promedio",
+      "averageRating": "CalificaciÃ³n Promedio",
       "satisfiedClients": "Clientes Satisfechos"
     },
     "features": {
-      "title": "¿Por qué elegirnos?",
+      "title": "Â¿Por quÃ© elegirnos?",
       "subtitle": "Todo lo que necesitas para contratar con confianza",
       "verifiedWorkers": {
         "title": "Trabajadores Verificados",
-        "description": "Todos nuestros profesionales pasan por un proceso de verificación riguroso"
+        "description": "Todos nuestros profesionales pasan por un proceso de verificaciÃ³n riguroso"
       },
       "availability": {
         "title": "Disponibilidad 24/7",
-        "description": "Encuentra ayuda cuando la necesites, cualquier día de la semana"
+        "description": "Encuentra ayuda cuando la necesites, cualquier dÃ­a de la semana"
       },
       "securePayments": {
         "title": "Pagos Seguros",
-        "description": "Sistema de pagos protegido con múltiples opciones de pago"
+        "description": "Sistema de pagos protegido con mÃºltiples opciones de pago"
       }
     },
     "testimonials": {
@@ -434,30 +434,30 @@
       "subtitle": "Historias reales de nuestros usuarios"
     },
     "cta": {
-      "title": "¿Listo para comenzar?",
-      "subtitle": "Únete a miles de usuarios satisfechos en El Salvador",
+      "title": "Â¿Listo para comenzar?",
+      "subtitle": "Ãšnete a miles de usuarios satisfechos en El Salvador",
       "createAccount": "Crear Cuenta Gratis",
       "familyTitle": "Busco un profesional",
       "familyDesc": "Encuentra el experto que necesitas para tu hogar, verificado y con buenas calificaciones.",
       "workerTitle": "Ofrezco mis servicios",
-      "workerDesc": "Regístrate gratis y accede a clientes en toda tu zona. Más ingresos, más libertad.",
+      "workerDesc": "RegÃ­strate gratis y accede a clientes en toda tu zona. MÃ¡s ingresos, mÃ¡s libertad.",
       "findProfessional": "Buscar ahora"
     },
     "about": {
       "badge": "Sobre Chambing",
       "value1": "Solo profesionales verificados y calificados",
-      "value2": "Calificación promedio de 4.8 / 5 en todos los servicios",
-      "value3": "Respuesta rápida — profesionales responden en menos de 24h",
+      "value2": "CalificaciÃ³n promedio de 4.8 / 5 en todos los servicios",
+      "value3": "Respuesta rÃ¡pida â€” profesionales responden en menos de 24h",
       "trustSub": "La plataforma #1 de servicios en El Salvador",
       "verified": "Perfiles 100% verificados y pagos seguros"
     },
     "howItWorks": {
-      "badge": "Cómo funciona",
-      "title": "Simple, rápido y confiable",
+      "badge": "CÃ³mo funciona",
+      "title": "Simple, rÃ¡pido y confiable",
       "subtitle": "Encuentra el profesional ideal en minutos, sin complicaciones.",
       "step1": {
         "title": "Describe lo que necesitas",
-        "desc": "Busca el servicio, indica tu ubicación y cuándo lo necesitas. Menos de un minuto."
+        "desc": "Busca el servicio, indica tu ubicaciÃ³n y cuÃ¡ndo lo necesitas. Menos de un minuto."
       },
       "step2": {
         "title": "Elige tu profesional",
@@ -465,12 +465,12 @@
       },
       "step3": {
         "title": "Trabajo hecho",
-        "desc": "El profesional llega, realiza el trabajo y tú calificas la experiencia."
+        "desc": "El profesional llega, realiza el trabajo y tÃº calificas la experiencia."
       }
     }
   },
   "dashboard": {
-    "welcome": "¡Bienvenido, {{name}}!",
+    "welcome": "Â¡Bienvenido, {{name}}!",
     "editProfile": "Editar Perfil",
     "changePhoto": "Cambiar Foto de Perfil",
     "userType": "Tipo: {{type}}",
@@ -488,7 +488,7 @@
     "viewWorkers": "Ver Trabajadores",
     "viewDetails": "Ver Detalles",
     "noContracts": {
-      "title": "No tienes contratos aún",
+      "title": "No tienes contratos aÃºn",
       "subtitle": "Comienza explorando nuestros servicios disponibles",
       "exploreServices": "Explorar Servicios"
     },
@@ -498,13 +498,13 @@
       "status": "Estado: {{status}}",
       "date": "Fecha: {{date}}",
       "viewDetails": "Ver Detalles",
-      "category": "Categoría:",
+      "category": "CategorÃ­a:",
       "amount": "Monto:",
-      "activationPin": "PIN de activación:",
+      "activationPin": "PIN de activaciÃ³n:",
       "activateContract": "Activar Contrato",
       "enterPin": "Ingresa el PIN para activar el contrato {{code}}:",
       "activating": "Activando contrato...",
-      "activated": "¡Contrato activado exitosamente!",
+      "activated": "Â¡Contrato activado exitosamente!",
       "activationError": "Error al activar el contrato"
     }
   },
@@ -512,16 +512,16 @@
     "pageTitle": "Encuentra Profesionales Verificados",
     "pageSubtitle": "Conecta con trabajadores calificados y confiables en El Salvador",
     "metaTitle": "Servicios Profesionales en El Salvador | ChambingApp",
-    "metaDescription": "Encuentra profesionales verificados en El Salvador para limpieza, plomería, electricidad, jardinería y más. Contrata con confianza en ChambingApp.",
+    "metaDescription": "Encuentra profesionales verificados en El Salvador para limpieza, plomerÃ­a, electricidad, jardinerÃ­a y mÃ¡s. Contrata con confianza en ChambingApp.",
     "loading": "Cargando profesionales...",
     "loadingProfessionals": "Buscando los mejores profesionales para ti...",
     "error": "Error al cargar los datos",
     "retryButton": "Intentar de nuevo",
     "filters": {
       "title": "Filtrar profesionales",
-      "searchPlaceholder": "Buscar por nombre, profesión o habilidades...",
-      "category": "Categoría",
-      "selectCategory": "Todas las categorías",
+      "searchPlaceholder": "Buscar por nombre, profesiÃ³n o habilidades...",
+      "category": "CategorÃ­a",
+      "selectCategory": "Todas las categorÃ­as",
       "department": "Departamento",
       "selectDepartment": "Todos los departamentos",
       "clearFilters": "Limpiar filtros",
@@ -531,32 +531,32 @@
       "found": "profesionales encontrados",
       "foundSingular": "profesional encontrado",
       "noResults": "No se encontraron profesionales",
-      "noResultsDescription": "Intenta ajustar tus filtros de búsqueda o explora todas las categorías",
+      "noResultsDescription": "Intenta ajustar tus filtros de bÃºsqueda o explora todas las categorÃ­as",
       "viewAll": "Ver todos los profesionales",
       "showing": "Mostrando"
     },
     "categories": {
-      "all": "Todas las categorías",
-      "domesticCleaning": "Limpieza Doméstica",
-      "plumbing": "Plomería",
+      "all": "Todas las categorÃ­as",
+      "domesticCleaning": "Limpieza DomÃ©stica",
+      "plumbing": "PlomerÃ­a",
       "electricity": "Electricidad",
-      "gardening": "Jardinería",
-      "carpentry": "Carpintería",
-      "construction": "Construcción",
+      "gardening": "JardinerÃ­a",
+      "carpentry": "CarpinterÃ­a",
+      "construction": "ConstrucciÃ³n",
       "painting": "Pintura",
-      "mechanics": "Mecánica",
+      "mechanics": "MecÃ¡nica",
       "catering": "Catering",
       "security": "Seguridad"
     },
     "descriptions": {
       "domesticCleaning": "Servicio profesional de limpieza para tu hogar",
-      "plumbing": "Reparaciones e instalaciones de plomería",
-      "electricity": "Instalaciones y reparaciones eléctricas",
-      "gardening": "Mantenimiento de jardines y áreas verdes",
+      "plumbing": "Reparaciones e instalaciones de plomerÃ­a",
+      "electricity": "Instalaciones y reparaciones elÃ©ctricas",
+      "gardening": "Mantenimiento de jardines y Ã¡reas verdes",
       "carpentry": "Trabajos en madera y muebles",
-      "construction": "Trabajos de construcción y remodelación",
+      "construction": "Trabajos de construcciÃ³n y remodelaciÃ³n",
       "painting": "Pintura profesional interior y exterior",
-      "mechanics": "Reparación y mantenimiento automotriz",
+      "mechanics": "ReparaciÃ³n y mantenimiento automotriz",
       "catering": "Servicios de catering y eventos",
       "security": "Servicios de seguridad privada"
     },
@@ -572,22 +572,22 @@
     "services": "Servicios",
     "company": "Empresa",
     "about": "Acerca de",
-    "terms": "Términos de Servicio",
-    "privacy": "Política de Privacidad",
+    "terms": "TÃ©rminos de Servicio",
+    "privacy": "PolÃ­tica de Privacidad",
     "help": "Ayuda",
     "contact": "Contacto",
     "email": "info@chambing.com",
     "phone": "+503 2234-5678",
     "address": "San Salvador, El Salvador",
-    "rights": "© 2024 ChambingApp. Todos los derechos reservados."
+    "rights": "Â© 2024 ChambingApp. Todos los derechos reservados."
   },
   "profile": {
     "photoModal": {
       "title": "Cambiar Foto de Perfil",
-      "instructions": "Haz clic en el icono de la cámara para seleccionar una nueva foto.",
-      "formats": "Formatos permitidos: JPG, PNG, WebP (máximo 5MB)",
+      "instructions": "Haz clic en el icono de la cÃ¡mara para seleccionar una nueva foto.",
+      "formats": "Formatos permitidos: JPG, PNG, WebP (mÃ¡ximo 5MB)",
       "selectedFile": "Archivo seleccionado: {{filename}}",
-      "fileSize": "Tamaño: {{size}} MB",
+      "fileSize": "TamaÃ±o: {{size}} MB",
       "uploading": "Subiendo...",
       "savePhoto": "Guardar Foto",
       "errors": {
@@ -598,57 +598,57 @@
     }
   },
   "errors": {
-    "networkError": "Error de conexión",
+    "networkError": "Error de conexiÃ³n",
     "serverError": "Error del servidor",
-    "authError": "Error de autenticación",
-    "validationError": "Error de validación",
+    "authError": "Error de autenticaciÃ³n",
+    "validationError": "Error de validaciÃ³n",
     "notFound": "No encontrado",
     "permissionDenied": "Permiso denegado",
     "unknown": "Error desconocido"
   },
   "success": {
-    "login": "Inicio de sesión exitoso",
+    "login": "Inicio de sesiÃ³n exitoso",
     "register": "Registro exitoso",
     "profileUpdated": "Perfil actualizado",
     "contractCreated": "Contrato creado",
     "paymentCompleted": "Pago completado",
-    "generic": "Operación exitosa"
+    "generic": "OperaciÃ³n exitosa"
   },
   "departments": {
-    "ahuachapan": "Ahuachapán",
-    "cabanas": "Cabañas",
+    "ahuachapan": "AhuachapÃ¡n",
+    "cabanas": "CabaÃ±as",
     "chalatenango": "Chalatenango",
-    "cuscatlan": "Cuscatlán",
+    "cuscatlan": "CuscatlÃ¡n",
     "laLibertad": "La Libertad",
     "laPaz": "La Paz",
-    "laUnion": "La Unión",
-    "morazan": "Morazán",
+    "laUnion": "La UniÃ³n",
+    "morazan": "MorazÃ¡n",
     "sanMiguel": "San Miguel",
     "sanSalvador": "San Salvador",
     "sanVicente": "San Vicente",
     "santaAna": "Santa Ana",
     "sonsonate": "Sonsonate",
-    "usulutan": "Usulután"
+    "usulutan": "UsulutÃ¡n"
   },
   "testimonials": {
     "maria": "Excelente servicio, muy profesionales y puntuales.",
-    "carlos": "Resolvieron mi problema de plomería rápidamente.",
-    "ana": "Muy contentos con el trabajo de jardinería realizado."
+    "carlos": "Resolvieron mi problema de plomerÃ­a rÃ¡pidamente.",
+    "ana": "Muy contentos con el trabajo de jardinerÃ­a realizado."
   },
   "publicProfile": {
     "loading": "Cargando perfil...",
     "notFound": "Perfil no encontrado",
-    "reviews": "reseñas",
+    "reviews": "reseÃ±as",
     "jobsCompleted": "trabajos completados",
-    "aboutMe": "Sobre mí",
-    "noBio": "Sin biografía",
+    "aboutMe": "Sobre mÃ­",
+    "noBio": "Sin biografÃ­a",
     "memberSince": "Miembro desde",
     "mySkills": "Mis habilidades",
-    "clientReviews": "Reseñas de clientes",
+    "clientReviews": "ReseÃ±as de clientes",
     "contact": "Contactar",
     "hire": "Contratar",
-    "contactInfo": "Información de contacto",
-    "phone": "Teléfono",
+    "contactInfo": "InformaciÃ³n de contacto",
+    "phone": "TelÃ©fono",
     "rates": "Tarifas",
     "createContract": "Crear Contrato",
     "availability": "Disponibilidad y Horarios",
@@ -656,27 +656,27 @@
     "worker": "Trabajador",
     "client": "Cliente",
     "verified": "Verificado",
-    "verificationPending": "Pendiente de Verificación",
+    "verificationPending": "Pendiente de VerificaciÃ³n",
     "hourlyRate": "Por Hora",
-    "dailyRate": "Por Día",
+    "dailyRate": "Por DÃ­a",
     "weeklyRate": "Por Semana",
     "monthlyRate": "Por Mes",
-    "email": "Correo electrónico"
+    "email": "Correo electrÃ³nico"
   },
   "workerCalendar": {
     "loading": "Cargando disponibilidad...",
     "notConfigured": "Este trabajador no tiene disponibilidad configurada actualmente",
-    "availableForHire": "Disponible para contratación",
-    "acceptsSameDay": "Acepta mismo día",
+    "availableForHire": "Disponible para contrataciÃ³n",
+    "acceptsSameDay": "Acepta mismo dÃ­a",
     "worksWeekends": "Trabaja fines de semana",
-    "advanceNotice": "Anticipación: {{days}} día(s)",
+    "advanceNotice": "AnticipaciÃ³n: {{days}} dÃ­a(s)",
     "weeklySchedule": "Horario Semanal",
     "notAvailable": "No disponible",
-    "specificDates": "Fechas Específicas Disponibles",
-    "hiringModalities": "Modalidades de Contratación",
-    "upcomingReservations": "Próximas Reservas",
+    "specificDates": "Fechas EspecÃ­ficas Disponibles",
+    "hiringModalities": "Modalidades de ContrataciÃ³n",
+    "upcomingReservations": "PrÃ³ximas Reservas",
     "openAvailability": "El trabajador tiene disponibilidad abierta",
-    "contactDirectly": "Contáctalo directamente para coordinar horarios"
+    "contactDirectly": "ContÃ¡ctalo directamente para coordinar horarios"
   },
   "availabilityCalendar": {
     "loading": "Cargando calendario...",
@@ -688,22 +688,22 @@
       "notAvailable": "No disponible"
     },
     "detail": {
-      "noSchedule": "No hay horarios configurados para este día",
-      "noSchedulePeriod": "No hay horarios configurados para este período",
+      "noSchedule": "No hay horarios configurados para este dÃ­a",
+      "noSchedulePeriod": "No hay horarios configurados para este perÃ­odo",
       "contactForAvailability": "Puedes contactar al trabajador para consultar disponibilidad",
       "available": "Disponible",
       "reserved": "Reservado",
       "notAvailable": "No disponible"
     },
     "config": {
-      "requiresAdvance": "Requiere {{days}} día(s) de anticipación",
-      "acceptsSameDay": "Acepta contrataciones para el mismo día",
-      "maxHours": "Máximo {{hours}}h/semana",
+      "requiresAdvance": "Requiere {{days}} dÃ­a(s) de anticipaciÃ³n",
+      "acceptsSameDay": "Acepta contrataciones para el mismo dÃ­a",
+      "maxHours": "MÃ¡ximo {{hours}}h/semana",
       "availableWeekends": "Disponible fines de semana"
     },
     "modalities": {
       "hora": "Por hora",
-      "dia": "Por día",
+      "dia": "Por dÃ­a",
       "semana": "Por semana",
       "mes": "Por mes",
       "proyecto": "Proyecto"
@@ -712,151 +712,151 @@
   "reviews": {
     "leaveReview": "Califica tu Experiencia",
     "reviewFor": "Trabajador",
-    "rating": "Calificación",
+    "rating": "CalificaciÃ³n",
     "stars": "estrellas",
     "ratingHelp": "Selecciona de 1 a 5 estrellas",
     "comment": "Comentario",
-    "commentPlaceholder": "Cuéntanos sobre tu experiencia con este trabajador...",
+    "commentPlaceholder": "CuÃ©ntanos sobre tu experiencia con este trabajador...",
     "characters": "caracteres",
-    "minChars": "Mínimo 10 caracteres",
-    "submit": "Enviar Reseña",
+    "minChars": "MÃ­nimo 10 caracteres",
+    "submit": "Enviar ReseÃ±a",
     "submitting": "Enviando...",
-    "validationError": "Por favor, selecciona una calificación y escribe un comentario (mínimo 10 caracteres)",
-    "alreadyReviewed": "Ya has dejado una reseña para este contrato",
-    "notAuthorized": "No tienes permiso para dejar una reseña en este contrato",
-    "submitError": "Error al enviar la reseña. Por favor, intenta de nuevo.",
-    "infoNote": "Tu reseña será pública y ayudará a otros usuarios a tomar mejores decisiones.",
-    "successTitle": "¡Gracias por tu Reseña!",
-    "successMessage": "Tu opinión ayuda a mejorar nuestra comunidad.",
+    "validationError": "Por favor, selecciona una calificaciÃ³n y escribe un comentario (mÃ­nimo 10 caracteres)",
+    "alreadyReviewed": "Ya has dejado una reseÃ±a para este contrato",
+    "notAuthorized": "No tienes permiso para dejar una reseÃ±a en este contrato",
+    "submitError": "Error al enviar la reseÃ±a. Por favor, intenta de nuevo.",
+    "infoNote": "Tu reseÃ±a serÃ¡ pÃºblica y ayudarÃ¡ a otros usuarios a tomar mejores decisiones.",
+    "successTitle": "Â¡Gracias por tu ReseÃ±a!",
+    "successMessage": "Tu opiniÃ³n ayuda a mejorar nuestra comunidad.",
     "skipForNow": "Omitir por ahora",
-    "noReviewsYet": "Sin reseñas aún",
-    "beTheFirst": "Sé el primero en dejar una reseña",
-    "viewAll": "Ver todas las reseñas",
-    "helpful": "Útil",
-    "reportReview": "Reportar reseña"
+    "noReviewsYet": "Sin reseÃ±as aÃºn",
+    "beTheFirst": "SÃ© el primero en dejar una reseÃ±a",
+    "viewAll": "Ver todas las reseÃ±as",
+    "helpful": "Ãštil",
+    "reportReview": "Reportar reseÃ±a"
   },
   "createContract": {
     "loading": "Cargando...",
     "back": "Volver",
     "title": "Crear Nuevo Contrato",
-    "subtitle": "Completa la información para generar un contrato de servicio",
+    "subtitle": "Completa la informaciÃ³n para generar un contrato de servicio",
     "selectedWorker": "Trabajador Seleccionado",
     "paymentModes": {
       "title": "Modalidad de Pago",
-      "subtitle": "Selecciona cómo deseas contratar el servicio",
+      "subtitle": "Selecciona cÃ³mo deseas contratar el servicio",
       "perHour": "Por Hora",
-      "perDay": "Por Día",
+      "perDay": "Por DÃ­a",
       "perWeek": "Por Semana",
       "perMonth": "Por Mes",
       "perProject": "Proyecto Completo",
       "unitLabels": {
         "hour": "/hora",
-        "day": "/día",
+        "day": "/dÃ­a",
         "week": "/semana",
         "month": "/mes",
         "project": "total"
       }
     },
     "form": {
-      "category": "Categoría del Servicio",
-      "selectCategory": "Selecciona una categoría",
-      "description": "Descripción del Servicio",
+      "category": "CategorÃ­a del Servicio",
+      "selectCategory": "Selecciona una categorÃ­a",
+      "description": "DescripciÃ³n del Servicio",
       "descriptionPlaceholder": "Describe el trabajo a realizar...",
-      "address": "Dirección del Servicio",
-      "addressPlaceholder": "Ingresa la dirección donde se realizará el servicio...",
+      "address": "DirecciÃ³n del Servicio",
+      "addressPlaceholder": "Ingresa la direcciÃ³n donde se realizarÃ¡ el servicio...",
       "amount": "Monto Total (USD)",
       "pricePerUnit": "Precio",
       "quantity": "Cantidad",
       "quantityLabels": {
         "hours": "Horas",
-        "days": "Días",
+        "days": "DÃ­as",
         "weeks": "Semanas",
         "months": "Meses"
       },
       "totalCalculated": "Total Calculado",
       "startDate": "Fecha de Inicio",
-      "endDate": "Fecha de Finalización",
+      "endDate": "Fecha de FinalizaciÃ³n",
       "optionalDates": "Fechas (Opcional)",
       "optionalDatesHelp": "Puedes agregar fechas si ya las tienes definidas",
       "notes": "Notas Adicionales",
-      "notesPlaceholder": "Información adicional, requisitos especiales, etc...",
+      "notesPlaceholder": "InformaciÃ³n adicional, requisitos especiales, etc...",
       "cancel": "Cancelar",
       "create": "Crear Contrato",
       "creating": "Creando Contrato...",
-      "descriptionMin": "La descripción debe tener al menos 10 caracteres",
-      "addressRequired": "La dirección es requerida",
+      "descriptionMin": "La descripciÃ³n debe tener al menos 10 caracteres",
+      "addressRequired": "La direcciÃ³n es requerida",
       "amountRequired": "El monto debe ser mayor a 0",
-      "categoryRequired": "Debes seleccionar una categoría"
+      "categoryRequired": "Debes seleccionar una categorÃ­a"
     },
     "sections": {
-      "basicInfo": "Información Básica",
+      "basicInfo": "InformaciÃ³n BÃ¡sica",
       "paymentDetails": "Detalles de Pago",
-      "optionalInfo": "Información Opcional",
+      "optionalInfo": "InformaciÃ³n Opcional",
       "additionalNotes": "Notas Adicionales"
     },
     "success": {
-      "title": "¡Contrato Creado Exitosamente!",
-      "contractCode": "Código del Contrato",
-      "activationPin": "PIN de Activación",
-      "pinInfo": "El trabajador deberá ingresar este PIN para activar el contrato.",
+      "title": "Â¡Contrato Creado Exitosamente!",
+      "contractCode": "CÃ³digo del Contrato",
+      "activationPin": "PIN de ActivaciÃ³n",
+      "pinInfo": "El trabajador deberÃ¡ ingresar este PIN para activar el contrato.",
       "goToDashboard": "Ir al Dashboard"
     },
     "errors": {
       "loadError": "Error al cargar los datos necesarios",
       "requiredFields": "Por favor completa todos los campos requeridos",
       "createError": "Error al crear el contrato",
-      "descriptionTooShort": "La descripción es muy corta (mínimo 10 caracteres)",
+      "descriptionTooShort": "La descripciÃ³n es muy corta (mÃ­nimo 10 caracteres)",
       "invalidAmount": "El monto debe ser mayor a 0",
-      "categoryRequired": "Debes seleccionar una categoría de servicio"
+      "categoryRequired": "Debes seleccionar una categorÃ­a de servicio"
     },
     "info": {
-      "title": "Información Importante",
-      "pinGeneration": "Una vez creado el contrato, se generará un PIN de activación",
-      "workerPin": "El trabajador deberá ingresar el PIN para confirmar el contrato",
-      "pendingStatus": "El contrato estará en estado \"Pendiente de Activación\" hasta que el trabajador lo active",
+      "title": "InformaciÃ³n Importante",
+      "pinGeneration": "Una vez creado el contrato, se generarÃ¡ un PIN de activaciÃ³n",
+      "workerPin": "El trabajador deberÃ¡ ingresar el PIN para confirmar el contrato",
+      "pendingStatus": "El contrato estarÃ¡ en estado \"Pendiente de ActivaciÃ³n\" hasta que el trabajador lo active",
       "dashboard": "Puedes ver y gestionar tus contratos desde el Dashboard",
-      "flexibleDates": "Las fechas son opcionales. Puedes crear contratos sin fechas específicas para mayor flexibilidad."
+      "flexibleDates": "Las fechas son opcionales. Puedes crear contratos sin fechas especÃ­ficas para mayor flexibilidad."
     }
   },
   "contractDetails": {
     "loading": "Cargando contrato...",
     "title": "Detalles del Contrato",
-    "contractNumber": "Número de contrato",
-    "creationDate": "Fecha de creación",
+    "contractNumber": "NÃºmero de contrato",
+    "creationDate": "Fecha de creaciÃ³n",
     "back": "Volver",
     "backToDashboard": "Volver al Dashboard",
     "notSpecified": "No especificado",
     "status": {
-      "pending": "Pendiente de Activación",
+      "pending": "Pendiente de ActivaciÃ³n",
       "active": "Activo",
       "completed": "Completado",
       "cancelled": "Cancelado",
       "closed": "Cerrado"
     },
     "parties": {
-      "title": "1. Información de las Partes",
+      "title": "1. InformaciÃ³n de las Partes",
       "client": "Cliente",
       "provider": "Prestador del Servicio"
     },
     "service": {
       "title": "2. Detalles del Servicio",
-      "category": "Categoría del servicio",
-      "address": "Dirección del servicio",
-      "description": "Descripción del servicio",
+      "category": "CategorÃ­a del servicio",
+      "address": "DirecciÃ³n del servicio",
+      "description": "DescripciÃ³n del servicio",
       "startDate": "Fecha de inicio",
-      "endDate": "Fecha de finalización",
+      "endDate": "Fecha de finalizaciÃ³n",
       "notes": "Notas adicionales"
     },
     "payment": {
-      "title": "3. Condiciones Económicas",
+      "title": "3. Condiciones EconÃ³micas",
       "totalAmount": "Monto total",
       "workerAmount": "Monto trabajador",
-      "platformFee": "Comisión plataforma"
+      "platformFee": "ComisiÃ³n plataforma"
     },
     "activation": {
-      "title": "⚠️ Pendiente de Activación",
-      "message": "Este contrato requiere activación por parte del trabajador.",
-      "pin": "PIN de activación"
+      "title": "âš ï¸ Pendiente de ActivaciÃ³n",
+      "message": "Este contrato requiere activaciÃ³n por parte del trabajador.",
+      "pin": "PIN de activaciÃ³n"
     },
     "errors": {
       "notFound": "Contrato no encontrado",
@@ -864,21 +864,21 @@
     },
     "evidence": {
       "titleStart": "Evidencia opcional del estado inicial",
-      "descStart": "Puedes adjuntar de 1 a 3 fotos del lugar o del área de trabajo antes de confirmar la llegada del prestador. Es opcional y visible para ambas partes.",
+      "descStart": "El trabajador puede adjuntar de 1 a 3 fotos o 1 video (max. 15 segundos) al iniciar el servicio, para documentar el antes del trabajo. Es opcional y visible para ambas partes.",
       "titleEnd": "Evidencia opcional del trabajo realizado",
-      "descEnd": "Puedes adjuntar hasta 3 fotos o un video (máx. 15 minutos) que documente el resultado del servicio. Es opcional y recomendado para mayor transparencia.",
-      "retention": "Chambing conserva estas evidencias como máximo 15 días; después se eliminan automáticamente de nuestros servidores.",
-      "pickImages": "Elegir fotos (máx. 3)",
+      "descEnd": "El trabajador puede adjuntar hasta 3 fotos o 1 video (max. 15 segundos) al finalizar, para comparar el antes y el despues del servicio.",
+      "retention": "Chambing conserva estas evidencias como maximo 15 dias; despues se eliminan automaticamente de nuestros servidores.",
+      "pickImages": "Elegir fotos (max. 3)",
       "pickUpTo3": "Elegir hasta 3 fotos",
-      "oneVideo": "O un solo video (MP4, MOV o WebM)",
+      "oneVideo": "O un solo video de hasta 15 segundos (MP4, MOV o WebM)",
       "selectedCount": "{{count}} archivo(s) seleccionado(s)",
       "skip": "Omitir y continuar",
       "continue": "Subir y continuar",
       "confirmArrival": "Confirmar llegada",
       "markComplete": "Marcar como completado",
-      "uploadError": "No se pudo subir la evidencia. Inténtalo de nuevo.",
-      "videoTooLong": "El video supera los 15 minutos permitidos.",
-      "codeRequired": "Ingresa el código de 4 dígitos que te dio el prestador.",
+      "uploadError": "No se pudo subir la evidencia. Intentalo de nuevo.",
+      "videoTooLong": "El video supera el maximo permitido de 15 segundos.",
+      "codeRequired": "Ingresa el codigo de 4 digitos que te dio el prestador.",
       "galleryTitle": "Evidencias del contrato",
       "phaseStart": "Inicio del servicio",
       "phaseEnd": "Fin del servicio",
@@ -887,15 +887,19 @@
     },
     "consent": {
       "title": "Consentimiento para evidencias",
-      "body": "Al cerrar confirmas que autorizas el registro y la compartición de fotos o videos asociados a este servicio con fines de transparencia y resolución de disputas, de acuerdo con los términos del contrato.",
-      "checkbox": "He leído y acepto el uso de evidencias conforme a lo indicado.",
+      "body": "Al cerrar confirmas que autorizas el registro y la comparticiÃ³n de fotos o videos asociados a este servicio con fines de transparencia y resoluciÃ³n de disputas, de acuerdo con los tÃ©rminos del contrato.",
+      "checkbox": "He leÃ­do y acepto el uso de evidencias conforme a lo indicado.",
       "mustAccept": "Debes marcar la casilla para continuar.",
-      "confirmClose": "Cerrar contrato y continuar"
+      "confirmClose": "Cerrar contrato y continuar",
+      "arrivalTitle": "Consentimiento para registro de evidencias",
+      "arrivalBody": "Antes de iniciar el servicio, confirmas que autorizas al trabajador a capturar y compartir fotos o video como evidencia para transparencia y resoluciÃ³n de disputas.",
+      "arrivalCheckbox": "Autorizo el registro de evidencias del servicio.",
+      "confirmArrival": "Confirmar llegada y continuar"
     }
   },
   "MoreDetails": {
-    "moreDetailsTitle": "Chambing: Tu Plataforma de Confianza para Servicios Domésticos Freelance en El Salvador",
-    "moreDetailsDescription": "Chambing conecta a particulares con profesionales freelance verificados para una amplia gama de servicios domésticos en El Salvador. Ya sea que necesites limpieza experta, fontanería fiable, jardinería profesional u otros servicios para el hogar, encuentra trabajadores cualificados de forma rápida y segura. Empoderando a los trabajadores independientes y simplificando tu vida diaria.",
-    "moreDetailsKeywords": "servicios domésticos El Salvador, servicios freelance, servicios a domicilio, limpieza, fontanería, jardinería, trabajadores independientes, servicios locales, encontrar profesionales, contratar servicios, empleos El Salvador"
+    "moreDetailsTitle": "Chambing: Tu Plataforma de Confianza para Servicios DomÃ©sticos Freelance en El Salvador",
+    "moreDetailsDescription": "Chambing conecta a particulares con profesionales freelance verificados para una amplia gama de servicios domÃ©sticos en El Salvador. Ya sea que necesites limpieza experta, fontanerÃ­a fiable, jardinerÃ­a profesional u otros servicios para el hogar, encuentra trabajadores cualificados de forma rÃ¡pida y segura. Empoderando a los trabajadores independientes y simplificando tu vida diaria.",
+    "moreDetailsKeywords": "servicios domÃ©sticos El Salvador, servicios freelance, servicios a domicilio, limpieza, fontanerÃ­a, jardinerÃ­a, trabajadores independientes, servicios locales, encontrar profesionales, contratar servicios, empleos El Salvador"
   }
 }

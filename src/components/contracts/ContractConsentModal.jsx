@@ -3,7 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { X, Loader2 } from 'lucide-react';
 import '../../styles/contractEvidenceModal.scss';
 
-export default function ContractConsentModal({ open, onClose, onConfirm }) {
+export default function ContractConsentModal({
+  open,
+  onClose,
+  onConfirm,
+  titleKey = 'contractDetails.consent.title',
+  bodyKey = 'contractDetails.consent.body',
+  checkboxKey = 'contractDetails.consent.checkbox',
+  confirmKey = 'contractDetails.consent.confirmClose',
+}) {
   const { t } = useTranslation();
   const [checked, setChecked] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -34,11 +42,11 @@ export default function ContractConsentModal({ open, onClose, onConfirm }) {
         <button type="button" className="cem-close" onClick={onClose} aria-label="Close">
           <X size={20} />
         </button>
-        <h2 className="cem-title">{t('contractDetails.consent.title')}</h2>
-        <p className="cem-desc">{t('contractDetails.consent.body')}</p>
+        <h2 className="cem-title">{t(titleKey)}</h2>
+        <p className="cem-desc">{t(bodyKey)}</p>
         <label className="cem-check">
           <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
-          <span>{t('contractDetails.consent.checkbox')}</span>
+          <span>{t(checkboxKey)}</span>
         </label>
         {err && <div className="cem-error">{err}</div>}
         <div className="cem-actions">
@@ -47,7 +55,7 @@ export default function ContractConsentModal({ open, onClose, onConfirm }) {
           </button>
           <button type="button" className="cem-btn cem-btn--primary" onClick={submit} disabled={busy}>
             {busy ? <Loader2 className="cem-spin" size={18} /> : null}
-            {t('contractDetails.consent.confirmClose')}
+            {t(confirmKey)}
           </button>
         </div>
       </div>

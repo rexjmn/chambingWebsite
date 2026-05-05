@@ -44,7 +44,8 @@ const ContractDetails = () => {
   const [codigoLlegada, setCodigoLlegada] = useState(null);
   const [evidenceModalOpen, setEvidenceModalOpen] = useState(false);
   const [evidencePhase, setEvidencePhase] = useState('inicio');
-  const [consentModalOpen, setConsentModalOpen] = useState(false);
+  const [arrivalConsentModalOpen, setArrivalConsentModalOpen] = useState(false);
+  const [initialEvidencePrompted, setInitialEvidencePrompted] = useState(false);
 
   useEffect(() => {
     const loadContract = async () => {
@@ -69,6 +70,24 @@ const ContractDetails = () => {
   }, [contractId, t]);
 
   useEffect(() => {
+    const isWorker = user && contract && String(user.id) === String(contract.trabajador?.id);
+    if (!contractId || !isWorker) return;
+    const isLiveState = ['en_camino', 'activo'].includes(contract?.estado);
+    if (!isLiveState) return;
+    const interval = setInterval(async () => {
+      try {
+        const response = await contractService.getContractById(contractId);
+        if (response.status === 'success') {
+          setContract(response.data);
+        }
+      } catch {
+        // silent polling retry
+      }
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [contractId, user, contract]);
+
+  useEffect(() => {
     const action = location.state?.action;
     if (!action || !contractId) return;
     if (action === 'completeEvidence') {
@@ -76,7 +95,7 @@ const ContractDetails = () => {
       setEvidenceModalOpen(true);
     }
     if (action === 'closeConsent') {
-      setConsentModalOpen(true);
+      runCerrarContrato().catch(() => {});
     }
     navigate(location.pathname, { replace: true, state: {} });
   }, [location.state, contractId, location.pathname, navigate]);
@@ -155,6 +174,7 @@ const ContractDetails = () => {
         setCodigoLlegada(res.data.codigo_llegada);
         const updated = await contractService.getContractById(contractId);
         if (updated.status === 'success') setContract(updated.data);
+        setInitialEvidencePrompted(false);
       } else {
         setActionError(res.message || 'No se pudo iniciar el viaje.');
       }
@@ -174,12 +194,16 @@ const ContractDetails = () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      const res = await contractService.confirmarLlegada(contractId, codigoConfirmacion);
+      const res = await contractService.confirmarLlegada(
+        contractId,
+        codigoConfirmacion,
+        true,
+      );
       if (res.status === 'success') {
         const updated = await contractService.getContractById(contractId);
         if (updated.status === 'success') setContract(updated.data);
         setCodigoConfirmacion('');
-        setEvidenceModalOpen(false);
+        setArrivalConsentModalOpen(false);
       } else {
         setActionError(res.message || 'Código incorrecto.');
       }
@@ -197,8 +221,7 @@ const ContractDetails = () => {
       return;
     }
     setActionError(null);
-    setEvidencePhase('inicio');
-    setEvidenceModalOpen(true);
+    setArrivalConsentModalOpen(true);
   };
 
   const handleCompletarContrato = async () => {
@@ -222,9 +245,7 @@ const ContractDetails = () => {
     }
   };
 
-  const openCerrarContratoFlow = () => {
-    setConsentModalOpen(true);
-  };
+  const openCerrarContratoFlow = () => runCerrarContrato().catch(() => {});
 
   const runCerrarContrato = async () => {
     setActionLoading(true);
@@ -235,7 +256,6 @@ const ContractDetails = () => {
       });
       const res = await contractService.getContractById(contractId);
       if (res.status === 'success') setContract(res.data);
-      setConsentModalOpen(false);
       setReviewTarget({
         calificadoId: contract.trabajador?.id,
         calificadoNombre: `${contract.trabajador?.nombre} ${contract.trabajador?.apellido}`,
@@ -283,6 +303,17 @@ const ContractDetails = () => {
     esTrabajador,
     location.state,
   ]);
+
+  useEffect(() => {
+    if (!contract || !esTrabajador) return;
+    if (contract.estado !== 'activo') return;
+    if (initialEvidencePrompted) return;
+    const inicioCount = (contract.evidencias || []).filter((e) => e.fase === 'inicio').length;
+    if (inicioCount > 0) return;
+    setEvidencePhase('inicio');
+    setEvidenceModalOpen(true);
+    setInitialEvidencePrompted(true);
+  }, [contract, esTrabajador, initialEvidencePrompted]);
 
   if (loading) {
     return (
@@ -713,19 +744,27 @@ const ContractDetails = () => {
         contractId={contractId}
         onClose={() => setEvidenceModalOpen(false)}
         onPrimary={
-          evidencePhase === 'inicio' ? runConfirmarLlegada : runCompletarContrato
+          evidencePhase === 'inicio'
+            ? async () => {
+                setEvidenceModalOpen(false);
+              }
+            : runCompletarContrato
         }
         primaryLabel={
           evidencePhase === 'inicio'
-            ? t('contractDetails.evidence.confirmArrival')
+            ? t('contractDetails.evidence.continue')
             : t('contractDetails.evidence.markComplete')
         }
       />
 
       <ContractConsentModal
-        open={consentModalOpen}
-        onClose={() => setConsentModalOpen(false)}
-        onConfirm={runCerrarContrato}
+        open={arrivalConsentModalOpen}
+        onClose={() => setArrivalConsentModalOpen(false)}
+        onConfirm={runConfirmarLlegada}
+        titleKey="contractDetails.consent.arrivalTitle"
+        bodyKey="contractDetails.consent.arrivalBody"
+        checkboxKey="contractDetails.consent.arrivalCheckbox"
+        confirmKey="contractDetails.consent.confirmArrival"
       />
 
     </div>

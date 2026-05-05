@@ -96,10 +96,13 @@ export const contractService = {
   },
 
   /** Cliente confirma llegada del trabajador ingresando el código de 4 dígitos */
-  async confirmarLlegada(contratoId, codigo) {
+  async confirmarLlegada(contratoId, codigo, clienteConsentimientoEvidencia = true) {
     try {
       logger.api('Confirmando llegada', { contratoId });
-      const response = await api.post(`/contracts/${contratoId}/confirmar-llegada`, { codigo });
+      const response = await api.post(`/contracts/${contratoId}/confirmar-llegada`, {
+        codigo,
+        clienteConsentimientoEvidencia,
+      });
       return response.data;
     } catch (error) {
       logger.error('Error confirmando llegada:', error.message);

@@ -6,7 +6,7 @@ import { logger } from '../../utils/logger';
 import { X, ImagePlus, Loader2, Video } from 'lucide-react';
 import '../../styles/contractEvidenceModal.scss';
 
-const MAX_VIDEO_SEC = 15 * 60;
+const MAX_VIDEO_SEC = 15;
 
 function readVideoDuration(file) {
   return new Promise((resolve, reject) => {
@@ -67,7 +67,7 @@ export default function ContractEvidenceModal({
         reset();
         return;
       }
-      if (phase === 'final' && video) {
+      if (video) {
         const dur = await readVideoDuration(video);
         if (dur > MAX_VIDEO_SEC + 1) {
           setErr(t('contractDetails.evidence.videoTooLong'));
@@ -77,7 +77,7 @@ export default function ContractEvidenceModal({
         await contractService.uploadEvidenceFile(
           contractId,
           {
-            fase: 'final',
+            fase,
             tipoMedia: 'video',
             mimeType: video.type || 'video/mp4',
             fileName: video.name,
@@ -144,31 +144,20 @@ export default function ContractEvidenceModal({
         </p>
         <p className="cem-retention">{t('contractDetails.evidence.retention')}</p>
 
-        {phase === 'inicio' && (
-          <label className="cem-file">
-            <ImagePlus size={18} />
-            <span>{t('contractDetails.evidence.pickImages')}</span>
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={(e) => {
-                const files = Array.from(e.target.files || []).slice(0, 3);
-                setImages(files);
-              }}
-            />
-          </label>
-        )}
-
-        {phase === 'final' && (
+        {(phase === 'inicio' || phase === 'final') && (
           <>
             <label className="cem-file">
               <ImagePlus size={18} />
-              <span>{t('contractDetails.evidence.pickUpTo3')}</span>
+              <span>
+                {phase === 'inicio'
+                  ? t('contractDetails.evidence.pickImages')
+                  : t('contractDetails.evidence.pickUpTo3')}
+              </span>
               <input
                 type="file"
                 accept="image/*"
                 multiple
+                capture="environment"
                 disabled={!!video}
                 onChange={(e) => {
                   const files = Array.from(e.target.files || []).slice(0, 3);
@@ -183,6 +172,7 @@ export default function ContractEvidenceModal({
               <input
                 type="file"
                 accept="video/mp4,video/quicktime,video/webm"
+                capture="environment"
                 disabled={images.length > 0}
                 onChange={(e) => {
                   const f = e.target.files?.[0] || null;

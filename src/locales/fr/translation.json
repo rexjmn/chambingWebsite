@@ -758,20 +758,20 @@
     },
     "evidence": {
       "titleStart": "Preuve facultative de l’état initial",
-      "descStart": "Vous pouvez joindre 1 à 3 photos du lieu ou de la zone de travail avant de confirmer l’arrivée du prestataire. Facultatif et visible par les deux parties.",
+      "descStart": "Le travailleur peut joindre 1 a 3 photos ou 1 video (max. 15 secondes) au demarrage du service, pour documenter l'etat avant travaux. Optionnel et visible par les deux parties.",
       "titleEnd": "Preuve facultative du travail effectué",
-      "descEnd": "Vous pouvez joindre jusqu’à 3 photos ou une vidéo (max. 15 minutes) documentant le résultat. Facultatif et recommandé pour plus de transparence.",
+      "descEnd": "Le travailleur peut joindre jusqu'a 3 photos ou 1 video (max. 15 secondes) a la fin, pour comparer l'avant et l'apres.",
       "retention": "Chambing conserve ces preuves au maximum 15 jours ; elles sont ensuite supprimées automatiquement de nos serveurs.",
       "pickImages": "Choisir des photos (max. 3)",
       "pickUpTo3": "Choisir jusqu’à 3 photos",
-      "oneVideo": "Ou une seule vidéo (MP4, MOV ou WebM)",
+      "oneVideo": "Ou une seule video de 15 secondes max (MP4, MOV ou WebM)",
       "selectedCount": "{{count}} fichier(s) sélectionné(s)",
       "skip": "Ignorer et continuer",
       "continue": "Téléverser et continuer",
       "confirmArrival": "Confirmer l’arrivée",
       "markComplete": "Marquer comme terminé",
       "uploadError": "Impossible de téléverser la preuve. Réessayez.",
-      "videoTooLong": "La vidéo dépasse la limite de 15 minutes.",
+      "videoTooLong": "La video depasse la limite de 15 secondes.",
       "codeRequired": "Saisissez le code à 4 chiffres donné par le prestataire.",
       "galleryTitle": "Preuves du contrat",
       "phaseStart": "Début du service",
@@ -784,7 +784,11 @@
       "body": "En fermant, vous confirmez autoriser l’enregistrement et le partage de photos ou vidéos liés à ce service à des fins de transparence et de résolution des litiges, conformément aux conditions du contrat.",
       "checkbox": "J’ai lu et j’accepte l’usage des preuves tel que décrit.",
       "mustAccept": "Vous devez cocher la case pour continuer.",
-      "confirmClose": "Fermer le contrat et continuer"
+      "confirmClose": "Fermer le contrat et continuer",
+      "arrivalTitle": "Consentement pour la capture de preuves",
+      "arrivalBody": "Avant de démarrer le service, vous confirmez autoriser le travailleur à capturer et partager des photos ou vidéos de preuve pour la transparence et la résolution des litiges.",
+      "arrivalCheckbox": "J’autorise la capture de preuves pour ce service.",
+      "confirmArrival": "Confirmer l’arrivée et continuer"
     }
   },
   "MoreDetails": {
