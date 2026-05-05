@@ -24,6 +24,8 @@ export default defineConfig({
   build: {
     // esbuild está incluido en Vite (no requiere instalación extra)
     minify: 'esbuild',
+    // Evita FOUC por estilos en chunks async: genera un CSS único inicial.
+    cssCodeSplit: false,
     esbuildOptions: {
       drop: ['console', 'debugger'],
     },
