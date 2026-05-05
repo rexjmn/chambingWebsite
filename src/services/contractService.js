@@ -131,11 +131,18 @@ export const contractService = {
   /**
    * Cierra el contrato y libera el pago (solo empleador)
    */
-  async cerrarContrato(contratoId, notas = '') {
+  async cerrarContrato(contratoId, options = {}) {
+    const notas =
+      typeof options === 'string' ? options : options.notas ?? '';
+    const clienteConsentimientoEvidencia =
+      typeof options === 'string'
+        ? false
+        : options.clienteConsentimientoEvidencia === true;
     try {
       logger.api('Cerrando contrato', { contratoId });
       const response = await api.patch(`/contracts/${contratoId}/cerrar`, {
-        notas
+        notas,
+        clienteConsentimientoEvidencia,
       });
       logger.api('Contrato cerrado exitosamente');
       return response.data;
@@ -178,5 +185,58 @@ export const contractService = {
       logger.error('Error obteniendo historial:', error.message);
       throw error;
     }
-  }
+  },
+
+  // ========== EVIDENCIAS (fotos / video, retención 15 días en servidor) ==========
+
+  async listEvidencias(contratoId) {
+    const response = await api.get(`/contracts/${contratoId}/evidences`);
+    return response.data?.data ?? response.data;
+  },
+
+  async initEvidenceUpload(contratoId, body) {
+    const response = await api.post(
+      `/contracts/${contratoId}/evidences/init-upload`,
+      body,
+    );
+    return response.data?.data ?? response.data;
+  },
+
+  async completeEvidenceUpload(contratoId, evidenceId) {
+    const response = await api.post(
+      `/contracts/${contratoId}/evidences/${evidenceId}/complete-upload`,
+      {},
+    );
+    return response.data?.data ?? response.data;
+  },
+
+  async getEvidenceDownloadUrl(contratoId, evidenceId) {
+    const response = await api.get(
+      `/contracts/${contratoId}/evidences/${evidenceId}/download`,
+    );
+    return response.data?.data ?? response.data;
+  },
+
+  /**
+   * Sube un archivo a S3 con URL firmada y marca la evidencia como lista.
+   */
+  async uploadEvidenceFile(contratoId, initBody, file) {
+    const init = await this.initEvidenceUpload(contratoId, {
+      ...initBody,
+      sizeBytes: file.size,
+      mimeType: file.type || 'application/octet-stream',
+    });
+    const { uploadUrl, evidenceId } = init;
+    const put = await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': file.type || 'application/octet-stream',
+      },
+    });
+    if (!put.ok) {
+      throw new Error(`Error al subir archivo (${put.status})`);
+    }
+    return this.completeEvidenceUpload(contratoId, evidenceId);
+  },
 };

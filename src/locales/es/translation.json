@@ -861,6 +861,36 @@
     "errors": {
       "notFound": "Contrato no encontrado",
       "loadError": "Error al cargar el contrato"
+    },
+    "evidence": {
+      "titleStart": "Evidencia opcional del estado inicial",
+      "descStart": "Puedes adjuntar de 1 a 3 fotos del lugar o del área de trabajo antes de confirmar la llegada del prestador. Es opcional y visible para ambas partes.",
+      "titleEnd": "Evidencia opcional del trabajo realizado",
+      "descEnd": "Puedes adjuntar hasta 3 fotos o un video (máx. 15 minutos) que documente el resultado del servicio. Es opcional y recomendado para mayor transparencia.",
+      "retention": "Chambing conserva estas evidencias como máximo 15 días; después se eliminan automáticamente de nuestros servidores.",
+      "pickImages": "Elegir fotos (máx. 3)",
+      "pickUpTo3": "Elegir hasta 3 fotos",
+      "oneVideo": "O un solo video (MP4, MOV o WebM)",
+      "selectedCount": "{{count}} archivo(s) seleccionado(s)",
+      "skip": "Omitir y continuar",
+      "continue": "Subir y continuar",
+      "confirmArrival": "Confirmar llegada",
+      "markComplete": "Marcar como completado",
+      "uploadError": "No se pudo subir la evidencia. Inténtalo de nuevo.",
+      "videoTooLong": "El video supera los 15 minutos permitidos.",
+      "codeRequired": "Ingresa el código de 4 dígitos que te dio el prestador.",
+      "galleryTitle": "Evidencias del contrato",
+      "phaseStart": "Inicio del servicio",
+      "phaseEnd": "Fin del servicio",
+      "download": "Descargar",
+      "refresh": "Actualizar lista"
+    },
+    "consent": {
+      "title": "Consentimiento para evidencias",
+      "body": "Al cerrar confirmas que autorizas el registro y la compartición de fotos o videos asociados a este servicio con fines de transparencia y resolución de disputas, de acuerdo con los términos del contrato.",
+      "checkbox": "He leído y acepto el uso de evidencias conforme a lo indicado.",
+      "mustAccept": "Debes marcar la casilla para continuar.",
+      "confirmClose": "Cerrar contrato y continuar"
     }
   },
   "MoreDetails": {

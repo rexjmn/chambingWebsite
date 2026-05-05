@@ -75,7 +75,9 @@ const ContractDetails = () => {
   const handleCerrarContrato = async () => {
     try {
       // Cerrar el contrato
-      await contractService.cerrarContrato(contract.id);
+      await contractService.cerrarContrato(contract.id, {
+        clienteConsentimientoEvidencia: true,
+      });
 
       // Mostrar modal de reseña
       setShowReviewModal(true);

@@ -165,16 +165,19 @@ const Navbar = () => {
     try {
       setNotificationActionLoading((prev) => ({ ...prev, [notification.id]: true }));
 
-      if (notification.actionType === 'complete') {
-        await contractService.completarContrato(notification.contractId);
-      } else if (notification.actionType === 'close') {
-        await contractService.cerrarContrato(notification.contractId);
-      }
-
       setDismissedNotificationIds((prev) => [...prev, notification.id]);
-      navigate(`/contracts/${notification.contractId}`, {
-        state: notification.actionType === 'close' ? { openReview: true } : undefined,
-      });
+      if (notification.actionType === 'complete') {
+        navigate(`/contracts/${notification.contractId}`, {
+          state: { action: 'completeEvidence' },
+        });
+        return;
+      }
+      if (notification.actionType === 'close') {
+        navigate(`/contracts/${notification.contractId}`, {
+          state: { action: 'closeConsent', openReview: true },
+        });
+        return;
+      }
     } catch (error) {
       logger.error('Error ejecutando acción rápida de notificación:', error);
       openNotificationContract(notification.contractId);

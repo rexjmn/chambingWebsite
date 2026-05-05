@@ -755,6 +755,36 @@
     "errors": {
       "notFound": "Contract not found",
       "loadError": "Error loading contract"
+    },
+    "evidence": {
+      "titleStart": "Optional evidence of initial condition",
+      "descStart": "You may attach 1–3 photos of the site or work area before confirming the provider’s arrival. Optional and visible to both parties.",
+      "titleEnd": "Optional evidence of completed work",
+      "descEnd": "You may attach up to 3 photos or one video (max. 15 minutes) documenting the outcome. Optional and recommended for transparency.",
+      "retention": "Chambing retains this evidence for up to 15 days; it is then automatically deleted from our servers.",
+      "pickImages": "Choose photos (max. 3)",
+      "pickUpTo3": "Choose up to 3 photos",
+      "oneVideo": "Or a single video (MP4, MOV or WebM)",
+      "selectedCount": "{{count}} file(s) selected",
+      "skip": "Skip and continue",
+      "continue": "Upload and continue",
+      "confirmArrival": "Confirm arrival",
+      "markComplete": "Mark as completed",
+      "uploadError": "Could not upload evidence. Please try again.",
+      "videoTooLong": "Video exceeds the 15-minute limit.",
+      "codeRequired": "Enter the 4-digit code the provider gave you.",
+      "galleryTitle": "Contract evidence",
+      "phaseStart": "Service start",
+      "phaseEnd": "Service end",
+      "download": "Download",
+      "refresh": "Refresh list"
+    },
+    "consent": {
+      "title": "Consent for evidence",
+      "body": "By closing, you confirm you authorize the recording and sharing of photos or videos related to this service for transparency and dispute resolution, as set out in the contract terms.",
+      "checkbox": "I have read and accept the use of evidence as described.",
+      "mustAccept": "You must check the box to continue.",
+      "confirmClose": "Close contract and continue"
     }
   },
   "MoreDetails": {

@@ -5,6 +5,9 @@ import { contractService } from '../services/contractService';
 import { reviewService } from '../services/reviewService';
 import { useAuth } from '../context/AuthContext';
 import ReviewModal from '../components/ReviewModal';
+import ContractEvidenceModal from '../components/contracts/ContractEvidenceModal';
+import ContractConsentModal from '../components/contracts/ContractConsentModal';
+import ContractEvidenceGallery from '../components/contracts/ContractEvidenceGallery';
 import { logger } from '../utils/logger';
 import {
   ArrowLeft,
@@ -39,6 +42,9 @@ const ContractDetails = () => {
   const [actionError, setActionError] = useState(null);
   const [codigoConfirmacion, setCodigoConfirmacion] = useState('');
   const [codigoLlegada, setCodigoLlegada] = useState(null);
+  const [evidenceModalOpen, setEvidenceModalOpen] = useState(false);
+  const [evidencePhase, setEvidencePhase] = useState('inicio');
+  const [consentModalOpen, setConsentModalOpen] = useState(false);
 
   useEffect(() => {
     const loadContract = async () => {
@@ -61,6 +67,19 @@ const ContractDetails = () => {
 
     loadContract();
   }, [contractId, t]);
+
+  useEffect(() => {
+    const action = location.state?.action;
+    if (!action || !contractId) return;
+    if (action === 'completeEvidence') {
+      setEvidencePhase('final');
+      setEvidenceModalOpen(true);
+    }
+    if (action === 'closeConsent') {
+      setConsentModalOpen(true);
+    }
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [location.state, contractId, location.pathname, navigate]);
 
   useEffect(() => {
     if (contract?.estado === 'cerrado') {
@@ -147,7 +166,7 @@ const ContractDetails = () => {
     }
   };
 
-  const handleConfirmarLlegada = async () => {
+  const runConfirmarLlegada = async () => {
     if (!codigoConfirmacion || codigoConfirmacion.length !== 4) {
       setActionError('El código debe tener exactamente 4 dígitos');
       return;
@@ -160,6 +179,7 @@ const ContractDetails = () => {
         const updated = await contractService.getContractById(contractId);
         if (updated.status === 'success') setContract(updated.data);
         setCodigoConfirmacion('');
+        setEvidenceModalOpen(false);
       } else {
         setActionError(res.message || 'Código incorrecto.');
       }
@@ -171,14 +191,29 @@ const ContractDetails = () => {
     }
   };
 
+  const openConfirmarLlegadaFlow = () => {
+    if (!codigoConfirmacion || codigoConfirmacion.length !== 4) {
+      setActionError(t('contractDetails.evidence.codeRequired'));
+      return;
+    }
+    setActionError(null);
+    setEvidencePhase('inicio');
+    setEvidenceModalOpen(true);
+  };
+
   const handleCompletarContrato = async () => {
+    setEvidencePhase('final');
+    setEvidenceModalOpen(true);
+  };
+
+  const runCompletarContrato = async () => {
     setActionLoading(true);
     setActionError(null);
     try {
       await contractService.completarContrato(contractId);
-      // Recargar contrato para reflejar nuevo estado
       const res = await contractService.getContractById(contractId);
       if (res.status === 'success') setContract(res.data);
+      setEvidenceModalOpen(false);
     } catch (err) {
       logger.error('Error completando contrato:', err);
       setActionError(err.response?.data?.message || 'No se pudo completar el contrato.');
@@ -187,14 +222,20 @@ const ContractDetails = () => {
     }
   };
 
-  const handleCerrarContrato = async () => {
+  const openCerrarContratoFlow = () => {
+    setConsentModalOpen(true);
+  };
+
+  const runCerrarContrato = async () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      await contractService.cerrarContrato(contractId);
+      await contractService.cerrarContrato(contractId, {
+        clienteConsentimientoEvidencia: true,
+      });
       const res = await contractService.getContractById(contractId);
       if (res.status === 'success') setContract(res.data);
-      // Abrir modal para que el empleador califique al trabajador
+      setConsentModalOpen(false);
       setReviewTarget({
         calificadoId: contract.trabajador?.id,
         calificadoNombre: `${contract.trabajador?.nombre} ${contract.trabajador?.apellido}`,
@@ -202,7 +243,9 @@ const ContractDetails = () => {
       });
     } catch (err) {
       logger.error('Error cerrando contrato:', err);
-      setActionError(err.response?.data?.message || 'No se pudo cerrar el contrato.');
+      const msg = err.response?.data?.message || 'No se pudo cerrar el contrato.';
+      setActionError(msg);
+      throw err;
     } finally {
       setActionLoading(false);
     }
@@ -379,11 +422,11 @@ const ContractDetails = () => {
               />
               <button
                 className="cd-btn cd-btn--success"
-                onClick={handleConfirmarLlegada}
+                onClick={openConfirmarLlegadaFlow}
                 disabled={actionLoading || codigoConfirmacion.length !== 4}
               >
                 {actionLoading ? <Loader2 size={16} className="spin" /> : <KeyRound size={16} />}
-                {actionLoading ? 'Confirmando...' : 'Confirmar llegada'}
+                {actionLoading ? 'Confirmando...' : t('contractDetails.evidence.confirmArrival')}
               </button>
             </div>
           </div>
@@ -416,7 +459,7 @@ const ContractDetails = () => {
             </p>
             <button
               className="cd-btn cd-btn--primary"
-              onClick={handleCerrarContrato}
+              onClick={openCerrarContratoFlow}
               disabled={actionLoading}
             >
               {actionLoading ? <Loader2 size={16} className="spin" /> : <CheckCircle size={16} />}
@@ -456,6 +499,15 @@ const ContractDetails = () => {
         {actionError && (
           <div className="contract-alert contract-alert--error">{actionError}</div>
         )}
+
+        <ContractEvidenceGallery
+          contractId={contractId}
+          evidencias={contract?.evidencias || []}
+          onRefresh={async () => {
+            const res = await contractService.getContractById(contractId);
+            if (res.status === 'success') setContract(res.data);
+          }}
+        />
 
         {/* ══ Información del contrato ══ */}
         <div className="contract-sections">
@@ -653,6 +705,27 @@ const ContractDetails = () => {
         onSuccess={() => { setReviewTarget(null); setContractReviews(prev => [...prev, { calificador: { id: user?.id } }]); }}
         onClose={() => setReviewTarget(null)}
         canSkip={true}
+      />
+
+      <ContractEvidenceModal
+        open={evidenceModalOpen}
+        phase={evidencePhase}
+        contractId={contractId}
+        onClose={() => setEvidenceModalOpen(false)}
+        onPrimary={
+          evidencePhase === 'inicio' ? runConfirmarLlegada : runCompletarContrato
+        }
+        primaryLabel={
+          evidencePhase === 'inicio'
+            ? t('contractDetails.evidence.confirmArrival')
+            : t('contractDetails.evidence.markComplete')
+        }
+      />
+
+      <ContractConsentModal
+        open={consentModalOpen}
+        onClose={() => setConsentModalOpen(false)}
+        onConfirm={runCerrarContrato}
       />
 
     </div>
