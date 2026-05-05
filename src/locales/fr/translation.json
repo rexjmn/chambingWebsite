@@ -777,6 +777,7 @@
       "phaseStart": "Début du service",
       "phaseEnd": "Fin du service",
       "download": "Télécharger",
+      "preview": "Aperçu",
       "refresh": "Actualiser la liste"
     },
     "consent": {

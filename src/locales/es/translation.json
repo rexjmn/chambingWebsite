@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "loading": "Cargando...",
     "error": "Error",
@@ -883,6 +883,7 @@
       "phaseStart": "Inicio del servicio",
       "phaseEnd": "Fin del servicio",
       "download": "Descargar",
+      "preview": "Ver",
       "refresh": "Actualizar lista"
     },
     "consent": {
