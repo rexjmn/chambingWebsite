@@ -29,6 +29,7 @@ const Navbar = () => {
   const [notificationActionLoading, setNotificationActionLoading] = useState({});
   const profileRef = useRef(null);
   const notificationsRef = useRef(null);
+  const mobileDrawerRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -122,7 +123,13 @@ const Navbar = () => {
   }, [isAuthenticated, user?.id, location.pathname, dismissedNotificationIds]);
 
   const isActive = (path) => location.pathname === path;
-  const closeMobile = () => setMobileOpen(false);
+  const closeMobile = () => {
+    const activeElement = document.activeElement;
+    if (mobileDrawerRef.current?.contains(activeElement)) {
+      activeElement.blur();
+    }
+    setMobileOpen(false);
+  };
   const publicProfilePath = user?.id ? `/profile/${user.id}` : '/perfil';
 
   const menuItems = [
@@ -429,6 +436,7 @@ const Navbar = () => {
       <div
         className={`navbar__drawer${mobileOpen ? ' navbar__drawer--open' : ''}`}
         aria-hidden={!mobileOpen}
+        ref={mobileDrawerRef}
       >
         <div className="navbar__drawer-content">
 

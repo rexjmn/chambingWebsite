@@ -8,6 +8,7 @@ import {
   normalizeAvailabilityReservasPayload,
   contractsToReservasFromWorkerContracts,
   mergeAvailabilityReservas,
+  fetchAvailabilityReservas,
 } from '../../utils/availabilityReservas';
 import './workerCalendar.scss';
 import EventIcon from '@mui/icons-material/Event';
@@ -64,11 +65,13 @@ const WorkerCalendar = ({ trabajadorId, showReservas = false }) => {
         const hoy = new Date();
         const treintaDias = new Date(hoy.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-        const reservasRes = await api.get(
-          `/availability/reservas/${trabajadorId}`,
-          { params: { fecha_inicio: hoy.toISOString(), fecha_fin: treintaDias.toISOString() } }
+        const reservasPayload = await fetchAvailabilityReservas(
+          api,
+          trabajadorId,
+          hoy,
+          treintaDias
         );
-        let list = normalizeAvailabilityReservasPayload(reservasRes.data);
+        let list = normalizeAvailabilityReservasPayload(reservasPayload);
 
         if (user && String(user.id) === String(trabajadorId)) {
           try {

@@ -8,6 +8,7 @@ import {
   normalizeAvailabilityReservasPayload,
   contractsToReservasFromWorkerContracts,
   mergeAvailabilityReservas,
+  fetchAvailabilityReservas,
 } from '../../utils/availabilityReservas';
 import {
   ChevronLeft,
@@ -153,11 +154,13 @@ const AvailabilityCalendar = ({
       setBloques(bloquesRes.data);
 
       try {
-        const reservasRes = await api.get(
-          `/availability/reservas/${trabajadorId}`,
-          { params: { fecha_inicio: inicioMes.toISOString(), fecha_fin: finMes.toISOString() } }
+        const reservasPayload = await fetchAvailabilityReservas(
+          api,
+          trabajadorId,
+          inicioMes,
+          finMes
         );
-        let list = normalizeAvailabilityReservasPayload(reservasRes.data);
+        let list = normalizeAvailabilityReservasPayload(reservasPayload);
 
         if (user && String(user.id) === String(trabajadorId)) {
           try {

@@ -6,6 +6,7 @@ import {
   normalizeAvailabilityReservasPayload,
   contractsToReservasFromWorkerContracts,
   mergeAvailabilityReservas,
+  fetchAvailabilityReservas,
 } from '../../utils/availabilityReservas';
 import './workerAvailability.scss';
 import TimeIcon from '@mui/icons-material/AccessTime';
@@ -118,16 +119,13 @@ const WorkerAvailability = () => {
         const hoy = new Date();
         const treintaDias = new Date(hoy.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-        const reservasRes = await api.get(
-          `/availability/reservas/${trabajadorId}`,
-          {
-            params: {
-              fecha_inicio: hoy.toISOString(),
-              fecha_fin: treintaDias.toISOString()
-            }
-          }
+        const reservasPayload = await fetchAvailabilityReservas(
+          api,
+          trabajadorId,
+          hoy,
+          treintaDias
         );
-        const apiReservas = normalizeAvailabilityReservasPayload(reservasRes.data);
+        const apiReservas = normalizeAvailabilityReservasPayload(reservasPayload);
         let merged = apiReservas;
         try {
           const contractsPayload = await contractService.getMyContracts('trabajador');

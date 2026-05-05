@@ -8,6 +8,40 @@ export function normalizeAvailabilityReservasPayload(payload) {
   return [];
 }
 
+function toLocalDateOnly(dateLike) {
+  const d = dateLike instanceof Date ? dateLike : new Date(dateLike);
+  if (Number.isNaN(d.getTime())) return '';
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+/**
+ * Consulta reservas y hace fallback a fechas YYYY-MM-DD si el backend rechaza ISO con hora.
+ */
+export async function fetchAvailabilityReservas(apiClient, workerId, startDate, endDate) {
+  const endpoint = `/availability/reservas/${workerId}`;
+  const isoParams = {
+    fecha_inicio: new Date(startDate).toISOString(),
+    fecha_fin: new Date(endDate).toISOString(),
+  };
+
+  try {
+    const response = await apiClient.get(endpoint, { params: isoParams });
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status !== 400) throw error;
+
+    const localDateParams = {
+      fecha_inicio: toLocalDateOnly(startDate),
+      fecha_fin: toLocalDateOnly(endDate),
+    };
+    const response = await apiClient.get(endpoint, { params: localDateParams });
+    return response.data;
+  }
+}
+
 const ESTADOS_CONTRATO_EN_AGENDA = new Set(['confirmado', 'en_camino', 'activo']);
 
 function workerIdOnContract(c) {
