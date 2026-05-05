@@ -84,6 +84,16 @@ const getDayKey = (date) => {
   return `${y}-${m}-${d}`;
 };
 
+/** YYYY-MM-DD en calendario local (evita desfase vs toISOString() UTC). */
+const toLocalYmd = (dateLike) => {
+  const d = dateLike instanceof Date ? dateLike : new Date(dateLike);
+  if (Number.isNaN(d.getTime())) return '';
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
+
 // ───────────────────────────────────────────────────────────────────────────
 
 /**
@@ -241,10 +251,11 @@ const AvailabilityCalendar = ({
            b.dia_semana === diaSemana
     );
 
-    // Comparar fechas como strings YYYY-MM-DD para evitar errores de timezone
-    const reservasFecha = reservas.filter(r => {
-      const inicioStr = new Date(r.fecha_inicio).toISOString().split('T')[0];
-      const finStr = new Date(r.fecha_fin).toISOString().split('T')[0];
+    // Mismo calendario local que fechaStr (getDayKey); no usar toISOString() (UTC).
+    const reservasFecha = reservas.filter((r) => {
+      const inicioStr = toLocalYmd(r.fecha_inicio);
+      const finStr = toLocalYmd(r.fecha_fin);
+      if (!inicioStr || !finStr) return false;
       return fechaStr >= inicioStr && fechaStr <= finStr;
     });
 
@@ -277,8 +288,9 @@ const AvailabilityCalendar = ({
 
     horarios.sort((a, b) => a.inicio.localeCompare(b.inicio));
 
+    // Fin de semana sin “disponibilidad” genérica: ocultar solo huecos libres, no contratos/reservas.
     if ((diaSemana === 0 || diaSemana === 6) && config && !config.acepta_fines_semana) {
-      return { tipo: 'sin-disponibilidad', horarios: [] };
+      horarios = horarios.filter((h) => h.tipo !== 'disponible');
     }
 
     // Determinar tipo del día basado en disponibilidad real por slot
