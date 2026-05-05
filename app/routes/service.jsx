@@ -1,7 +1,7 @@
 import Service from '../../src/pages/Service';
 import { buildMeta, SITE_URL, SITE_NAME } from '../seo';
 
-const API = process.env.API_INTERNAL_URL || 'http://localhost:3000/api';
+const API = globalThis?.process?.env?.API_INTERNAL_URL || 'http://localhost:3000/api';
 const PAGE_URL = `${SITE_URL}/service`;
 
 export async function loader() {

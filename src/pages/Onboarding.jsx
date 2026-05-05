@@ -196,7 +196,7 @@ const Onboarding = () => {
         })
         .catch(() => {});
     }
-  }, [selectedUserType]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedUserType]);  
 
   // ── Photo handlers ────────────────────────────────────────────────────────────
   const handleFileSelect = (e) => {

@@ -19,115 +19,69 @@ export const profileService = {
   // ===== MÉTHODES GET =====
 
   async getCurrentUser() {
-    try {
-      const response = await api.get('/users/me');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get('/users/me');
+    return response.data;
   },
 
   async getAvailableSkills() {
-    try {
-      const response = await api.get('/skills');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get('/skills');
+    return response.data;
   },
 
   async getMySkills() {
-    try {
-      const response = await api.get('/users/me/skills');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get('/users/me/skills');
+    return response.data;
   },
 
   // ===== MÉTHODES POST =====
 
   async uploadProfilePhoto(file) {
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await api.post('/users/profile-photo', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post('/users/profile-photo', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
   },
 
   // ===== MÉTHODES PUT =====
 
   async updateSkills(skillIds) {
-    try {
-      const response = await api.put('/users/profile/skills', { skillIds });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.put('/users/profile/skills', { skillIds });
+    return response.data;
   },
 
   // ===== MÉTHODES PATCH =====
 
   async updateProfile(userData) {
-    try {
-      const response = await api.patch('/users/profile', userData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.patch('/users/profile', userData);
+    return response.data;
   },
 
   async changeUserType(tipo_usuario) {
-    try {
-      const response = await api.patch('/users/change-type', { tipo_usuario });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.patch('/users/change-type', { tipo_usuario });
+    return response.data;
   },
 
   async completeOnboarding() {
-    try {
-      const response = await api.patch('/users/complete-onboarding');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.patch('/users/complete-onboarding');
+    return response.data;
   },
 
   // ===== MÉTHODES DELETE =====
 
   async deleteProfilePhoto() {
-    try {
-      const response = await api.delete('/users/profile-photo');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.delete('/users/profile-photo');
+    return response.data;
   },
 
   async deleteSkill(skillId) {
-    try {
-      const response = await api.delete(`/users/profile/skills/${skillId}`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.delete(`/users/profile/skills/${skillId}`);
+    return response.data;
   },
 
   async deleteAccount() {
-    try {
-      const response = await api.delete('/users/me');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.delete('/users/me');
+    return response.data;
   },
 };

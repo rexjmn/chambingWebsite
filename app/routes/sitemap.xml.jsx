@@ -1,4 +1,4 @@
-const API = process.env.API_INTERNAL_URL || 'http://localhost:3000/api';
+const API = globalThis?.process?.env?.API_INTERNAL_URL || 'http://localhost:3000/api';
 const SITE_URL = 'https://chambing.com';
 
 const STATIC_URLS = [

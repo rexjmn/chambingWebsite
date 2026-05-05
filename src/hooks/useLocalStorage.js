@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { logger } from '../utils/logger';
 
 export const useLocalStorage = (key, initialValue) => {

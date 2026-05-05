@@ -21,7 +21,6 @@ import { useAuth } from '../context/AuthContext';
 import { serviceService } from '../services/serviceService';
 import { workerService } from '../services/workerService';
 import { publicProfileService } from '../services/publicProfileService';
-import { logger } from '../utils/logger';
 import heroManImage from '../assets/images/heroman.png';
 import imgWorker1  from '../assets/images/gallery/ehmitrich-fW6lwDM26o0-unsplash.jpg';
 import imgCreative from '../assets/images/gallery/ona-creative-z4S0MYNYT08-unsplash.jpg';
@@ -62,10 +61,9 @@ const Home = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  useMediaQuery(theme.breakpoints.down('md'));
 
-  const [categories, setCategories] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [, setCategories] = useState([]);
   const [featuredWorkers, setFeaturedWorkers] = useState([]);
   const [topRatedWorkers, setTopRatedWorkers] = useState([]);
   const [loadingWorkers, setLoadingWorkers] = useState(true);
@@ -134,23 +132,6 @@ const Home = () => {
       habilidades: ['Reparaciones','Instalaciones'],
       categorias: [{ nombre: titles[i % titles.length] }],
     }));
-  };
-
-  const getServiceIcon = (iconName) => {
-    const map = {
-      cleaning:  <CleaningServices />,
-      plumbing:  <Plumbing />,
-      electrical:<ElectricalServices />,
-      carpenter: <Handyman />,
-      garden:    <HomeIcon />,
-      build:     <Build />,
-    };
-    return map[iconName] ?? <Build />;
-  };
-
-  const handleSearch = (e) => {
-    e?.preventDefault();
-    if (searchQuery.trim()) navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
   };
 
   const features = [

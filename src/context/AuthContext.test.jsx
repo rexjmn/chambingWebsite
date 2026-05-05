@@ -109,7 +109,7 @@ describe('AuthContext', () => {
       await act(async () => {
         try {
           await result.current.login(mockCredentials)
-        } catch (error) {
+        } catch {
           // Error esperado
         }
       })
@@ -192,7 +192,7 @@ describe('AuthContext', () => {
       await act(async () => {
         try {
           await result.current.refreshUser()
-        } catch (error) {
+        } catch {
           // Error esperado
         }
       })
@@ -216,7 +216,7 @@ describe('AuthContext', () => {
       await act(async () => {
         try {
           await result.current.login({ email: 'test', password: 'test' })
-        } catch (error) {
+        } catch {
           // Expected
         }
       })

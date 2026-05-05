@@ -168,7 +168,7 @@ const adminService = {
         params: { period }
       });
       return response.data.data || response.data;
-    } catch (error) {
+    } catch {
       logger.warn('Metrics endpoint not available, using basic stats');
       return await this.getAdminStats(period);
     }

@@ -53,7 +53,7 @@ export const sanitizeObject = (obj) => {
 
   const sanitized = {};
   for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
       const value = obj[key];
       if (typeof value === 'string') {
         sanitized[key] = sanitizeInput(value);
@@ -112,7 +112,7 @@ export const validatePasswordStrength = (password) => {
     hasUpperCase: /[A-Z]/.test(password),
     hasLowerCase: /[a-z]/.test(password),
     hasNumber: /\d/.test(password),
-    hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+    hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password),
   };
 
   const strength = Object.values(validations).filter(Boolean).length;
@@ -217,7 +217,7 @@ export const validateForm = (formData, requiredFields = []) => {
   const sanitizedData = {};
 
   for (const field in formData) {
-    if (formData.hasOwnProperty(field)) {
+    if (Object.prototype.hasOwnProperty.call(formData, field)) {
       const value = formData[field];
 
       // Validar campos requeridos
@@ -262,15 +262,13 @@ export const generateCSRFToken = () => {
  */
 export const detectMaliciousUnicode = (input) => {
   if (typeof input !== 'string') return false;
-
-  // Detectar caracteres de control y unicode sospechosos
-  const suspiciousPatterns = [
-    /[\u0000-\u001F\u007F-\u009F]/g, // Caracteres de control
-    /[\u200B-\u200D\u2060\uFEFF]/g, // Zero-width characters
-    /[\uD800-\uDFFF]/g, // Surrogates sin par
-  ];
-
-  return suspiciousPatterns.some(pattern => pattern.test(input));
+  for (const char of input) {
+    const code = char.charCodeAt(0);
+    if ((code >= 0 && code <= 31) || (code >= 127 && code <= 159)) return true;
+    if ((code >= 0x200b && code <= 0x200d) || code === 0x2060 || code === 0xfeff) return true;
+    if (code >= 0xd800 && code <= 0xdfff) return true;
+  }
+  return false;
 };
 
 export default {

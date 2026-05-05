@@ -1,4 +1,3 @@
-import { get } from 'react-hook-form';
 import api from './api';
 
 export const userService = {
@@ -29,7 +28,7 @@ export const userService = {
         return response.data;
     },
     async getUserById(userId) {
-        const response = await api.get(`/user/${id}`);
+        const response = await api.get(`/user/${userId}`);
         return response.data;
     },
 };

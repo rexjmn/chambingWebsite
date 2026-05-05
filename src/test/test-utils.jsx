@@ -12,7 +12,6 @@ import { AuthProvider } from '../context/AuthContext'
 export function renderWithProviders(
   ui,
   {
-    initialEntries = ['/'],
     ...renderOptions
   } = {}
 ) {

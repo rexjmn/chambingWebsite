@@ -87,7 +87,7 @@ const WorkerAvailability = () => {
       setLoading(false);
       alert('No se pudo obtener tu ID de usuario. Por favor, inicia sesión nuevamente.');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [authLoading, trabajadorId]);
 
   const cargarDatos = async () => {

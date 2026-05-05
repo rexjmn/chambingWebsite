@@ -137,7 +137,7 @@ const RegisterForm = () => {
       cancelled = true;
     };
     // Solo al montar: país sugerido por IP sin pisar elección manual
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   useEffect(() => {

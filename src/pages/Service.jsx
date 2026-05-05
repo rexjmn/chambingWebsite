@@ -117,7 +117,7 @@ const Service = () => {
 
   useEffect(() => {
     fetchWorkers();
-  }, [filters, committedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filters, committedSearch]);  
 
   const fetchWorkers = async () => {
     try {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useTranslations } from '../hooks/useTranslations';
 import CategoriesManager from '../components/admin/CategoriesManager';
 import DocumentsVerifier from '../components/admin/DocumentsVerifier';
 import ContractsManager from '../components/admin/ContractsManager';
@@ -107,7 +106,6 @@ const ICON_MAP = {
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
-  const { t } = useTranslations();
   const [activeTab, setActiveTab] = useState('stats');
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);

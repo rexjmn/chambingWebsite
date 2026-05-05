@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import adminService from '../../services/adminService';
 import { logger } from '../../utils/logger';
 import TextInputModal from '../TextInputModal';
 import ConfirmDialog from '../ConfirmDialog';
 import SuccessSnackbar from '../SuccessSnackbar';
 
-const UsersManager = ({ isSuperAdmin }) => {
-  const { t } = useTranslation();
+const UsersManager = () => {
   const [users, setUsers] = useState([]);
   const [pendingWorkers, setPendingWorkers] = useState([]);
   const [loading, setLoading] = useState(true);

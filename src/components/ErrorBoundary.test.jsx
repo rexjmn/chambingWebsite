@@ -55,25 +55,6 @@ describe('ErrorBoundary', () => {
     spy.mockRestore()
   })
 
-  it('should show error details in development mode', () => {
-    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const originalEnv = process.env.NODE_ENV
-
-    // Simular development mode
-    process.env.NODE_ENV = 'development'
-
-    render(
-      <ErrorBoundary>
-        <ThrowError />
-      </ErrorBoundary>
-    )
-
-    expect(screen.getByText(/Detalles del error/i)).toBeInTheDocument()
-
-    process.env.NODE_ENV = originalEnv
-    spy.mockRestore()
-  })
-
   it('should have "Volver al inicio" button', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
 

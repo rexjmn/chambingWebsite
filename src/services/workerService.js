@@ -21,21 +21,13 @@ export const workerService = {
    * @returns {Promise} Liste des travailleurs
    */
   async getVerifiedWorkers(filters = {}) {
-    try {
-      // Construire les paramètres de requête - Axios permet de passer les params directement
-      const params = {};
-
-      if (filters.categoria) params.categoria = filters.categoria;
-      if (filters.departamento) params.departamento = filters.departamento;
-      if (filters.search) params.search = filters.search;
-      if (filters.verificado !== undefined) params.verificado = filters.verificado;
-
-      // Utilisation d'Axios avec le verbe GET et les params
-      const response = await api.get('/users/workers', { params });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const params = {};
+    if (filters.categoria) params.categoria = filters.categoria;
+    if (filters.departamento) params.departamento = filters.departamento;
+    if (filters.search) params.search = filters.search;
+    if (filters.verificado !== undefined) params.verificado = filters.verificado;
+    const response = await api.get('/users/workers', { params });
+    return response.data;
   },
 
   /**
@@ -46,13 +38,8 @@ export const workerService = {
    * @returns {Promise} Données du travailleur
    */
   async getWorkerById(workerId) {
-    try {
-      // Utilisation d'Axios avec le verbe GET
-      const response = await api.get(`/users/public/${workerId}`);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get(`/users/public/${workerId}`);
+    return response.data;
   },
 
   /**
@@ -116,7 +103,7 @@ export const workerService = {
       }
 
       return [];
-    } catch (error) {
+    } catch {
       return [];
     }
   },
@@ -140,7 +127,7 @@ export const workerService = {
       }
 
       return [];
-    } catch (error) {
+    } catch {
       return [];
     }
   },

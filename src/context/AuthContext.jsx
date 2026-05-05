@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { authService } from '../services/authService';
 import { logger } from '../utils/logger';
 import api from '../services/api'; 
@@ -12,7 +12,7 @@ const authReducer = (state, action) => {
     case 'LOGIN_START':
       return { ...state, loading: true, error: null };
       
-    case 'LOGIN_SUCCESS':
+    case 'LOGIN_SUCCESS': {
       if (!action.payload) {
         logger.error('❌ LOGIN_SUCCESS: payload es undefined');
         return {
@@ -42,6 +42,7 @@ const authReducer = (state, action) => {
         isAuthenticated: true,
         error: null,
       };
+    }
       
     case 'LOGIN_FAILURE':
       return {
@@ -71,7 +72,7 @@ const authReducer = (state, action) => {
         user: action.payload,
       };
       
-    case 'UPDATE_USER':
+    case 'UPDATE_USER': {
       const updatedUser = {
         ...state.user,
         ...action.payload
@@ -83,6 +84,7 @@ const authReducer = (state, action) => {
         ...state,
         user: updatedUser
       };
+    }
       
     case 'REFRESH_USER_START':
       return {

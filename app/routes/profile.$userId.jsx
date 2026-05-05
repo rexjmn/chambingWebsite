@@ -2,7 +2,7 @@ import { useLoaderData } from 'react-router';
 import PublicProfile from '../../src/pages/PublicProfile';
 import { buildMeta, SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE } from '../seo';
 
-const API = process.env.API_INTERNAL_URL || 'http://localhost:3000/api';
+const API = globalThis?.process?.env?.API_INTERNAL_URL || 'http://localhost:3000/api';
 
 export async function loader({ params }) {
   try {

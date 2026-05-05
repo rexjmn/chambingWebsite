@@ -3,7 +3,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import WorkerCard from '../WorkerCard';
-import { workerService } from '../../services/workerService';
 import '../../styles/components/Carrousel.scss';
 
 const Carrousel = ({ workers, title = "Profesionales Destacados", subtitle }) => {

@@ -11,7 +11,7 @@ class ErrorBoundary extends React.Component {
     };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     // Update state so the next render will show the fallback UI
     return { hasError: true };
   }
@@ -67,7 +67,7 @@ class ErrorBoundary extends React.Component {
             {this.props.message || 'Ha ocurrido un error inesperado. Por favor, intenta recargar la página.'}
           </p>
 
-          {process.env.NODE_ENV === 'development' && this.state.error && (
+          {import.meta.env.DEV && this.state.error && (
             <details style={{
               marginBottom: '2rem',
               padding: '1rem',

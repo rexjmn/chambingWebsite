@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import adminService from '../../services/adminService';
 import { logger } from '../../utils/logger';
 
-const AdminStats = ({ isSuperAdmin }) => {
-  const { t } = useTranslation();
+const AdminStats = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('month');

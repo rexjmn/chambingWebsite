@@ -141,7 +141,7 @@ export default function ResponderOferta() {
   }
 
   // Estado: loaded
-  const { empleador, trabajador, categoria, detalles_servicio, modalidad, monto_total, fecha_inicio_programada, fecha_fin_programada } = contrato;
+  const { empleador, categoria, detalles_servicio, modalidad, monto_total, fecha_inicio_programada, fecha_fin_programada } = contrato;
 
   return (
     <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2, bgcolor: '#f5f5f5' }}>

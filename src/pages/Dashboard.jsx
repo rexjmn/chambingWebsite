@@ -186,7 +186,7 @@ const getWorkerSkillNames = (worker) => {
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { t, nav, translateService, translateUserType } = useTranslations();
   const { isAdmin } = useAdmin();
   const [categories, setCategories] = useState([]);
@@ -200,7 +200,7 @@ const Dashboard = () => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [dismissedNotifications, setDismissedNotifications] = useState([]);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshKey] = useState(0);
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -301,7 +301,6 @@ const Dashboard = () => {
     navigate(`/service?search=${encodeURIComponent(categoryLabel)}`);
   };
 
-  const handleRefresh = () => setRefreshKey(prev => prev + 1);
   const dismissNotification = (notificationId) => {
     setDismissedNotifications(prev => [...prev, notificationId]);
   };
