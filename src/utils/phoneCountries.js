@@ -65,6 +65,12 @@ export function splitInternationalTelefono(stored) {
     if (national.length >= c.nsnMin && national.length <= c.nsnMax) {
       return { iso: c.iso, national };
     }
+    if (
+      national.length === c.nsnMax + 1 &&
+      national.startsWith('0')
+    ) {
+      return { iso: c.iso, national };
+    }
   }
 
   if (d.length === 8) return { iso: 'SV', national: d };
@@ -74,7 +80,10 @@ export function splitInternationalTelefono(stored) {
 
 export function buildInternationalTelefonoDigits(iso, nationalDigits) {
   const c = getCountryByIso(iso);
-  const n = String(nationalDigits || '').replace(/\D/g, '');
+  let n = String(nationalDigits || '').replace(/\D/g, '');
+  if (n.length === c.nsnMax + 1 && n.startsWith('0')) {
+    n = n.slice(1);
+  }
   return `${c.dial}${n}`;
 }
 

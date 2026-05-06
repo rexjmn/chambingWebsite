@@ -363,7 +363,7 @@ const EditProfile = () => {
                   inputMode="numeric"
                   autoComplete="tel-national"
                   placeholder="Número local"
-                  maxLength={PHONE_COUNTRIES.find((c) => c.iso === phoneCountryIso)?.nsnMax ?? 15}
+                  maxLength={(PHONE_COUNTRIES.find((c) => c.iso === phoneCountryIso)?.nsnMax ?? 15) + 1}
                 />
               </div>
             </div>
