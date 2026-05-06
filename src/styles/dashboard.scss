@@ -1803,8 +1803,8 @@ body {
   }
 }
 
-// Lazy loading con blur effect mejorado
-img[loading="lazy"] {
+// Lazy loading blur solo para dashboard (evita afectar otras páginas)
+.dashboard img[loading="lazy"] {
   filter: blur(20px);
   transition: filter 0.4s ease;
   background: linear-gradient(135deg, rgba($brand-primary, 0.05) 0%, rgba($brand-light, 0.05) 100%);
@@ -1814,8 +1814,8 @@ img[loading="lazy"] {
   }
 }
 
-// Placeholder para imágenes mientras cargan
-.img-loading {
+// Placeholder para imágenes mientras cargan (dashboard)
+.dashboard .img-loading {
   background: linear-gradient(
     90deg,
     rgba($brand-primary, 0.05) 0%,
