@@ -46,7 +46,7 @@ $avatar-border: 3px;
     box-shadow: 0 20px 56px rgba(35, 61, 255, 0.13);
     border-color: rgba(35, 61, 255, 0.28);
 
-    .wcard-cover img     { transform: scale(1.02); }
+    .wcard-cover img     { transform: scale(1.06); }
     .wcard-avatar        { box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(35, 61, 255, 0.4); }
     .wcard-cta           { opacity: 1; transform: translateY(0); }
     .wcard-cover-gradient { opacity: 0.55; }
@@ -68,9 +68,6 @@ $avatar-border: 3px;
     height: 100%;
     object-fit: cover;
     display: block;
-    image-rendering: auto;
-    backface-visibility: hidden;
-    transform: translateZ(0);
     transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
@@ -182,9 +179,6 @@ $avatar-border: 3px;
     box-shadow 0.28s ease,
     transform  0.28s ease;
   display: block;
-  image-rendering: auto;
-  backface-visibility: hidden;
-  transform: translateZ(0);
 }
 
 // ════════════════════════════════════════════════════════════════
