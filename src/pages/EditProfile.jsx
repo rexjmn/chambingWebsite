@@ -6,6 +6,11 @@ import { profileService } from '../services/profileService';
 import { serviceService } from '../services/serviceService';
 import { logger } from '../utils/logger';
 import WorkerCalendar from '../components/calendar/WorkerCalendar';
+import {
+  PHONE_COUNTRIES,
+  buildInternationalTelefonoDigits,
+  splitInternationalTelefono,
+} from '../utils/phoneCountries';
 import '../styles/edit-profile.scss';
 
 const EditProfile = () => {
@@ -21,6 +26,8 @@ const EditProfile = () => {
     municipio: '',
     titulo_profesional: '', // 🆕 NUEVO
   });
+  const [phoneCountryIso, setPhoneCountryIso] = useState('SV');
+  const [phoneNational, setPhoneNational] = useState('');
 
   // 🆕 NUEVO - Estado para tarifas
   const [tarifas, setTarifas] = useState({
@@ -53,15 +60,18 @@ const EditProfile = () => {
 
         // Cargar datos del usuario
         if (user) {
+          const parsedPhone = splitInternationalTelefono(user.telefono || '');
           setFormData({
             nombre: user.nombre || '',
             apellido: user.apellido || '',
-            telefono: user.telefono || '',
+            telefono: buildInternationalTelefonoDigits(parsedPhone.iso, parsedPhone.national),
             biografia: user.biografia || '',
             departamento: user.departamento || '',
             municipio: user.municipio || '',
             titulo_profesional: user.titulo_profesional || '', // 🆕 NUEVO
           });
+          setPhoneCountryIso(parsedPhone.iso);
+          setPhoneNational(parsedPhone.national);
 
           // Cargar habilidades del usuario
           if (user.tipo_usuario === 'trabajador') {
@@ -109,6 +119,26 @@ const EditProfile = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhoneCountryChange = (e) => {
+    const nextIso = e.target.value;
+    setPhoneCountryIso(nextIso);
+    setFormData((prev) => ({
+      ...prev,
+      telefono: buildInternationalTelefonoDigits(nextIso, phoneNational),
+    }));
+  };
+
+  const handlePhoneNationalChange = (e) => {
+    const digitsOnly = e.target.value.replace(/\D/g, '');
+    const maxDigits = PHONE_COUNTRIES.find((c) => c.iso === phoneCountryIso)?.nsnMax ?? 15;
+    const clipped = digitsOnly.slice(0, maxDigits);
+    setPhoneNational(clipped);
+    setFormData((prev) => ({
+      ...prev,
+      telefono: buildInternationalTelefonoDigits(phoneCountryIso, clipped),
+    }));
   };
 
   // 🆕 NUEVO - Manejar cambios en tarifas
@@ -307,14 +337,35 @@ const EditProfile = () => {
 
             <div className="edit-profile__field">
               <label htmlFor="telefono">Teléfono</label>
-              <input
-                type="tel"
-                id="telefono"
-                name="telefono"
-                value={formData.telefono}
-                onChange={handleInputChange}
-                placeholder="+503 0000-0000"
-              />
+              <div className="edit-profile__phone-row">
+                <select
+                  id="telefono-country"
+                  name="telefono-country"
+                  value={phoneCountryIso}
+                  onChange={handlePhoneCountryChange}
+                  aria-label="Código de país del teléfono"
+                  className="edit-profile__phone-country"
+                >
+                  {[...PHONE_COUNTRIES]
+                    .sort((a, b) => a.name.localeCompare(b.name, 'es'))
+                    .map((country) => (
+                      <option key={country.iso} value={country.iso}>
+                        +{country.dial} {country.name}
+                      </option>
+                    ))}
+                </select>
+                <input
+                  type="tel"
+                  id="telefono"
+                  name="telefono"
+                  value={phoneNational}
+                  onChange={handlePhoneNationalChange}
+                  inputMode="numeric"
+                  autoComplete="tel-national"
+                  placeholder="Número local"
+                  maxLength={PHONE_COUNTRIES.find((c) => c.iso === phoneCountryIso)?.nsnMax ?? 15}
+                />
+              </div>
             </div>
 
             {/* 🆕 NUEVO - Título Profesional para trabajadores */}
