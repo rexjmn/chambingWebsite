@@ -9,6 +9,7 @@ import '../../styles/contractEvidenceModal.scss';
 const MAX_VIDEO_SEC = 15;
 const EVIDENCE_IMAGE_MAX_EDGE = 2560;
 const EVIDENCE_IMAGE_QUALITY = 0.9;
+const EVIDENCE_JPEG_PASSTHROUGH_MAX_BYTES = 4 * 1024 * 1024;
 
 function readVideoDuration(file) {
   return new Promise((resolve, reject) => {
@@ -89,11 +90,16 @@ export default function ContractEvidenceModal({
         );
       } else {
         for (const raw of images) {
-          const file = await compressImageToJpeg(
-            raw,
-            EVIDENCE_IMAGE_MAX_EDGE,
-            EVIDENCE_IMAGE_QUALITY,
-          ).catch(() => raw);
+          const shouldKeepOriginalJpeg =
+            raw.type === 'image/jpeg' && raw.size <= EVIDENCE_JPEG_PASSTHROUGH_MAX_BYTES;
+
+          const file = shouldKeepOriginalJpeg
+            ? raw
+            : await compressImageToJpeg(
+                raw,
+                EVIDENCE_IMAGE_MAX_EDGE,
+                EVIDENCE_IMAGE_QUALITY,
+              ).catch(() => raw);
           await contractService.uploadEvidenceFile(
             contractId,
             {

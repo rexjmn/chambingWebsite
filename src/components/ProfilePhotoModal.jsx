@@ -27,7 +27,6 @@ import api from '../services/api';
 
 const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
   const { user, updateUser } = useAuth();
-  const [selectedFile, setSelectedFile] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -60,8 +59,6 @@ const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
     }
 
     setError(null);
-    setSelectedFile(file);
-
     // Crear preview con FileReader
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -105,8 +102,8 @@ const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
 
     const data = rotCtx.getImageData(0, 0, safeArea, safeArea);
 
-    // Output canvas: cap at 500×500 to keep uploads under ~150 KB
-    const MAX_OUTPUT = 500;
+    // Output canvas: higher cap to avoid blurry avatars across the app
+    const MAX_OUTPUT = 900;
     const scale = Math.min(1, MAX_OUTPUT / Math.max(pixelCrop.width, pixelCrop.height));
     const outW = Math.round(pixelCrop.width * scale);
     const outH = Math.round(pixelCrop.height * scale);
@@ -129,7 +126,7 @@ const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
     outCtx.drawImage(tmpCanvas, 0, 0, outW, outH);
 
     return new Promise((resolve) => {
-      outCanvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.80);
+      outCanvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.92);
     });
   };
 
@@ -145,7 +142,7 @@ const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
       
       // Crear FormData con la imagen recortada
       const formData = new FormData();
-      formData.append('file', croppedBlob, selectedFile.name);
+      formData.append('file', croppedBlob, 'profile-photo.jpg');
 
       const { data: result } = await api.post('/users/profile-photo', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -173,7 +170,6 @@ const ProfilePhotoModal = ({ open, onClose, onPhotoUpdated }) => {
   };
 
   const handleClose = () => {
-    setSelectedFile(null);
     setImageSrc(null);
     setCrop({ x: 0, y: 0 });
     setZoom(1);
