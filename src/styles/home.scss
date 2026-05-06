@@ -1781,6 +1781,9 @@ html {
   padding: 8px;
   height: calc(100% - 36px);
   overflow: hidden;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .gallery-col {
@@ -1788,19 +1791,16 @@ html {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  will-change: transform;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 
   &--a { animation: gallery-scroll 15s linear infinite; }
   &--b { animation: gallery-scroll 19s linear infinite; animation-delay: -7s; }
 }
 
-// translate3d forces GPU compositing for buttery-smooth scroll
+// Use 2D translation to avoid browser GPU blur artifacts
 // calc(-50% + 4px) compensates for the half-gap offset in flex containers
 @keyframes gallery-scroll {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(0, calc(-50% + 4px), 0); }
+  from { transform: translateY(0); }
+  to   { transform: translateY(calc(-50% + 4px)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1813,6 +1813,9 @@ html {
   object-fit: cover;
   flex-shrink: 0;
   display: block;
+  image-rendering: auto;
+  filter: none !important;
+  -webkit-filter: none !important;
 }
 
 // 4-height cycle for more visual variety across the longer columns
