@@ -7,7 +7,7 @@ import { logger } from '../../utils/logger';
 import LanguageSelector from './LanguageSelector';
 import {
   Menu, X, LayoutDashboard, Briefcase, Home,
-  User, LogOut, ChevronDown, Bell, Shield,
+  User, LogOut, ChevronDown, Bell, Shield, Rocket,
 } from 'lucide-react';
 import { useAdmin } from '../../hooks/useAdmin';
 import '../../styles/navbar.scss';
@@ -133,8 +133,9 @@ const Navbar = () => {
   const publicProfilePath = user?.id ? `/profile/${user.id}` : '/perfil';
 
   const menuItems = [
-    { label: nav.home,     path: '/',        icon: <Home size={18} /> },
-    { label: nav.services, path: '/service', icon: <Briefcase size={18} /> },
+    { label: nav.home,      path: '/',         icon: <Home size={18} /> },
+    { label: nav.services,  path: '/service',  icon: <Briefcase size={18} /> },
+    { label: nav.misiones,  path: '/misiones', icon: <Rocket size={18} /> },
   ];
 
   const authItems = isAuthenticated

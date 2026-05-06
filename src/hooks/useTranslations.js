@@ -32,6 +32,7 @@ export const useTranslations = () => {
   const nav = {
     home: t('nav.home'),
     services: t('nav.services'),
+    misiones: t('nav.misiones'),
     dashboard: t('nav.dashboard'),
     adminPanel: t('nav.adminPanel'),
     notifications: t('nav.notifications'),

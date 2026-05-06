@@ -7,6 +7,11 @@ export default [
   route('/service', 'routes/service.jsx'),
   route('/profile/:userId', 'routes/profile.$userId.jsx'),
 
+  // ── Misión Chambing (público + protegido) ────────────────────────────────
+  route('/misiones', 'routes/misiones.jsx'),
+  route('/misiones/crear', 'routes/misiones.crear.jsx'),
+  route('/misiones/:misionId', 'routes/misiones.$misionId.jsx'),
+
   // ── Rutas de auth (CSR) ───────────────────────────────────────────────────
   route('/login', 'routes/login.jsx'),
   route('/register', 'routes/register.jsx'),

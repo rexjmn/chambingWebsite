@@ -262,6 +262,7 @@
   "nav": {
     "home": "Inicio",
     "services": "Servicios",
+    "misiones": "Misiones",
     "dashboard": "Dashboard",
     "adminPanel": "Administración",
     "notifications": "Notificaciones",
@@ -269,6 +270,34 @@
     "login": "Iniciar Sesión",
     "register": "Registrarse",
     "logout": "Cerrar Sesión"
+  },
+  "misiones": {
+    "title": "Misión Chambing",
+    "subtitle": "Proyectos y trabajos publicados por clientes",
+    "publish": "Publicar Misión",
+    "apply": "Postularme",
+    "myMissions": "Mis Misiones",
+    "myApplications": "Mis Postulaciones",
+    "applicants": "Postulantes",
+    "noMissions": "No hay misiones disponibles",
+    "noApplications": "No tienes postulaciones aún",
+    "status": {
+      "activa": "Activa",
+      "pausada": "Pausada",
+      "cerrada": "Cerrada"
+    },
+    "applicationStatus": {
+      "pendiente": "Pendiente",
+      "aceptado": "Aceptado",
+      "rechazado": "Rechazado",
+      "retirada": "Retirada"
+    },
+    "messages": {
+      "createSuccess": "¡Misión publicada exitosamente!",
+      "applySuccess": "¡Postulación enviada!",
+      "withdrawSuccess": "Postulación retirada",
+      "loadError": "Error al cargar las misiones"
+    }
   },
   "auth": {
     "login": {

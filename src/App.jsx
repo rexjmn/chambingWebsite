@@ -30,6 +30,10 @@ const Onboarding = lazy(() => import('./pages/Onboarding'));
 const VerificarEmail = lazy(() => import('./pages/VerificarEmail'));
 const ResponderOferta = lazy(() => import('./pages/ResponderOferta'));
 const GoogleCallback = lazy(() => import('./pages/GoogleCallback'));
+// ✅ Módulo Misión Chambing
+const Misiones = lazy(() => import('./pages/Misiones'));
+const MisionDetalle = lazy(() => import('./pages/MisionDetalle'));
+const CrearMision = lazy(() => import('./pages/CrearMision'));
 
 // Loading fallback component - optimizado
 const LoadingFallback = () => (
@@ -101,6 +105,10 @@ function App() {
                   {/* ✅ Página de Servicios - Pública */}
                   <Route path="/service" element={<ErrorBoundaryWrapper><Services /></ErrorBoundaryWrapper>} />
 
+                  {/* ✅ Misión Chambing — pública */}
+                  <Route path="/misiones" element={<ErrorBoundaryWrapper><Misiones /></ErrorBoundaryWrapper>} />
+                  <Route path="/misiones/:misionId" element={<ErrorBoundaryWrapper><MisionDetalle /></ErrorBoundaryWrapper>} />
+
                   {/* Rutas protegidas - Dashboard normal */}
                   <Route
                     path="/dashboard"
@@ -132,6 +140,18 @@ function App() {
                     <ErrorBoundaryWrapper>
                       <ProtectedRoute>
                         <WorkerAvailability />
+                      </ProtectedRoute>
+                    </ErrorBoundaryWrapper>
+                  }
+                />
+
+                {/* ✅ Crear Misión — solo clientes */}
+                <Route
+                  path="/misiones/crear"
+                  element={
+                    <ErrorBoundaryWrapper>
+                      <ProtectedRoute>
+                        <CrearMision />
                       </ProtectedRoute>
                     </ErrorBoundaryWrapper>
                   }

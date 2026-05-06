@@ -262,6 +262,7 @@
   "nav": {
     "home": "Home",
     "services": "Services",
+    "misiones": "Missions",
     "dashboard": "Dashboard",
     "adminPanel": "Administration",
     "notifications": "Notifications",
@@ -269,6 +270,34 @@
     "login": "Sign In",
     "register": "Sign Up",
     "logout": "Sign Out"
+  },
+  "misiones": {
+    "title": "Chambing Missions",
+    "subtitle": "Projects and jobs posted by clients",
+    "publish": "Post Mission",
+    "apply": "Apply Now",
+    "myMissions": "My Missions",
+    "myApplications": "My Applications",
+    "applicants": "Applicants",
+    "noMissions": "No missions available",
+    "noApplications": "You have no applications yet",
+    "status": {
+      "activa": "Active",
+      "pausada": "Paused",
+      "cerrada": "Closed"
+    },
+    "applicationStatus": {
+      "pendiente": "Pending",
+      "aceptado": "Accepted",
+      "rechazado": "Rejected",
+      "retirada": "Withdrawn"
+    },
+    "messages": {
+      "createSuccess": "Mission posted successfully!",
+      "applySuccess": "Application sent!",
+      "withdrawSuccess": "Application withdrawn",
+      "loadError": "Error loading missions"
+    }
   },
   "auth": {
     "login": {

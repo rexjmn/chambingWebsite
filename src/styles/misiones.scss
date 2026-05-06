@@ -1,0 +1,1060 @@
+@use './variables' as *;
+
+// ─────────────────────────────────────────────
+//  MISIONES — Página principal
+// ─────────────────────────────────────────────
+
+.misiones-page {
+  min-height: 100vh;
+  background: var(--color-gray-50, #fafafb);
+}
+
+// ─── Hero ─────────────────────────────────────
+
+.misiones-hero {
+  background: linear-gradient(135deg, #1a2ecc 0%, #4d63ff 50%, #233dff 100%);
+  color: #fff;
+  padding: $spacing-2xl $spacing-xl;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  &__title {
+    font-family: var(--font-title, 'League Spartan', sans-serif);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    margin-bottom: $spacing-sm;
+    position: relative;
+  }
+
+  &__subtitle {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    opacity: 0.9;
+    margin-bottom: $spacing-xl;
+    position: relative;
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-sm;
+    background: #fff;
+    color: $primary-color;
+    font-weight: 700;
+    padding: 0.875rem 2rem;
+    border-radius: $border-radius-xl;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+// ─── Filtros ──────────────────────────────────
+
+.misiones-filters {
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  padding: $spacing-md $spacing-xl;
+
+  &__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    gap: $spacing-md;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  &__search {
+    flex: 1;
+    min-width: 240px;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    background: var(--color-gray-50, #fafafb);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: $border-radius-xl;
+    padding: 0.625rem $spacing-md;
+
+    input {
+      border: none;
+      background: transparent;
+      font-size: 0.95rem;
+      width: 100%;
+      outline: none;
+      color: $text-primary;
+
+      &::placeholder { color: $text-muted; }
+    }
+
+    svg { color: $text-muted; flex-shrink: 0; }
+  }
+
+  &__count {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    white-space: nowrap;
+  }
+}
+
+// ─── Grid de cards ────────────────────────────
+
+.misiones-grid-section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: $spacing-xl;
+}
+
+.misiones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: $spacing-xl;
+
+  @media (max-width: $tablet) {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: $spacing-lg;
+  }
+
+  @media (max-width: $mobile) {
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+  }
+}
+
+// ─────────────────────────────────────────────
+//  MISION CARD
+// ─────────────────────────────────────────────
+
+.mision-card {
+  background: #fff;
+  border-radius: $border-radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+  }
+
+  // ── Cover photo ──────────────────────────────
+
+  &__cover {
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .mision-card:hover & img {
+      transform: scale(1.04);
+    }
+  }
+
+  &__cover-placeholder {
+    height: 180px;
+    background: linear-gradient(135deg, #1a2ecc 0%, #4d63ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg { color: rgba(255, 255, 255, 0.35); }
+  }
+
+  &__estado-badge {
+    position: absolute;
+    top: $spacing-sm;
+    right: $spacing-sm;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+
+    &--activa  { background: rgba(16, 185, 129, 0.9); color: #fff; }
+    &--pausada { background: rgba(245, 158, 11, 0.9); color: #fff; }
+    &--cerrada { background: rgba(100, 116, 139, 0.9); color: #fff; }
+  }
+
+  // ── Body ─────────────────────────────────────
+
+  &__body {
+    padding: $spacing-lg;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: $spacing-sm;
+  }
+
+  &__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $text-primary;
+    line-height: 1.3;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__description {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  // ── Stats row ────────────────────────────────
+
+  &__stats {
+    display: flex;
+    gap: $spacing-md;
+    margin-top: $spacing-xs;
+  }
+
+  &__stat {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.875rem;
+    color: $text-secondary;
+
+    svg { color: $primary-color; flex-shrink: 0; }
+
+    strong {
+      color: $text-primary;
+      font-weight: 600;
+    }
+  }
+
+  // ── Salary highlight ─────────────────────────
+
+  &__salary {
+    background: linear-gradient(135deg, #e8ebff 0%, #f0f3ff 100%);
+    border-radius: $border-radius-md;
+    padding: $spacing-sm $spacing-md;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+
+    &-label { font-size: 0.75rem; color: $text-secondary; }
+
+    &-amount {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: $primary-color;
+    }
+
+    &-per {
+      font-size: 0.75rem;
+      color: $text-secondary;
+      text-align: right;
+    }
+  }
+
+  // ── Skills ───────────────────────────────────
+
+  &__skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+    margin-top: $spacing-xs;
+  }
+
+  &__skill-chip {
+    background: rgba(37, 99, 235, 0.07);
+    color: $primary-color;
+    border-radius: 999px;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid rgba(37, 99, 235, 0.15);
+  }
+
+  &__skills-more {
+    color: $text-muted;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    align-self: center;
+  }
+
+  // ── Footer ───────────────────────────────────
+
+  &__footer {
+    padding: $spacing-md $spacing-lg;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-sm;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: 0.8rem;
+    color: $text-muted;
+
+    img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    &-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: $primary-color;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+  }
+
+  &__apply-btn {
+    background: $primary-color;
+    color: #fff;
+    border: none;
+    border-radius: $border-radius-lg;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.18s;
+    white-space: nowrap;
+
+    &:hover {
+      background: $primary-dark;
+      transform: translateY(-1px);
+    }
+  }
+
+  &__manage-btn {
+    @extend .mision-card__apply-btn;
+    background: $text-secondary;
+
+    &:hover { background: $dark-color; }
+  }
+}
+
+// ─── Empty state ──────────────────────────────
+
+.misiones-empty {
+  text-align: center;
+  padding: $spacing-2xl $spacing-xl;
+  color: $text-secondary;
+
+  &__icon { margin-bottom: $spacing-md; opacity: 0.4; }
+  &__title { font-size: 1.25rem; font-weight: 600; color: $text-primary; margin-bottom: $spacing-sm; }
+  &__text { font-size: 0.95rem; margin-bottom: $spacing-xl; }
+}
+
+// ─────────────────────────────────────────────
+//  APPLY MODAL — Popup de postulación
+// ─────────────────────────────────────────────
+
+.apply-modal {
+  &__skills-section { margin: $spacing-md 0; }
+
+  &__skills-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $text-secondary;
+    margin-bottom: $spacing-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-md;
+  }
+
+  &__skill-chip {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+
+    &--match {
+      background: rgba(16, 185, 129, 0.12);
+      color: $success-color;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    &--missing {
+      background: rgba(100, 116, 139, 0.08);
+      color: $text-secondary;
+      border: 1px solid rgba(100, 116, 139, 0.15);
+    }
+  }
+
+  &__match-banner {
+    border-radius: $border-radius-lg;
+    padding: $spacing-md;
+    display: flex;
+    gap: $spacing-sm;
+    align-items: flex-start;
+    margin-bottom: $spacing-md;
+
+    &--great {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: darken(#10b981, 15%);
+    }
+
+    &--ok {
+      background: rgba(37, 99, 235, 0.06);
+      border: 1px solid rgba(37, 99, 235, 0.15);
+      color: $primary-color;
+    }
+
+    &--warn {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      color: darken(#f59e0b, 15%);
+    }
+
+    p { font-size: 0.9rem; line-height: 1.4; margin: 0; }
+    strong { font-weight: 700; }
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+    justify-content: flex-end;
+    margin-top: $spacing-md;
+
+    @media (max-width: $mobile) {
+      flex-direction: column-reverse;
+    }
+  }
+
+  &__btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: $border-radius-lg;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.18s;
+    border: none;
+
+    &:hover { transform: translateY(-1px); }
+
+    &--primary {
+      background: $primary-color;
+      color: #fff;
+      &:hover { background: $primary-dark; }
+    }
+
+    &--secondary {
+      background: transparent;
+      color: $text-secondary;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      &:hover { background: rgba(0, 0, 0, 0.04); }
+    }
+
+    &--warn {
+      background: transparent;
+      color: darken(#f59e0b, 20%);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      &:hover { background: rgba(245, 158, 11, 0.06); }
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+//  MISION DETALLE
+// ─────────────────────────────────────────────
+
+.mision-detalle {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: $spacing-xl;
+
+  @media (max-width: $mobile) { padding: $spacing-md; }
+
+  &__cover {
+    width: 100%;
+    max-height: 380px;
+    border-radius: $border-radius-xl;
+    overflow: hidden;
+    margin-bottom: $spacing-xl;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__cover-placeholder {
+    width: 100%;
+    height: 240px;
+    border-radius: $border-radius-xl;
+    background: linear-gradient(135deg, #1a2ecc 0%, #4d63ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: $spacing-xl;
+
+    svg { color: rgba(255, 255, 255, 0.3); }
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: $spacing-xl;
+    align-items: start;
+
+    @media (max-width: $tablet) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__main { }
+
+  &__sidebar { }
+
+  &__title {
+    font-family: var(--font-title, 'League Spartan', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 800;
+    color: $text-primary;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__meta-item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: 0.9rem;
+    color: $text-secondary;
+
+    svg { color: $primary-color; }
+    strong { color: $text-primary; }
+  }
+
+  &__section {
+    margin-bottom: $spacing-xl;
+
+    &-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: $text-primary;
+      margin-bottom: $spacing-md;
+      padding-bottom: $spacing-xs;
+      border-bottom: 2px solid rgba(37, 99, 235, 0.12);
+    }
+
+    p {
+      color: $text-secondary;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+  }
+
+  &__skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+  }
+
+  &__skill-chip {
+    background: rgba(37, 99, 235, 0.07);
+    color: $primary-color;
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-radius: 999px;
+    padding: 0.35rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  // ── Sidebar card ─────────────────────────────
+
+  &__action-card {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: $border-radius-xl;
+    padding: $spacing-lg;
+    box-shadow: $shadow-sm;
+    position: sticky;
+    top: 90px;
+  }
+
+  &__salary-display {
+    text-align: center;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-lg;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+
+    &-amount {
+      font-size: 2rem;
+      font-weight: 800;
+      color: $primary-color;
+    }
+
+    &-label {
+      font-size: 0.875rem;
+      color: $text-secondary;
+      margin-top: $spacing-xs;
+    }
+  }
+
+  &__info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-xs 0;
+    font-size: 0.9rem;
+
+    &-label { color: $text-secondary; }
+    &-value { font-weight: 600; color: $text-primary; }
+
+    &:not(:last-child) { border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+  }
+
+  &__apply-btn {
+    width: 100%;
+    padding: 0.875rem;
+    border-radius: $border-radius-lg;
+    background: $primary-color;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    margin-top: $spacing-lg;
+    transition: background 0.18s, transform 0.18s;
+
+    &:hover {
+      background: $primary-dark;
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      background: $text-muted;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    &--applied {
+      background: $success-color;
+      &:hover { background: darken(#10b981, 8%); }
+    }
+
+    &--danger {
+      background: $danger-color;
+      &:hover { background: darken(#ef4444, 8%); }
+    }
+  }
+
+  &__client-info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-md;
+    background: rgba(37, 99, 235, 0.04);
+    border-radius: $border-radius-lg;
+    margin-bottom: $spacing-md;
+
+    &-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: $primary-color;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    &-name { font-weight: 600; color: $text-primary; font-size: 0.95rem; }
+    &-label { font-size: 0.8rem; color: $text-muted; }
+  }
+}
+
+// ─────────────────────────────────────────────
+//  APLICANTES PANEL — vista del cliente
+// ─────────────────────────────────────────────
+
+.aplicantes-panel {
+  &__count {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: $spacing-lg;
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: $primary-color;
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 0.875rem;
+      margin-left: $spacing-xs;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__card {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-radius: $border-radius-lg;
+    padding: $spacing-md $spacing-lg;
+    transition: box-shadow 0.18s;
+
+    &:hover { box-shadow: $shadow-md; }
+
+    @media (max-width: $mobile) {
+      flex-wrap: wrap;
+    }
+  }
+
+  &__avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: $primary-color;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__title {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    margin-top: 2px;
+  }
+
+  &__stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-top: $spacing-xs;
+    font-size: 0.8rem;
+    color: #f59e0b;
+
+    span { color: $text-muted; margin-left: 4px; }
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+    flex-shrink: 0;
+
+    @media (max-width: $mobile) {
+      width: 100%;
+    }
+  }
+
+  &__view-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: $border-radius-lg;
+    background: $primary-color;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    transition: background 0.18s;
+
+    &:hover { background: $primary-dark; }
+  }
+
+  &__estado-chip {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &--pendiente { background: rgba(245, 158, 11, 0.12); color: darken(#f59e0b, 20%); }
+    &--aceptado  { background: rgba(16, 185, 129, 0.12); color: darken(#10b981, 15%); }
+    &--rechazado { background: rgba(239, 68, 68, 0.1);  color: darken(#ef4444, 10%); }
+    &--retirada  { background: rgba(100, 116, 139, 0.1); color: $text-secondary; }
+  }
+}
+
+// ─────────────────────────────────────────────
+//  CREAR / EDITAR MISIÓN
+// ─────────────────────────────────────────────
+
+.crear-mision {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: $spacing-xl;
+
+  @media (max-width: $mobile) { padding: $spacing-md; }
+
+  &__header {
+    margin-bottom: $spacing-xl;
+
+    h1 {
+      font-family: var(--font-title, 'League Spartan', sans-serif);
+      font-size: 2rem;
+      font-weight: 800;
+      color: $text-primary;
+      margin-bottom: $spacing-xs;
+    }
+
+    p { color: $text-secondary; }
+  }
+
+  &__card {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: $border-radius-xl;
+    padding: $spacing-xl;
+    box-shadow: $shadow-sm;
+  }
+
+  &__section {
+    margin-bottom: $spacing-xl;
+
+    &:last-child { margin-bottom: 0; }
+
+    &-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: $text-primary;
+      margin-bottom: $spacing-md;
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+
+      svg { color: $primary-color; }
+    }
+  }
+
+  &__photo-upload {
+    border: 2px dashed rgba(37, 99, 235, 0.25);
+    border-radius: $border-radius-lg;
+    padding: $spacing-xl;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s;
+    background: rgba(37, 99, 235, 0.02);
+
+    &:hover {
+      border-color: $primary-color;
+      background: rgba(37, 99, 235, 0.05);
+    }
+
+    &--has-image {
+      border-style: solid;
+      padding: $spacing-sm;
+    }
+
+    input { display: none; }
+
+    img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: $border-radius-md;
+      object-fit: cover;
+    }
+
+    p {
+      color: $text-secondary;
+      font-size: 0.9rem;
+      margin-top: $spacing-sm;
+    }
+  }
+
+  &__skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: $spacing-xs 0;
+  }
+
+  &__skill-toggle {
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    background: transparent;
+    color: $text-secondary;
+
+    &:hover { border-color: $primary-color; color: $primary-color; background: rgba(37, 99, 235, 0.05); }
+
+    &--selected {
+      background: $primary-color;
+      color: #fff;
+      border-color: $primary-color;
+
+      &:hover { background: $primary-dark; }
+    }
+  }
+
+  &__submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: $primary-color;
+    color: #fff;
+    border: none;
+    border-radius: $border-radius-lg;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: $spacing-xl;
+    transition: background 0.18s, transform 0.18s;
+
+    &:hover:not(:disabled) {
+      background: $primary-dark;
+      transform: translateY(-2px);
+    }
+
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+  }
+}
+
+// ─── Loader skeleton ──────────────────────────
+
+.mision-skeleton {
+  background: #fff;
+  border-radius: $border-radius-xl;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+
+  &__cover {
+    height: 180px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  &__body {
+    padding: $spacing-lg;
+
+    &-line {
+      height: 16px;
+      border-radius: $border-radius-sm;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      margin-bottom: $spacing-sm;
+
+      &--short { width: 40%; }
+      &--medium { width: 70%; }
+      &--full { width: 100%; }
+    }
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
