@@ -122,6 +122,9 @@ const WorkerCard = memo(({ worker }) => {
             src={worker.foto_portada || DEFAULT_COVER_IMAGE}
             alt=""
             aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+            fetchPriority="low"
             onError={(e) => { e.currentTarget.src = DEFAULT_COVER_IMAGE; }}
           />
           <div className="wcard-cover-gradient" aria-hidden="true" />
@@ -153,6 +156,9 @@ const WorkerCard = memo(({ worker }) => {
             src={worker.foto_perfil || DEFAULT_AVATAR_IMAGE}
             alt={`${worker.nombre || ''} ${worker.apellido || ''}`}
             loading="lazy"
+            decoding="async"
+            width="80"
+            height="80"
             onError={(e) => { e.currentTarget.src = DEFAULT_AVATAR_IMAGE; }}
           />
         </div>

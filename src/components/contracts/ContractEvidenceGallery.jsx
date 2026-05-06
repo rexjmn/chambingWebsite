@@ -20,6 +20,33 @@ export default function ContractEvidenceGallery({ contractId, evidencias = [], o
   const activeEvidence = sortedEvidencias[activeIndex] || null;
 
   useEffect(() => {
+    if (!contractId || sortedEvidencias.length === 0) return;
+    let cancelled = false;
+
+    const prefetchPreviewUrls = async () => {
+      const firstEvidence = sortedEvidencias.slice(0, 6);
+      for (const evidence of firstEvidence) {
+        if (cancelled || !evidence?.id || previewUrls[evidence.id]) continue;
+        try {
+          const { url } = await contractService.getEvidenceDownloadUrl(contractId, evidence.id);
+          if (!cancelled) {
+            setPreviewUrls((prev) => (prev[evidence.id] ? prev : { ...prev, [evidence.id]: url }));
+          }
+        } catch (e) {
+          if (!cancelled) {
+            logger.error('Prefetch evidence preview URL', e);
+          }
+        }
+      }
+    };
+
+    prefetchPreviewUrls();
+    return () => {
+      cancelled = true;
+    };
+  }, [contractId, sortedEvidencias, previewUrls]);
+
+  useEffect(() => {
     if (!previewOpen) return undefined;
     const onKeyDown = (event) => {
       if (event.key === 'Escape') setPreviewOpen(false);

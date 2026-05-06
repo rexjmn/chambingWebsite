@@ -5,12 +5,6 @@ import { useTranslations } from '../hooks/useTranslations';
 import SearchInput from '../components/common/SearchInput';
 import Chip from '../components/common/Chip';
 import { useTheme, useMediaQuery } from '@mui/material';
-import HomeIcon from '@mui/icons-material/Home';
-import Build from '@mui/icons-material/Build';
-import CleaningServices from '@mui/icons-material/CleaningServices';
-import Plumbing from '@mui/icons-material/Plumbing';
-import ElectricalServices from '@mui/icons-material/ElectricalServices';
-import Handyman from '@mui/icons-material/Handyman';
 import Search from '@mui/icons-material/Search';
 import {
   Shield, Clock, CreditCard, Star,

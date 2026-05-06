@@ -233,6 +233,9 @@ export const contractService = {
     const put = await fetch(uploadUrl, {
       method: 'PUT',
       body: file,
+      mode: 'cors',
+      credentials: 'omit',
+      cache: 'no-store',
       headers: {
         'Content-Type': file.type || 'application/octet-stream',
       },

@@ -7,6 +7,8 @@ import { X, ImagePlus, Loader2, Video } from 'lucide-react';
 import '../../styles/contractEvidenceModal.scss';
 
 const MAX_VIDEO_SEC = 15;
+const EVIDENCE_IMAGE_MAX_EDGE = 2560;
+const EVIDENCE_IMAGE_QUALITY = 0.9;
 
 function readVideoDuration(file) {
   return new Promise((resolve, reject) => {
@@ -87,10 +89,11 @@ export default function ContractEvidenceModal({
         );
       } else {
         for (const raw of images) {
-          const file =
-            raw.type === 'image/jpeg'
-              ? raw
-              : await compressImageToJpeg(raw).catch(() => raw);
+          const file = await compressImageToJpeg(
+            raw,
+            EVIDENCE_IMAGE_MAX_EDGE,
+            EVIDENCE_IMAGE_QUALITY,
+          ).catch(() => raw);
           await contractService.uploadEvidenceFile(
             contractId,
             {

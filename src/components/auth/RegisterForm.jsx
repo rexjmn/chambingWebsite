@@ -25,7 +25,7 @@ import {
   Lock, Eye, EyeOff, AlertCircle, Info,
   Briefcase, Search, Shield, Star, ChevronRight
 } from 'lucide-react';
-import heroWomanImg from '../../assets/images/herowoman.png';
+import heroWomanImg from '../../assets/images/herowoman-optimized.png';
 
 const PHONE_ISO_VALUES = PHONE_COUNTRIES.map((c) => c.iso);
 
@@ -261,7 +261,8 @@ const RegisterForm = () => {
               src={heroWomanImg}
               alt="Profesional de servicios del hogar"
               className="register-brand__hero-img"
-              fetchPriority="high"
+              loading="lazy"
+              fetchPriority="low"
               decoding="async"
             />
           </div>
