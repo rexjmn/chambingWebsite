@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { contractService } from '../../services/contractService';
 import { logger } from '../../utils/logger';
@@ -10,6 +10,7 @@ export default function ContractEvidenceGallery({ contractId, evidencias = [], o
   const [previewLoadingId, setPreviewLoadingId] = useState(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const previewRequestsRef = useRef(new Map());
 
   const sortedEvidencias = useMemo(
     () => [...(evidencias || [])].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)),
@@ -18,33 +19,6 @@ export default function ContractEvidenceGallery({ contractId, evidencias = [], o
 
   const canNavigate = sortedEvidencias.length > 1;
   const activeEvidence = sortedEvidencias[activeIndex] || null;
-
-  useEffect(() => {
-    if (!contractId || sortedEvidencias.length === 0) return;
-    let cancelled = false;
-
-    const prefetchPreviewUrls = async () => {
-      const firstEvidence = sortedEvidencias.slice(0, 6);
-      for (const evidence of firstEvidence) {
-        if (cancelled || !evidence?.id || previewUrls[evidence.id]) continue;
-        try {
-          const { url } = await contractService.getEvidenceDownloadUrl(contractId, evidence.id);
-          if (!cancelled) {
-            setPreviewUrls((prev) => (prev[evidence.id] ? prev : { ...prev, [evidence.id]: url }));
-          }
-        } catch (e) {
-          if (!cancelled) {
-            logger.error('Prefetch evidence preview URL', e);
-          }
-        }
-      }
-    };
-
-    prefetchPreviewUrls();
-    return () => {
-      cancelled = true;
-    };
-  }, [contractId, sortedEvidencias, previewUrls]);
 
   useEffect(() => {
     if (!previewOpen) return undefined;
@@ -64,17 +38,27 @@ export default function ContractEvidenceGallery({ contractId, evidencias = [], o
   const ensurePreviewUrl = async (evidence) => {
     if (!evidence?.id) return null;
     if (previewUrls[evidence.id]) return previewUrls[evidence.id];
-    setPreviewLoadingId(evidence.id);
-    try {
-      const { url } = await contractService.getEvidenceDownloadUrl(contractId, evidence.id);
-      setPreviewUrls((prev) => ({ ...prev, [evidence.id]: url }));
-      return url;
-    } catch (e) {
-      logger.error('Load evidence preview URL', e);
-      return null;
-    } finally {
-      setPreviewLoadingId(null);
+    if (previewRequestsRef.current.has(evidence.id)) {
+      return previewRequestsRef.current.get(evidence.id);
     }
+
+    setPreviewLoadingId(evidence.id);
+    const request = (async () => {
+      try {
+        const { url } = await contractService.getEvidenceDownloadUrl(contractId, evidence.id);
+        setPreviewUrls((prev) => ({ ...prev, [evidence.id]: url }));
+        return url;
+      } catch (e) {
+        logger.error('Load evidence preview URL', e);
+        return null;
+      } finally {
+        previewRequestsRef.current.delete(evidence.id);
+        setPreviewLoadingId((current) => (current === evidence.id ? null : current));
+      }
+    })();
+
+    previewRequestsRef.current.set(evidence.id, request);
+    return request;
   };
 
   const download = async (evidenceId) => {
