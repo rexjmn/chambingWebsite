@@ -47,6 +47,18 @@ const ContractDetails = () => {
   const [arrivalConsentModalOpen, setArrivalConsentModalOpen] = useState(false);
   const [initialEvidencePrompted, setInitialEvidencePrompted] = useState(false);
 
+  const getApiErrorMessage = (err, fallback) => {
+    const raw = err?.response?.data?.message;
+    if (typeof raw === 'string' && raw.trim()) return raw;
+    if (Array.isArray(raw) && raw.length > 0) return String(raw[0]);
+    if (raw && typeof raw === 'object') {
+      const firstValue = Object.values(raw)[0];
+      if (typeof firstValue === 'string' && firstValue.trim()) return firstValue;
+    }
+    if (typeof err?.message === 'string' && err.message.trim()) return err.message;
+    return fallback;
+  };
+
   useEffect(() => {
     const loadContract = async () => {
       try {
@@ -180,7 +192,7 @@ const ContractDetails = () => {
       }
     } catch (err) {
       logger.error('Error iniciando viaje:', err);
-      setActionError(err.response?.data?.message || 'Error al iniciar el viaje.');
+      setActionError(getApiErrorMessage(err, 'Error al iniciar el viaje.'));
     } finally {
       setActionLoading(false);
     }
@@ -209,7 +221,9 @@ const ContractDetails = () => {
       }
     } catch (err) {
       logger.error('Error confirmando llegada:', err);
-      setActionError(err.response?.data?.message || 'Código incorrecto. Verifica con el trabajador.');
+      setActionError(
+        getApiErrorMessage(err, 'Código incorrecto. Verifica con el trabajador.'),
+      );
     } finally {
       setActionLoading(false);
     }
@@ -239,7 +253,7 @@ const ContractDetails = () => {
       setEvidenceModalOpen(false);
     } catch (err) {
       logger.error('Error completando contrato:', err);
-      setActionError(err.response?.data?.message || 'No se pudo completar el contrato.');
+      setActionError(getApiErrorMessage(err, 'No se pudo completar el contrato.'));
     } finally {
       setActionLoading(false);
     }
@@ -263,7 +277,7 @@ const ContractDetails = () => {
       });
     } catch (err) {
       logger.error('Error cerrando contrato:', err);
-      const msg = err.response?.data?.message || 'No se pudo cerrar el contrato.';
+      const msg = getApiErrorMessage(err, 'No se pudo cerrar el contrato.');
       setActionError(msg);
       throw err;
     } finally {

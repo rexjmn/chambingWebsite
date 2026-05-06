@@ -671,8 +671,11 @@ const AvailabilityCalendar = ({
                   <div className="tgrid-confirm-panel">
                     <div className="tgrid-confirm-header">
                       <CheckCircle size={15} />
-                      <span>
+                      <span className="tgrid-confirm-title">
                         {selectedSlots.size} hora{selectedSlots.size > 1 ? 's' : ''} seleccionada{selectedSlots.size > 1 ? 's' : ''}
+                      </span>
+                      <span className="tgrid-confirm-subtitle">
+                        Toca una tarjeta para quitarla antes de confirmar
                       </span>
                     </div>
                     <div className="tgrid-selected-slots">

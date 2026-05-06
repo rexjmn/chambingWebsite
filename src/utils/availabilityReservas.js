@@ -56,6 +56,37 @@ function parseDateSafe(value) {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
+function normalizeCantidad(cantidadRaw) {
+  const n = Number(cantidadRaw);
+  if (!Number.isFinite(n) || n <= 0) return 1;
+  return n;
+}
+
+function deriveContractEnd(start, contract) {
+  if (!(start instanceof Date) || Number.isNaN(start.getTime())) return null;
+
+  const modalidad = String(contract?.modalidad || '').toLowerCase();
+  const cantidad = normalizeCantidad(contract?.cantidad);
+  const end = new Date(start);
+
+  switch (modalidad) {
+    case 'hora':
+      end.setHours(end.getHours() + cantidad);
+      return end;
+    case 'dia':
+      end.setDate(end.getDate() + cantidad);
+      return end;
+    case 'semana':
+      end.setDate(end.getDate() + (cantidad * 7));
+      return end;
+    case 'mes':
+      end.setMonth(end.getMonth() + cantidad);
+      return end;
+    default:
+      return null;
+  }
+}
+
 /**
  * Construye filas tipo "reserva" a partir de contratos del trabajador con fechas programadas,
  * para cuando el backend aún no sincroniza la tabla de reservas de disponibilidad.
@@ -86,8 +117,13 @@ export function contractsToReservasFromWorkerContracts(contracts, workerId, rang
 
     let end = parseDateSafe(c.fecha_fin_programada || c.fecha_fin);
     if (!end || end < start) {
-      end = new Date(start);
-      end.setHours(23, 59, 59, 999);
+      const derivedEnd = deriveContractEnd(start, c);
+      if (derivedEnd && derivedEnd > start) {
+        end = derivedEnd;
+      } else {
+        end = new Date(start);
+        end.setHours(23, 59, 59, 999);
+      }
     }
 
     const startMs = start.getTime();
