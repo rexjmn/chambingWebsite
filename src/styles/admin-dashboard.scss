@@ -973,6 +973,84 @@ $sidebar-collapsed-width: 68px;
   }
 }
 
+.admin-services {
+  &__toolbar {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    align-items: center;
+    background: rgba($admin-primary, 0.02);
+    border: 1px solid rgba($admin-primary, 0.08);
+    border-radius: 14px;
+    padding: 0.75rem;
+  }
+
+  &__search {
+    flex: 1;
+    min-width: 220px;
+  }
+
+  &__category-select {
+    min-width: 190px;
+  }
+
+  &__checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.875rem;
+    color: $admin-text-light;
+    cursor: pointer;
+    white-space: nowrap;
+    padding: 0.58rem 0.72rem;
+    border: 1px solid $admin-border;
+    border-radius: 10px;
+    background: $admin-white;
+  }
+
+  &__empty-message {
+    color: $admin-text-light;
+    text-align: center;
+    padding: 2rem 0;
+  }
+
+  &__category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  &__category-block {
+    background: rgba($admin-white, 0.72);
+    border: 1px solid rgba($admin-border, 0.95);
+    border-radius: 14px;
+    padding: 0.85rem;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+  }
+
+  &__category-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    margin-bottom: 0.7rem;
+    padding-left: 0.1rem;
+  }
+
+  &__row--inactive {
+    opacity: 0.55;
+  }
+
+  &__description {
+    display: block;
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    margin-top: 0.2rem;
+  }
+}
+
 // Stat Badges
 .admin-stat-badge {
   background: $admin-white;

@@ -126,6 +126,14 @@ const SkillsManager = () => {
     return [...merged].sort((a, b) => a.localeCompare(b, 'es'));
   }, [managedCategories, existingCategories]);
 
+  // Para el formulario, mostrar solo categorías administradas.
+  // Si el servicio editado tiene una categoría legacy, la conservamos para no perderla.
+  const formCategories = useMemo(() => {
+    const merged = new Set(managedCategories);
+    if (form.categoria) merged.add(form.categoria);
+    return [...merged].sort((a, b) => a.localeCompare(b, 'es'));
+  }, [managedCategories, form.categoria]);
+
   const filtered = useMemo(() => {
     return skills.filter((s) => {
       const matchSearch =
@@ -147,7 +155,7 @@ const SkillsManager = () => {
   }, [filtered]);
 
   return (
-    <div className="admin-section">
+    <div className="admin-section admin-services">
       <div className="admin-section__header">
         <div>
           <h2>Catalogo de Servicios</h2>
@@ -183,27 +191,25 @@ const SkillsManager = () => {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="admin-services__toolbar">
         <input
           type="text"
-          className="admin-input"
           placeholder="Buscar servicio o categoria..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ flex: '1', minWidth: '180px' }}
+          className="admin-services__search"
         />
         <select
-          className="admin-input"
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          style={{ minWidth: '160px' }}
+          className="admin-services__category-select"
         >
           <option value="">Todas las categorias</option>
           {availableCategories.map((cat) => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.875rem', color: 'var(--color-text-secondary, #64748b)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+        <label className="admin-services__checkbox">
           <input
             type="checkbox"
             checked={showInactive}
@@ -219,13 +225,14 @@ const SkillsManager = () => {
           <p>Cargando servicios...</p>
         </div>
       ) : filtered.length === 0 ? (
-        <p style={{ color: '#64748b', textAlign: 'center', padding: '2rem 0' }}>
+        <p className="admin-services__empty-message">
           No se encontraron servicios. Crea el primero con el boton de arriba.
         </p>
       ) : (
-        Object.entries(groupedByCategory).sort(([a], [b]) => a.localeCompare(b)).map(([category, items]) => (
-          <div key={category} style={{ marginBottom: '1.75rem' }}>
-            <h3 style={{ fontSize: '0.8125rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#94a3b8', marginBottom: '0.5rem' }}>
+        <div className="admin-services__category-list">
+          {Object.entries(groupedByCategory).sort(([a], [b]) => a.localeCompare(b)).map(([category, items]) => (
+          <div key={category} className="admin-services__category-block">
+            <h3 className="admin-services__category-title">
               {category}
             </h3>
             <div className="admin-table-container">
@@ -239,11 +246,11 @@ const SkillsManager = () => {
                 </thead>
                 <tbody>
                   {items.map((skill) => (
-                    <tr key={skill.id} style={{ opacity: skill.activo ? 1 : 0.5 }}>
+                    <tr key={skill.id} className={!skill.activo ? 'admin-services__row--inactive' : ''}>
                       <td>
                         <strong>{skill.nombre}</strong>
                         {skill.descripcion && (
-                          <span style={{ display: 'block', fontSize: '0.8125rem', color: '#94a3b8', marginTop: '0.2rem' }}>
+                          <span className="admin-services__description">
                             {skill.descripcion}
                           </span>
                         )}
@@ -287,7 +294,8 @@ const SkillsManager = () => {
               </table>
             </div>
           </div>
-        ))
+        ))}
+        </div>
       )}
 
       {showModal && (
@@ -331,7 +339,7 @@ const SkillsManager = () => {
                   onChange={(e) => setForm((p) => ({ ...p, categoria: e.target.value }))}
                 >
                   <option value="">Sin categoria</option>
-                  {availableCategories.map((cat) => (
+                  {formCategories.map((cat) => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
