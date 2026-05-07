@@ -54,6 +54,13 @@ const getHourRange = (inicio, fin) => {
   return hours;
 };
 
+const isFullDayRange = (inicio, fin) => {
+  if (!inicio || !fin) return false;
+  const start = timeToMinutes(inicio);
+  const end = timeToMinutes(fin);
+  return start === 0 && end >= (23 * 60 + 59);
+};
+
 const getSlotStatus = (horarios, hourStr) => {
   const slotStart = timeToMinutes(hourStr);
   const slotEnd = slotStart + 60;
@@ -263,14 +270,19 @@ const AvailabilityCalendar = ({
     });
 
     let horarios = [];
+    const disponibilidadBase = [];
 
     disponibilidadEspecifica.forEach(b => {
-      horarios.push({ inicio: b.hora_inicio, fin: b.hora_fin, tipo: 'disponible', modalidades: b.modalidades_aceptadas });
+      const slot = { inicio: b.hora_inicio, fin: b.hora_fin, tipo: 'disponible', modalidades: b.modalidades_aceptadas };
+      horarios.push(slot);
+      disponibilidadBase.push(slot);
     });
 
     if (horarios.length === 0) {
       disponibilidadRecurrente.forEach(b => {
-        horarios.push({ inicio: b.hora_inicio, fin: b.hora_fin, tipo: 'disponible', modalidades: b.modalidades_aceptadas });
+        const slot = { inicio: b.hora_inicio, fin: b.hora_fin, tipo: 'disponible', modalidades: b.modalidades_aceptadas };
+        horarios.push(slot);
+        disponibilidadBase.push(slot);
       });
     }
 
@@ -283,9 +295,19 @@ const AvailabilityCalendar = ({
       const fin = new Date(r.fecha_fin);
       const inicioHora = inicio.toTimeString().slice(0, 5);
       const finHora = fin.toTimeString().slice(0, 5);
-      // Si la reserva cubre todo el día o son fechas sin hora, usar horario completo
-      const inicioEfectivo = inicioHora === '00:00' ? '00:00' : inicioHora;
-      const finEfectivo = finHora === '00:00' ? '23:59' : finHora;
+
+      let inicioEfectivo = inicioHora === '00:00' ? '00:00' : inicioHora;
+      let finEfectivo = finHora === '00:00' ? '23:59' : finHora;
+
+      // Si backend envía reserva "todo el día", la acotamos a la jornada laboral real del trabajador.
+      if (isFullDayRange(inicioEfectivo, finEfectivo)) {
+        const baseBounds = getJornadaBounds(disponibilidadBase);
+        if (baseBounds) {
+          inicioEfectivo = baseBounds.inicio;
+          finEfectivo = baseBounds.fin;
+        }
+      }
+
       horarios.push({ inicio: inicioEfectivo, fin: finEfectivo, tipo: 'reservado', estado: r.estado });
     });
 
@@ -587,7 +609,8 @@ const AvailabilityCalendar = ({
             const threeDays = [prevDay, selectedDate, nextDay];
             const threeDisp = threeDays.map(d => getDisponibilidadDia(d));
             const allHorarios = threeDisp.flatMap(d => d.horarios);
-            const bounds = getJornadaBounds(allHorarios);
+            const horariosDisponibles = allHorarios.filter((h) => h.tipo === 'disponible');
+            const bounds = getJornadaBounds(horariosDisponibles.length > 0 ? horariosDisponibles : allHorarios);
 
             if (!bounds) {
               return (

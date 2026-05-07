@@ -14,19 +14,25 @@ const DEFAULT_AVATAR_IMAGE =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23eef2ff'/%3E%3Ccircle cx='100' cy='76' r='34' fill='%23c7d2fe'/%3E%3Cpath d='M34 180c9-30 34-48 66-48s57 18 66 48' fill='%23c7d2fe'/%3E%3C/svg%3E";
 
 /* ─── Render star rating ─────────────────────────────────────── */
-const StarRating = ({ value = 0 }) => (
-  <div className="wcard-stars" aria-label={`${value.toFixed(1)} de 5 estrellas`}>
-    {Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        size={13}
-        strokeWidth={2}
-        fill={i < Math.floor(value) ? 'currentColor' : 'none'}
-        style={{ opacity: i < Math.floor(value) ? 1 : 0.28 }}
-      />
-    ))}
-  </div>
-);
+const StarRating = ({ value = 0 }) => {
+  const safeValue = Number.isFinite(Number(value)) ? Number(value) : 0;
+  const clampedValue = Math.min(5, Math.max(0, safeValue));
+  const roundedStars = Math.round(clampedValue);
+
+  return (
+    <div className="wcard-stars" aria-label={`${clampedValue.toFixed(1)} de 5 estrellas`}>
+      {Array.from({ length: 5 }, (_, i) => (
+        <Star
+          key={i}
+          size={13}
+          strokeWidth={2}
+          fill={i < roundedStars ? 'currentColor' : 'none'}
+          style={{ opacity: i < roundedStars ? 1 : 0.28 }}
+        />
+      ))}
+    </div>
+  );
+};
 
 /* ════════════════════════════════════════════════════════════════
    WORKER CARD

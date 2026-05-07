@@ -138,4 +138,31 @@ export const misionService = {
       throw error;
     }
   },
+
+  async actualizarEstadoAplicacion(misionId, aplicacionId, estado) {
+    try {
+      logger.api('Actualizando estado de aplicación', { misionId, aplicacionId, estado });
+      const payload = { estado };
+      const candidates = [
+        `/misiones/${misionId}/aplicaciones/${aplicacionId}`,
+        `/misiones/aplicaciones/${aplicacionId}`,
+      ];
+
+      let lastError = null;
+      for (const url of candidates) {
+        try {
+          const res = await api.patch(url, payload);
+          return res.data;
+        } catch (error) {
+          lastError = error;
+          if (error?.response?.status !== 404) throw error;
+        }
+      }
+
+      throw lastError || new Error('No se pudo actualizar la aplicación');
+    } catch (error) {
+      logger.error('Error actualizando aplicación:', error.message);
+      throw error;
+    }
+  },
 };

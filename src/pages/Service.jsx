@@ -2,21 +2,31 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLoaderData } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 import { X, SlidersHorizontal, Search } from 'lucide-react';
+import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
+import PlumbingIcon from '@mui/icons-material/Plumbing';
+import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
+import GrassIcon from '@mui/icons-material/Grass';
+import HandymanIcon from '@mui/icons-material/Handyman';
+import ConstructionIcon from '@mui/icons-material/Construction';
+import FormatPaintIcon from '@mui/icons-material/FormatPaint';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import SecurityIcon from '@mui/icons-material/Security';
 import WorkerCard from '../components/WorkerCard';
 import { logger } from '../utils/logger';
 import '../styles/services.scss';
 
 const CATEGORIES = [
-  { id: 'limpieza_domestica', label: 'Limpieza', icon: '🧹' },
-  { id: 'plomeria',           label: 'Plomería',    icon: '🔧' },
-  { id: 'electricidad',       label: 'Electricidad', icon: '⚡' },
-  { id: 'jardineria',         label: 'Jardinería',  icon: '🌿' },
-  { id: 'carpinteria',        label: 'Carpintería', icon: '🪚' },
-  { id: 'construccion',       label: 'Construcción', icon: '🏗️' },
-  { id: 'pintura',            label: 'Pintura',     icon: '🖌️' },
-  { id: 'mecanica',           label: 'Mecánica',    icon: '🚗' },
-  { id: 'catering',           label: 'Cocina',      icon: '🍳' },
-  { id: 'seguridad',          label: 'Seguridad',   icon: '🛡️' },
+  { id: 'limpieza_domestica', label: 'Limpieza', icon: CleaningServicesIcon },
+  { id: 'plomeria',           label: 'Plomería', icon: PlumbingIcon },
+  { id: 'electricidad',       label: 'Electricidad', icon: ElectricBoltIcon },
+  { id: 'jardineria',         label: 'Jardinería', icon: GrassIcon },
+  { id: 'carpinteria',        label: 'Carpintería', icon: HandymanIcon },
+  { id: 'construccion',       label: 'Construcción', icon: ConstructionIcon },
+  { id: 'pintura',            label: 'Pintura', icon: FormatPaintIcon },
+  { id: 'mecanica',           label: 'Mecánica', icon: DirectionsCarIcon },
+  { id: 'catering',           label: 'Cocina', icon: RestaurantIcon },
+  { id: 'seguridad',          label: 'Seguridad', icon: SecurityIcon },
 ];
 
 const CATEGORY_ALIASES = {
@@ -238,15 +248,22 @@ const Service = () => {
           <nav className="svc-categories" aria-label="Categorías de servicio">
             <div className="svc-cat-scroll">
               {CATEGORIES.map(cat => (
+                (() => {
+                  const CategoryIcon = cat.icon;
+                  return (
                 <button
                   key={cat.id}
                   className={`svc-cat-pill${filters.categoria === cat.id ? ' active' : ''}`}
                   onClick={() => toggleCategory(cat.id)}
                   aria-pressed={filters.categoria === cat.id}
                 >
-                  <span className="svc-cat-icon" aria-hidden="true">{cat.icon}</span>
+                  <span className="svc-cat-icon" aria-hidden="true">
+                    <CategoryIcon fontSize="inherit" />
+                  </span>
                   <span>{cat.label}</span>
                 </button>
+                  );
+                })()
               ))}
             </div>
           </nav>
