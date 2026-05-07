@@ -61,6 +61,12 @@ const isFullDayRange = (inicio, fin) => {
   return start === 0 && end >= (23 * 60 + 59);
 };
 
+const normalizeCantidadHoras = (value) => {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return Math.max(1, Math.round(n));
+};
+
 const getSlotStatus = (horarios, hourStr) => {
   const slotStart = timeToMinutes(hourStr);
   const slotEnd = slotStart + 60;
@@ -302,7 +308,28 @@ const AvailabilityCalendar = ({
       // Si backend envía reserva "todo el día", la acotamos a la jornada laboral real del trabajador.
       if (isFullDayRange(inicioEfectivo, finEfectivo)) {
         const baseBounds = getJornadaBounds(disponibilidadBase);
-        if (baseBounds) {
+        const modalidad = String(r?.modalidad_contrato || r?.modalidad || '').toLowerCase();
+        const cantidadHoras =
+          normalizeCantidadHoras(r?.cantidad_horas) ??
+          normalizeCantidadHoras(r?.cantidadHoras) ??
+          normalizeCantidadHoras(r?.cantidad) ??
+          normalizeCantidadHoras(r?.contrato?.cantidad);
+
+        // Para contratos por hora, marcar solo el tramo real reservado.
+        if (baseBounds && modalidad === 'hora' && cantidadHoras) {
+          const startMinutes = timeToMinutes(baseBounds.inicio);
+          const endMinutes = Math.min(
+            timeToMinutes(baseBounds.fin),
+            startMinutes + (cantidadHoras * 60),
+          );
+          const fmt = (minutes) => {
+            const h = String(Math.floor(minutes / 60)).padStart(2, '0');
+            const m = String(minutes % 60).padStart(2, '0');
+            return `${h}:${m}`;
+          };
+          inicioEfectivo = fmt(startMinutes);
+          finEfectivo = fmt(endMinutes);
+        } else if (baseBounds) {
           inicioEfectivo = baseBounds.inicio;
           finEfectivo = baseBounds.fin;
         }
@@ -693,12 +720,14 @@ const AvailabilityCalendar = ({
                 {onSlotsConfirm && selectedSlots.size > 0 && (
                   <div className="tgrid-confirm-panel">
                     <div className="tgrid-confirm-header">
-                      <CheckCircle size={15} />
-                      <span className="tgrid-confirm-title">
-                        {selectedSlots.size} hora{selectedSlots.size > 1 ? 's' : ''} seleccionada{selectedSlots.size > 1 ? 's' : ''}
-                      </span>
+                      <div className="tgrid-confirm-title-row">
+                        <CheckCircle size={15} />
+                        <span className="tgrid-confirm-title">
+                          {selectedSlots.size} hora{selectedSlots.size > 1 ? 's' : ''} seleccionada{selectedSlots.size > 1 ? 's' : ''}
+                        </span>
+                      </div>
                       <span className="tgrid-confirm-subtitle">
-                        Toca una tarjeta para quitarla antes de confirmar
+                        Toca una tarjeta para quitarla antes de confirmar.
                       </span>
                     </div>
                     <div className="tgrid-selected-slots">
@@ -724,7 +753,7 @@ const AvailabilityCalendar = ({
                       onClick={confirmSlots}
                     >
                       <CheckCircle size={16} />
-                      Confirmar horario seleccionado
+                      Confirmar horarios
                     </button>
                   </div>
                 )}

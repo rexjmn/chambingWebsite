@@ -590,7 +590,7 @@ $color-borde: #e9ecef;
           display: flex;
           align-items: flex-start;
           flex-direction: column;
-          gap: 0.5rem;
+          gap: 0.35rem;
           font-size: 0.9rem;
           color: color.adjust($color-hoy, $lightness: -8%);
           background: rgba($color-hoy, 0.07);
@@ -598,9 +598,15 @@ $color-borde: #e9ecef;
           border-radius: 10px;
           padding: 0.6rem 0.75rem;
 
-          svg {
-            flex-shrink: 0;
-            margin-top: 1px;
+          .tgrid-confirm-title-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+
+            svg {
+              flex-shrink: 0;
+              margin-top: 1px;
+            }
           }
 
           .tgrid-confirm-title {
@@ -631,7 +637,7 @@ $color-borde: #e9ecef;
         .tgrid-slot-badge {
           display: inline-flex;
           align-items: center;
-          gap: 0.3rem;
+          gap: 0.42rem;
           background: white;
           border: 1px solid rgba($color-hoy, 0.4);
           border-radius: 20px;
@@ -651,9 +657,10 @@ $color-borde: #e9ecef;
           }
 
           .slot-remove {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             line-height: 1;
-            opacity: 0.7;
+            opacity: 0.8;
+            font-weight: 700;
           }
         }
 
@@ -689,7 +696,7 @@ $color-borde: #e9ecef;
             flex-wrap: wrap;
             gap: 0.45rem 0.6rem;
 
-            svg {
+            .tgrid-confirm-title-row {
               order: 0;
             }
 
@@ -700,7 +707,7 @@ $color-borde: #e9ecef;
             .tgrid-confirm-subtitle {
               order: 2;
               width: 100%;
-              margin-left: 1.55rem;
+              margin-left: 0;
             }
           }
         }
