@@ -784,6 +784,17 @@ $color-borde: #e9ecef;
     }
   }
 
+  .tgrid-confirmed-feedback {
+    margin: 0.65rem 0.75rem 0.25rem;
+    padding: 0.62rem 0.8rem;
+    border-radius: 10px;
+    border: 1px solid rgba(22, 163, 74, 0.28);
+    background: linear-gradient(135deg, rgba(220, 252, 231, 0.72) 0%, rgba(240, 253, 244, 0.92) 100%);
+    color: #166534;
+    font-size: 0.84rem;
+    font-weight: 600;
+  }
+
   // Hint en el header del detalle cuando se puede seleccionar horas
   .detail-hint {
     margin-left: auto;

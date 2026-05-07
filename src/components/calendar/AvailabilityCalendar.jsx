@@ -131,6 +131,7 @@ const AvailabilityCalendar = ({
 
   const [selectedSlots, setSelectedSlots] = useState(new Set());
   const [selectedDays, setSelectedDays] = useState(new Set());
+  const [lastConfirmedSlotsCount, setLastConfirmedSlotsCount] = useState(0);
 
   const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const diasSemanaCompletos = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -412,11 +413,14 @@ const AvailabilityCalendar = ({
   };
 
   const confirmSlots = () => {
+    if (selectedSlots.size === 0) return;
     const slots = Array.from(selectedSlots).sort().map(key => {
       const [dateStr, hour] = key.split(' ');
       return { dateStr, hour };
     });
     onSlotsConfirm?.(slots);
+    setLastConfirmedSlotsCount(slots.length);
+    setSelectedSlots(new Set());
   };
 
   const getWeekDays = (fecha) => {
@@ -762,6 +766,12 @@ const AvailabilityCalendar = ({
                       <CheckCircle size={16} />
                       Confirmar horarios
                     </button>
+                  </div>
+                )}
+
+                {onSlotsConfirm && selectedSlots.size === 0 && lastConfirmedSlotsCount > 0 && (
+                  <div className="tgrid-confirmed-feedback" role="status" aria-live="polite">
+                    {lastConfirmedSlotsCount} hora{lastConfirmedSlotsCount > 1 ? 's' : ''} aplicada{lastConfirmedSlotsCount > 1 ? 's' : ''}. Puedes seleccionar de nuevo para cambiar.
                   </div>
                 )}
               </>
