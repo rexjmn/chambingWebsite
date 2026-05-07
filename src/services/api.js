@@ -75,7 +75,13 @@ function handleLogout() {
   isRedirecting = true;
 
   logger.auth('Sesión expirada - Cerrando sesión automáticamente');
-  if (typeof window !== 'undefined') localStorage.removeItem('user');
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('user');
+    sessionStorage.setItem(
+      'chambing_auth_expired_message',
+      'Tu sesión expiró. Inicia sesión nuevamente para continuar.'
+    );
+  }
 
   const protectedPrefixes = ['/dashboard', '/edit-profile', '/admin', '/availability', '/contracts', '/onboarding', '/perfil'];
   const onProtectedPage = typeof window !== 'undefined' &&

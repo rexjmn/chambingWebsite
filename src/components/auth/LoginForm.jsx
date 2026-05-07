@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslations } from '../../hooks/useTranslations';
 import { useAuth } from '../../context/AuthContext';
@@ -25,8 +25,17 @@ const LoginForm = () => {
   const { login, loading, error } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [sessionExpiredMessage, setSessionExpiredMessage] = useState('');
 
   const message = location.state?.message;
+
+  useEffect(() => {
+    const storedMessage = sessionStorage.getItem('chambing_auth_expired_message');
+    if (storedMessage) {
+      setSessionExpiredMessage(storedMessage);
+      sessionStorage.removeItem('chambing_auth_expired_message');
+    }
+  }, []);
 
   const schema = yup.object().shape({
     email: yup
@@ -118,6 +127,14 @@ const LoginForm = () => {
             <div className="auth-alert alert-success">
               <CheckCircle size={20} className="alert-icon" />
               <span className="alert-message">{message}</span>
+            </div>
+          )}
+
+          {/* Session Expired Message */}
+          {sessionExpiredMessage && (
+            <div className="auth-alert alert-warning">
+              <AlertCircle size={20} className="alert-icon" />
+              <span className="alert-message">{sessionExpiredMessage}</span>
             </div>
           )}
 

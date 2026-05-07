@@ -1,276 +1,229 @@
-// =====================================================
-// REVIEW FORM STYLES
-// =====================================================
-
 .review-form-container {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  max-width: 600px;
-  margin: 0 auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-
-  @media (max-width: 768px) {
-    padding: 24px;
-    border-radius: 12px;
-  }
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  padding: 1.4rem 1.4rem 1.2rem;
+  width: 100%;
+  box-shadow: 0 24px 64px -22px rgba(15, 23, 42, 0.36);
 }
 
 .review-form-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 32px;
-  gap: 16px;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #edf2f7;
 
   .close-button {
-    background: none;
-    border: none;
-    color: #666;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
     cursor: pointer;
-    padding: 8px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    display: flex;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    transition: all 0.15s ease;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
 
     &:hover {
-      background: #f5f5f5;
-      color: #333;
+      background: #eef2ff;
+      border-color: #cbd5e1;
+      color: #334155;
     }
 
-    svg {
-      font-size: 24px;
-    }
+    svg { font-size: 20px; }
   }
 }
 
 .review-form-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 8px 0;
-
-  @media (max-width: 768px) {
-    font-size: 20px;
-  }
+  font-size: 1.24rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.25rem;
+  line-height: 1.2;
 }
 
 .review-form-subtitle {
-  font-size: 14px;
-  color: #666;
+  font-size: 0.86rem;
+  color: #64748b;
   margin: 0;
 
   strong {
-    color: #1976d2;
-    font-weight: 600;
+    color: #1e293b;
+    font-weight: 700;
   }
 }
 
 .review-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 0.9rem;
 
   .form-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0.4rem;
   }
 
   .form-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    display: flex;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #1e293b;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 0.2rem;
 
-    .required {
-      color: #d32f2f;
-    }
+    .required { color: #dc2626; }
   }
 
   .form-help {
-    font-size: 13px;
-    color: #666;
-    margin: 4px 0 0 0;
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 0;
   }
 }
-
-// ============== STARS RATING ==============
 
 .stars-container {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 0.3rem;
 }
 
 .star-button {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
-  transition: transform 0.2s ease;
+  padding: 0.15rem;
+  transition: transform 0.14s ease;
 
-  &:hover {
-    transform: scale(1.15);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
+  &:hover { transform: translateY(-1px) scale(1.07); }
+  &:active { transform: scale(0.96); }
 
   .star-icon {
-    font-size: 36px;
-    color: #e0e0e0;
-    transition: color 0.2s ease;
+    font-size: 2rem;
+    color: #d5dde7;
+    transition: color 0.15s ease;
   }
 
   &.filled .star-icon {
-    color: #ffc107;
-  }
-
-  @media (max-width: 768px) {
-    .star-icon {
-      font-size: 32px;
-    }
+    color: #f59e0b;
   }
 }
 
 .rating-text {
-  font-size: 14px;
-  color: #666;
-  margin-left: 8px;
-  font-weight: 500;
+  font-size: 0.78rem;
+  color: #475569;
+  margin-left: 0.3rem;
+  font-weight: 600;
 }
-
-// ============== TEXTAREA ==============
 
 .form-textarea {
   width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 0.75rem 0.85rem;
+  border: 1.5px solid #d9e2ec;
+  border-radius: 12px;
+  font-size: 0.9rem;
   font-family: inherit;
   line-height: 1.5;
-  color: #333;
+  color: #1e293b;
   resize: vertical;
-  transition: all 0.2s ease;
-  min-height: 120px;
+  transition: all 0.16s ease;
+  min-height: 112px;
+  background: #fcfdff;
 
   &:focus {
     outline: none;
-    border-color: #1976d2;
-    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+    border-color: #2540ff;
+    box-shadow: 0 0 0 3px rgba(37, 64, 255, 0.12);
+    background: #ffffff;
   }
 
   &:disabled {
-    background: #f5f5f5;
+    background: #f8fafc;
     cursor: not-allowed;
   }
 
-  &::placeholder {
-    color: #999;
-  }
+  &::placeholder { color: #94a3b8; }
 }
 
 .char-counter {
-  font-size: 12px;
-  color: #999;
+  font-size: 0.74rem;
+  color: #94a3b8;
   text-align: right;
 
   .char-warning {
-    color: #f57c00;
-    font-weight: 500;
+    color: #d97706;
+    font-weight: 600;
   }
 }
-
-// ============== ERROR MESSAGE ==============
 
 .error-message {
-  background: #ffebee;
-  border: 1px solid #ef5350;
-  color: #c62828;
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  &::before {
-    content: '⚠️';
-    font-size: 16px;
-  }
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+  padding: 0.72rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.84rem;
 }
-
-// ============== FORM ACTIONS ==============
 
 .form-actions {
   display: flex;
-  gap: 12px;
+  gap: 0.55rem;
   justify-content: flex-end;
-  margin-top: 8px;
-
-  @media (max-width: 768px) {
-    flex-direction: column-reverse;
-  }
+  margin-top: 0.15rem;
 
   button {
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
+    min-height: 40px;
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
+    font-size: 0.86rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
+    transition: all 0.16s ease;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 0.45rem;
     border: none;
 
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
-
-    @media (max-width: 768px) {
-      width: 100%;
-    }
   }
 
   .btn-cancel {
-    background: #f5f5f5;
-    color: #666;
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #dbe4ee;
 
     &:hover:not(:disabled) {
-      background: #e0e0e0;
-      color: #333;
+      background: #eef2f7;
+      color: #1e293b;
     }
   }
 
   .btn-submit {
-    background: #1976d2;
-    color: white;
+    background: linear-gradient(135deg, #2540ff 0%, #1d33d9 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(37, 64, 255, 0.26);
 
     &:hover:not(:disabled) {
-      background: #1565c0;
-      box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(37, 64, 255, 0.32);
     }
 
-    .icon {
-      font-size: 18px;
-    }
+    .icon { font-size: 1rem; }
 
     .spinner {
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.38);
+      border-top-color: #ffffff;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -278,71 +231,39 @@
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
-// ============== INFO NOTE ==============
-
 .info-note {
-  font-size: 12px;
-  color: #999;
-  margin: 0;
-  padding: 12px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  border-left: 3px solid #1976d2;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0.15rem 0 0;
+  padding: 0.62rem 0.74rem;
+  background: #f8fbff;
+  border-radius: 10px;
+  border: 1px solid #dbeafe;
   text-align: left;
 }
 
-// ============== DARK MODE (OPCIONAL) ==============
-
-@media (prefers-color-scheme: dark) {
+@media (max-width: 768px) {
   .review-form-container {
-    background: #1e1e1e;
+    border-radius: 14px;
+    padding: 1rem 0.95rem 0.9rem;
   }
 
   .review-form-title {
-    color: #f5f5f5;
+    font-size: 1.08rem;
   }
 
-  .review-form-subtitle {
-    color: #b0b0b0;
+  .star-button .star-icon {
+    font-size: 1.78rem;
+  }
 
-    strong {
-      color: #64b5f6;
+  .form-actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
     }
-  }
-
-  .form-label {
-    color: #e0e0e0;
-  }
-
-  .form-textarea {
-    background: #2a2a2a;
-    border-color: #404040;
-    color: #e0e0e0;
-
-    &:focus {
-      border-color: #64b5f6;
-      box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.1);
-    }
-  }
-
-  .btn-cancel {
-    background: #2a2a2a;
-    color: #b0b0b0;
-
-    &:hover:not(:disabled) {
-      background: #404040;
-      color: #e0e0e0;
-    }
-  }
-
-  .info-note {
-    background: #2a2a2a;
-    color: #b0b0b0;
-    border-left-color: #64b5f6;
   }
 }

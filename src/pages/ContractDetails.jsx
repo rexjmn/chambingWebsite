@@ -436,7 +436,10 @@ const ContractDetails = () => {
         {/* Oferta pendiente: cliente espera respuesta */}
         {contract.estado === 'oferta_pendiente' && esEmpleador && (
           <div className="contract-alert contract-alert--warning">
-            <h3>⏳ Esperando respuesta del trabajador</h3>
+            <h3>
+              <Hourglass size={16} />
+              Esperando respuesta del trabajador
+            </h3>
             <p>
               La oferta expira en 72 horas. El trabajador recibirá un recordatorio.
             </p>
@@ -445,7 +448,10 @@ const ContractDetails = () => {
 
         {contract.estado === 'oferta_pendiente' && esTrabajador && (
           <div className="contract-alert contract-alert--info">
-            <h3>📩 Tienes una oferta pendiente</h3>
+            <h3>
+              <Hourglass size={16} />
+              Tienes una oferta pendiente
+            </h3>
             <p>
               Si deseas tomar este trabajo, confirma la oferta para avanzar al siguiente paso.
             </p>
@@ -491,7 +497,10 @@ const ContractDetails = () => {
         {/* Confirmado: empleador espera que trabajador salga */}
         {contract.estado === 'confirmado' && esEmpleador && (
           <div className="contract-alert contract-alert--pending">
-            <h3>✅ Oferta aceptada</h3>
+            <h3>
+              <CheckCircle size={16} />
+              Oferta aceptada
+            </h3>
             <p>
               El trabajador confirmó. Cuando salga hacia tu ubicación recibirás una notificación.
               Al llegar, <strong>pídele un código de 4 dígitos</strong> para confirmar su identidad.
@@ -502,7 +511,10 @@ const ContractDetails = () => {
         {/* Confirmado: trabajador sale */}
         {contract.estado === 'confirmado' && esTrabajador && (
           <div className="contract-alert contract-alert--info">
-            <h3>🚶 ¿Listo para salir?</h3>
+            <h3>
+              <Hourglass size={16} />
+              ¿Listo para salir?
+            </h3>
             <p>
               Pulsa el botón cuando estés en camino. Recibirás un código de 4 dígitos que deberás decirle al cliente al llegar.
             </p>
@@ -520,7 +532,10 @@ const ContractDetails = () => {
         {/* En camino: trabajador ve su código */}
         {contract.estado === 'en_camino' && esTrabajador && (
           <div className="contract-alert contract-alert--code">
-            <h3>🔑 Tu código de verificación</h3>
+            <h3>
+              <KeyRound size={16} />
+              Tu código de verificación
+            </h3>
             <p>
               Díselo al cliente cuando llegues a su puerta
             </p>
@@ -544,7 +559,8 @@ const ContractDetails = () => {
               </div>
               <div>
                 <h3>
-                  🚶 {contract.trabajador?.nombre} {contract.trabajador?.apellido} está en camino
+                  <Hourglass size={16} />
+                  {contract.trabajador?.nombre} {contract.trabajador?.apellido} está en camino
                 </h3>
                 <p>
                   Cuando llegue, pídele su código de 4 dígitos y confírmalo aquí
@@ -576,7 +592,10 @@ const ContractDetails = () => {
         {/* Activo: trabajador marca como completado */}
         {esTrabajador && contract.estado === 'activo' && (
           <div className="contract-alert contract-alert--active">
-            <h3>🔨 Trabajo en progreso</h3>
+            <h3>
+              <CheckCircle size={16} />
+              Trabajo en progreso
+            </h3>
             <p>
               Cuando hayas terminado el trabajo, márcalo como completado para notificar al cliente.
             </p>
@@ -594,7 +613,10 @@ const ContractDetails = () => {
         {/* Completado: empleador cierra y reseña */}
         {esEmpleador && contract.estado === 'completado' && (
           <div className="contract-alert contract-alert--complete">
-            <h3>⭐ El trabajador terminó el trabajo</h3>
+            <h3>
+              <CheckCircle size={16} />
+              El trabajador terminó el trabajo
+            </h3>
             <p>
               Confirma que el trabajo fue realizado correctamente. Podrás dejar una reseña al cerrar.
             </p>
@@ -612,7 +634,10 @@ const ContractDetails = () => {
         {/* Cerrado: dejar reseña pendiente */}
         {contract.estado === 'cerrado' && (esEmpleador || esTrabajador) && !yaResene && (
           <div className="contract-alert contract-alert--success">
-            <h3>⭐ Deja tu reseña</h3>
+            <h3>
+              <CheckCircle size={16} />
+              Deja tu reseña
+            </h3>
             <p>
               Tu opinión ayuda a construir la confianza en la plataforma.
             </p>
@@ -634,7 +659,12 @@ const ContractDetails = () => {
         )}
 
         {contract.estado === 'cerrado' && (esEmpleador || esTrabajador) && yaResene && (
-          <div className="contract-alert contract-alert--success">✓ Ya dejaste tu reseña para este contrato.</div>
+          <div className="contract-alert contract-alert--success">
+            <h3>
+              <CheckCircle size={16} />
+              Ya dejaste tu reseña para este contrato.
+            </h3>
+          </div>
         )}
 
         {actionError && (

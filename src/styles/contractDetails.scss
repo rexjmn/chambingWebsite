@@ -176,6 +176,13 @@
     margin: 0 0 0.4rem;
     font-size: 1.05rem;
     color: #12233f;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    svg {
+      flex-shrink: 0;
+    }
   }
 
   p {
