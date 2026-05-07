@@ -177,6 +177,12 @@ const ContractDetails = () => {
     contract?.detallesServicio?.direccion_servicio ||
     contract?.direccion_servicio ||
     '';
+  const ofertaToken =
+    contract?.token_oferta ||
+    contract?.oferta_token ||
+    contract?.tokenOferta ||
+    contract?.oferta?.token ||
+    null;
 
   const handleEnCamino = async () => {
     setActionLoading(true);
@@ -203,7 +209,7 @@ const ContractDetails = () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      const res = await contractService.aceptarOferta(contractId);
+      const res = await contractService.aceptarOferta(contractId, '', ofertaToken);
       if (res?.status !== 'success') {
         setActionError(res?.message || 'No se pudo aceptar la oferta.');
         return;
@@ -227,7 +233,7 @@ const ContractDetails = () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      const res = await contractService.rechazarOferta(contractId, rechazoComentario);
+      const res = await contractService.rechazarOferta(contractId, rechazoComentario, ofertaToken);
       if (res?.status !== 'success') {
         setActionError(res?.message || 'No se pudo rechazar la oferta.');
         return;

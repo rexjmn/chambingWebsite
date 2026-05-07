@@ -250,28 +250,30 @@ const PublicProfile = () => {
                   </div>
                 )}
 
-                {/* Badge de Tipo de Usuario */}
-                <span className={`user-type-badge ${isTrabajador ? 'worker' : 'client'}`}>
-                  {isTrabajador ? <WorkIcon fontSize="small" /> : <PersonIcon fontSize="small" />}
-                  {isTrabajador ? t('publicProfile.worker') || 'Trabajador' : t('publicProfile.client') || 'Cliente'}
-                </span>
-
-                {/* Estado de Verificación */}
-                {isTrabajador && (
-                  <span className={`verification-status ${isVerified ? 'verified' : 'pending'}`}>
-                    {isVerified ? (
-                      <>
-                        <VerifiedUserIcon fontSize="small" />
-                        {t('publicProfile.verified') || 'Verificado'}
-                      </>
-                    ) : (
-                      <>
-                        <HourglassEmptyIcon fontSize="small" />
-                        {t('publicProfile.verificationPending') || 'Pendiente de Verificación'}
-                      </>
-                    )}
+                <div className="meta-badges">
+                  {/* Badge de Tipo de Usuario */}
+                  <span className={`user-type-badge ${isTrabajador ? 'worker' : 'client'}`}>
+                    {isTrabajador ? <WorkIcon fontSize="small" /> : <PersonIcon fontSize="small" />}
+                    {isTrabajador ? t('publicProfile.worker') || 'Trabajador' : t('publicProfile.client') || 'Cliente'}
                   </span>
-                )}
+
+                  {/* Estado de Verificación */}
+                  {isTrabajador && (
+                    <span className={`verification-status ${isVerified ? 'verified' : 'pending'}`}>
+                      {isVerified ? (
+                        <>
+                          <VerifiedUserIcon fontSize="small" />
+                          {t('publicProfile.verified') || 'Verificado'}
+                        </>
+                      ) : (
+                        <>
+                          <HourglassEmptyIcon fontSize="small" />
+                          {t('publicProfile.verificationPending') || 'Pendiente de Verificación'}
+                        </>
+                      )}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Rating y Estadísticas - Para cualquier usuario con reseñas */}

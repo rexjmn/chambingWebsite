@@ -86,23 +86,27 @@ export const contractService = {
   /**
    * Acepta una oferta pendiente (solo trabajador)
    */
-  async aceptarOferta(contratoId, mensaje = '') {
+  async aceptarOferta(contratoId, mensaje = '', ofertaToken = null) {
     try {
       logger.api('Aceptando oferta', { contratoId });
       const payload = mensaje?.trim() ? { mensaje: mensaje.trim() } : {};
+      const candidates = [
+        ofertaToken ? `/contracts/oferta/${ofertaToken}/aceptar` : null,
+        `/contracts/${contratoId}/aceptar-oferta`,
+        `/contracts/${contratoId}/aceptar`,
+      ].filter(Boolean);
 
-      // Compatibilidad con distintos nombres de endpoint según backend.
-      try {
-        const response = await api.post(`/contracts/${contratoId}/aceptar-oferta`, payload);
-        return response.data;
-      } catch (firstError) {
-        if (firstError?.response?.status && firstError.response.status !== 404) {
-          throw firstError;
+      let lastError = null;
+      for (const url of candidates) {
+        try {
+          const response = await api.post(url, payload);
+          return response.data;
+        } catch (error) {
+          lastError = error;
+          if (error?.response?.status !== 404) throw error;
         }
-
-        const fallbackResponse = await api.post(`/contracts/${contratoId}/aceptar`, payload);
-        return fallbackResponse.data;
       }
+      throw lastError || new Error('No se pudo aceptar la oferta');
     } catch (error) {
       logger.error('Error aceptando oferta:', error.message);
       throw error;
@@ -112,22 +116,27 @@ export const contractService = {
   /**
    * Rechaza una oferta pendiente (solo trabajador)
    */
-  async rechazarOferta(contratoId, comentario) {
+  async rechazarOferta(contratoId, comentario, ofertaToken = null) {
     try {
       logger.api('Rechazando oferta', { contratoId });
       const payload = { comentario: comentario?.trim() || '' };
+      const candidates = [
+        ofertaToken ? `/contracts/oferta/${ofertaToken}/rechazar` : null,
+        `/contracts/${contratoId}/rechazar-oferta`,
+        `/contracts/${contratoId}/rechazar`,
+      ].filter(Boolean);
 
-      try {
-        const response = await api.post(`/contracts/${contratoId}/rechazar-oferta`, payload);
-        return response.data;
-      } catch (firstError) {
-        if (firstError?.response?.status && firstError.response.status !== 404) {
-          throw firstError;
+      let lastError = null;
+      for (const url of candidates) {
+        try {
+          const response = await api.post(url, payload);
+          return response.data;
+        } catch (error) {
+          lastError = error;
+          if (error?.response?.status !== 404) throw error;
         }
-
-        const fallbackResponse = await api.post(`/contracts/${contratoId}/rechazar`, payload);
-        return fallbackResponse.data;
       }
+      throw lastError || new Error('No se pudo rechazar la oferta');
     } catch (error) {
       logger.error('Error rechazando oferta:', error.message);
       throw error;
