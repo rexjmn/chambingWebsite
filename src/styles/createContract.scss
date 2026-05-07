@@ -876,6 +876,18 @@ $radius-md: 12px;
     }
   }
 
+  &.success-view {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 2rem;
+
+    .success-container {
+      margin: 0 auto;
+    }
+  }
+
   // ========== RESPONSIVE ==========
 
   @media (max-width: 640px) {
@@ -923,6 +935,12 @@ $radius-md: 12px;
     .success-container {
       margin: 2rem auto;
       padding: 1.75rem 1.25rem;
+    }
+
+    &.success-view {
+      min-height: calc(100vh - 92px);
+      align-items: flex-start;
+      padding-top: 1rem;
     }
   }
 

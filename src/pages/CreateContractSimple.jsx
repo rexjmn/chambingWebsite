@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -77,6 +77,7 @@ const CreateContractSimple = () => {
   const [success, setSuccess] = useState(false);
   const [createdContract, setCreatedContract] = useState(null);
   const [confirmedSlots, setConfirmedSlots] = useState([]);
+  const successContainerRef = useRef(null);
 
   const [formData, setFormData] = useState({
     trabajador_id: workerId || '',
@@ -125,6 +126,24 @@ const CreateContractSimple = () => {
 
     loadData();
   }, [isAuthenticated, workerId, navigate]);
+
+  useEffect(() => {
+    if (!success || !createdContract) return;
+
+    const scrollToSuccess = () => {
+      if (successContainerRef.current) {
+        successContainerRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    const timer = setTimeout(scrollToSuccess, 60);
+    return () => clearTimeout(timer);
+  }, [success, createdContract]);
 
   // ── Cálculo del total ────────────────────────────────────────────────────────────────────────
 const calculateTotal = () => {
@@ -274,8 +293,8 @@ if (loading) {
 if (success && createdContract) {
     const total = calculateTotal();
     return (
-      <div className="create-contract-page">
-        <div className="success-container">
+      <div className="create-contract-page success-view">
+        <div className="success-container" ref={successContainerRef}>
           <CheckCircleIcon className="success-icon" />
           <h2>¡Contrato Creado!</h2>
           <p className="success-subtitle">El trabajador recibirá tu solicitud</p>
