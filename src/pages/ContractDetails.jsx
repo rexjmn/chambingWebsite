@@ -164,6 +164,31 @@ const ContractDetails = () => {
     }).format(amount);
   };
 
+  const formatHour = (value) => {
+    if (!value) return null;
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleTimeString('es-SV', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getHourlyRange = () => {
+    const startRaw = contract?.fecha_inicio_programada || contract?.fecha_inicio;
+    if (!startRaw) return null;
+    const start = new Date(startRaw);
+    if (Number.isNaN(start.getTime())) return null;
+
+    let end = contract?.fecha_fin_programada ? new Date(contract.fecha_fin_programada) : null;
+    if (!end || Number.isNaN(end.getTime())) {
+      const cantidad = Number(contract?.cantidad) || 1;
+      end = new Date(start);
+      end.setHours(end.getHours() + cantidad);
+    }
+
+    const startTxt = start.toLocaleTimeString('es-SV', { hour: '2-digit', minute: '2-digit' });
+    const endTxt = end.toLocaleTimeString('es-SV', { hour: '2-digit', minute: '2-digit' });
+    return `${startTxt} - ${endTxt}`;
+  };
+
   // Determinar rol del usuario en este contrato
   const esEmpleador  = user && contract && String(user.id) === String(contract.empleador?.id);
   const esTrabajador = user && contract && String(user.id) === String(contract.trabajador?.id);
@@ -810,6 +835,16 @@ const ContractDetails = () => {
                         </p>
                       </div>
                   </div>
+
+                  {String(contract?.modalidad || '').toLowerCase() === 'hora' && (
+                    <div className="contract-info-item">
+                      <Calendar size={18} />
+                      <div>
+                        <p className="label">Horario reservado</p>
+                        <p className="value">{getHourlyRange() || (formatHour(contract?.fecha_inicio_programada) ?? 'No especificado')}</p>
+                      </div>
+                    </div>
+                  )}
 
                   {contract.detalles_servicio?.notas_adicionales && (
                     <div className="contract-info-item full">

@@ -748,6 +748,42 @@ $color-borde: #e9ecef;
     svg { flex-shrink: 0; }
   }
 
+  // Confirm panel lives outside .three-day-grid in JSX.
+  .day-detail-panel > .tgrid-confirm-panel {
+    margin: 0.65rem 0.75rem 0.75rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #f8faff 0%, #eef3ff 100%);
+    border: 1px solid rgba($color-hoy, 0.28);
+    border-left: 5px solid $color-hoy;
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+
+    .tgrid-confirm-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      background: rgba($color-hoy, 0.07);
+      border: 1px solid rgba($color-hoy, 0.18);
+      border-radius: 10px;
+      padding: 0.6rem 0.75rem;
+    }
+
+    .tgrid-selected-slots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px dashed rgba($color-hoy, 0.35);
+      border-radius: 10px;
+      padding: 0.6rem;
+      max-height: 124px;
+      overflow-y: auto;
+    }
+  }
+
   // Hint en el header del detalle cuando se puede seleccionar horas
   .detail-hint {
     margin-left: auto;

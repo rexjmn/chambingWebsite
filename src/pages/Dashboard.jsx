@@ -334,6 +334,25 @@ const Dashboard = () => {
     catch { return dateString; }
   };
 
+  const getContractHourRange = (contract) => {
+    if (String(contract?.modalidad || '').toLowerCase() !== 'hora') return null;
+    const startRaw = contract?.fecha_inicio_programada || contract?.fecha_inicio;
+    if (!startRaw) return null;
+    const start = new Date(startRaw);
+    if (Number.isNaN(start.getTime())) return null;
+
+    let end = contract?.fecha_fin_programada ? new Date(contract.fecha_fin_programada) : null;
+    if (!end || Number.isNaN(end.getTime())) {
+      const cantidad = Number(contract?.cantidad) || 1;
+      end = new Date(start);
+      end.setHours(end.getHours() + cantidad);
+    }
+
+    const startTxt = start.toLocaleTimeString('es-SV', { hour: '2-digit', minute: '2-digit' });
+    const endTxt = end.toLocaleTimeString('es-SV', { hour: '2-digit', minute: '2-digit' });
+    return `${startTxt} - ${endTxt}`;
+  };
+
   const formatCurrency = (amount) =>
     new Intl.NumberFormat('es-SV', {
       style: 'currency',
@@ -754,6 +773,12 @@ const Dashboard = () => {
                       <span className="dashboard__contract-label">Fecha</span>
                       <span className="dashboard__contract-value">{formatDate(contract.fecha_creacion)}</span>
                     </div>
+                    {getContractHourRange(contract) && (
+                      <div className="dashboard__contract-row">
+                        <span className="dashboard__contract-label">Horario</span>
+                        <span className="dashboard__contract-value">{getContractHourRange(contract)}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="dashboard__contract-actions">

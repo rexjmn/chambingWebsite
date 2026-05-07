@@ -34,6 +34,8 @@ const formatFecha = (dateStr) => {
   return `${DIAS[d.getDay()]}, ${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;
 };
 
+const toSlotDateTime = (dateStr, hourStr) => new Date(`${dateStr}T${hourStr}:00`);
+
 // ── Constantes fuera del componente ────────────────────────────────────────────────────────────────
 const PAYMENT_MODES = [
   { value: 'hora',     label: 'Por Hora',     desc: 'Pagas por cada hora trabajada',       icon: <TimeIcon />,        unit: '/hora' },
@@ -77,6 +79,7 @@ const CreateContractSimple = () => {
   const [success, setSuccess] = useState(false);
   const [createdContract, setCreatedContract] = useState(null);
   const [confirmedSlots, setConfirmedSlots] = useState([]);
+  const [slotRange, setSlotRange] = useState({ inicio: '', fin: '' });
   const successContainerRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -193,6 +196,7 @@ const handleChange = (e) => {
   const handleModalidadChange = (modalidad) => {
     setFormData(prev => ({ ...prev, modalidad, cantidad: '1' }));
     setConfirmedSlots([]);
+    setSlotRange({ inicio: '', fin: '' });
   };
 
   const handleDateSelect = (date) => {
@@ -201,10 +205,12 @@ const handleChange = (e) => {
       fecha_inicio: date.toISOString().split('T')[0],
     }));
     setConfirmedSlots([]);
+    setSlotRange({ inicio: '', fin: '' });
   };
 
   const handleDaysConfirm = ({ fechaInicio, fechaFin, count }) => {
     setConfirmedSlots([]);
+    setSlotRange({ inicio: '', fin: '' });
     setFormData(prev => ({
       ...prev,
       fecha_inicio: fechaInicio,
@@ -216,12 +222,33 @@ const handleChange = (e) => {
   const handleSlotsConfirm = (slots) => {
     setConfirmedSlots(slots);
     if (slots.length > 0) {
+      const sortedDates = slots
+        .map((s) => toSlotDateTime(s.dateStr, s.hour))
+        .sort((a, b) => a.getTime() - b.getTime());
+      const first = sortedDates[0];
+      const last = sortedDates[sortedDates.length - 1];
+      const end = new Date(last);
+      end.setHours(end.getHours() + 1);
+
+      const toIsoLocal = (d) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const h = String(d.getHours()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
+        return `${y}-${m}-${day}T${h}:${min}:00`;
+      };
+
+      setSlotRange({
+        inicio: toIsoLocal(first),
+        fin: toIsoLocal(end),
+      });
+
       setFormData(prev => ({
         ...prev,
         fecha_inicio: slots[0].dateStr,
-        cantidad: prev.modalidad === 'hora'
-          ? String(slots.filter(s => s.dateStr === slots[0].dateStr).length)
-          : prev.cantidad,
+        fecha_fin: '',
+        cantidad: prev.modalidad === 'hora' ? String(slots.length) : prev.cantidad,
       }));
     }
   };
@@ -243,14 +270,33 @@ const handleChange = (e) => {
         categoriaId: formData.categoria_id,
         modalidad: formData.modalidad,
         ...(formData.modalidad !== 'proyecto' && { cantidad: parseInt(formData.cantidad) || 1 }),
-        ...(formData.fecha_inicio && { fechaInicio: formData.fecha_inicio }),
-        ...(formData.fecha_fin && formData.fecha_fin > formData.fecha_inicio && { fechaFin: formData.fecha_fin }),
+        ...(formData.modalidad === 'hora' && slotRange.inicio
+          ? { fechaInicio: slotRange.inicio }
+          : formData.fecha_inicio
+            ? { fechaInicio: formData.fecha_inicio }
+            : {}),
+        ...(formData.modalidad === 'hora' && slotRange.fin
+          ? { fechaFin: slotRange.fin }
+          : (formData.fecha_fin && formData.fecha_fin > formData.fecha_inicio)
+            ? { fechaFin: formData.fecha_fin }
+            : {}),
         detallesServicio: {
           descripcion: formData.descripcion,
           // MVP: no persistir placeholder "Por definir".
           // Si no hay dirección, enviamos vacío y el backend la acepta como opcional.
           direccion: formData.direccion?.trim() || '',
-          ...(formData.notas && { notas_adicionales: formData.notas }),
+          ...((formData.notas || confirmedSlots.length > 0) && {
+            notas_adicionales: [
+              formData.notas?.trim(),
+              confirmedSlots.length > 0
+                ? `Horarios reservados: ${confirmedSlots
+                    .map((s) => `${DIAS[new Date(`${s.dateStr}T12:00:00`).getDay()].slice(0, 3)} ${new Date(`${s.dateStr}T12:00:00`).getDate()} ${s.hour}`)
+                    .join(', ')}`
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' | '),
+          }),
         },
         terminosCondiciones: 'Términos y condiciones estándar de ChambingApp',
         monto: parseFloat(formData.monto),

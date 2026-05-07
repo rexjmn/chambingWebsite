@@ -315,8 +315,15 @@ const AvailabilityCalendar = ({
           normalizeCantidadHoras(r?.cantidad) ??
           normalizeCantidadHoras(r?.contrato?.cantidad);
 
-        // Para contratos por hora, marcar solo el tramo real reservado.
-        if (baseBounds && modalidad === 'hora' && cantidadHoras) {
+        const jornadaHoras = baseBounds
+          ? Math.max(1, Math.round((timeToMinutes(baseBounds.fin) - timeToMinutes(baseBounds.inicio)) / 60))
+          : null;
+        const shouldTreatAsHourly =
+          modalidad === 'hora' ||
+          (cantidadHoras && jornadaHoras && cantidadHoras < jornadaHoras);
+
+        // Para contratos por hora (o con cantidad menor a jornada), marcar solo el tramo real reservado.
+        if (baseBounds && shouldTreatAsHourly && cantidadHoras) {
           const startMinutes = timeToMinutes(baseBounds.inicio);
           const endMinutes = Math.min(
             timeToMinutes(baseBounds.fin),
