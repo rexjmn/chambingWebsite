@@ -525,12 +525,17 @@ body {
 
   // Chips horizontal-scroll container
   &__profile-chips {
+    display: none;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
 
     &::-webkit-scrollbar {
       display: none;
+    }
+
+    @media (min-width: $breakpoint-md) {
+      display: block;
     }
   }
 

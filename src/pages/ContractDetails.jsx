@@ -46,6 +46,7 @@ const ContractDetails = () => {
   const [evidencePhase, setEvidencePhase] = useState('inicio');
   const [arrivalConsentModalOpen, setArrivalConsentModalOpen] = useState(false);
   const [initialEvidencePrompted, setInitialEvidencePrompted] = useState(false);
+  const [rechazoComentario, setRechazoComentario] = useState('');
 
   const getApiErrorMessage = (err, fallback) => {
     const raw = err?.response?.data?.message;
@@ -193,6 +194,50 @@ const ContractDetails = () => {
     } catch (err) {
       logger.error('Error iniciando viaje:', err);
       setActionError(getApiErrorMessage(err, 'Error al iniciar el viaje.'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleAceptarOferta = async () => {
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      const res = await contractService.aceptarOferta(contractId);
+      if (res?.status !== 'success') {
+        setActionError(res?.message || 'No se pudo aceptar la oferta.');
+        return;
+      }
+      const updated = await contractService.getContractById(contractId);
+      if (updated.status === 'success') setContract(updated.data);
+    } catch (err) {
+      logger.error('Error aceptando oferta:', err);
+      setActionError(getApiErrorMessage(err, 'No se pudo aceptar la oferta.'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRechazarOferta = async () => {
+    if (!rechazoComentario.trim()) {
+      setActionError('Debes escribir un comentario para rechazar la oferta.');
+      return;
+    }
+
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      const res = await contractService.rechazarOferta(contractId, rechazoComentario);
+      if (res?.status !== 'success') {
+        setActionError(res?.message || 'No se pudo rechazar la oferta.');
+        return;
+      }
+      const updated = await contractService.getContractById(contractId);
+      if (updated.status === 'success') setContract(updated.data);
+      setRechazoComentario('');
+    } catch (err) {
+      logger.error('Error rechazando oferta:', err);
+      setActionError(getApiErrorMessage(err, 'No se pudo rechazar la oferta.'));
     } finally {
       setActionLoading(false);
     }
@@ -389,6 +434,51 @@ const ContractDetails = () => {
             <p>
               La oferta expira en 72 horas. El trabajador recibirá un recordatorio.
             </p>
+          </div>
+        )}
+
+        {contract.estado === 'oferta_pendiente' && esTrabajador && (
+          <div className="contract-alert contract-alert--info">
+            <h3>📩 Tienes una oferta pendiente</h3>
+            <p>
+              Si deseas tomar este trabajo, confirma la oferta para avanzar al siguiente paso.
+            </p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button
+                className="cd-btn cd-btn--primary"
+                onClick={handleAceptarOferta}
+                disabled={actionLoading}
+              >
+                {actionLoading ? <Loader2 size={16} className="spin" /> : <CheckCircle size={16} />}
+                {actionLoading ? 'Aceptando...' : 'Aceptar oferta'}
+              </button>
+            </div>
+            <div style={{ marginTop: 12 }}>
+              <textarea
+                value={rechazoComentario}
+                onChange={(e) => setRechazoComentario(e.target.value)}
+                placeholder="Motivo del rechazo (obligatorio)"
+                maxLength={500}
+                style={{
+                  width: '100%',
+                  minHeight: 88,
+                  borderRadius: 8,
+                  border: '1px solid #d1d5db',
+                  padding: '10px 12px',
+                  fontSize: 14,
+                  resize: 'vertical',
+                }}
+              />
+              <button
+                className="cd-btn cd-btn--outline"
+                onClick={handleRechazarOferta}
+                disabled={actionLoading}
+                style={{ marginTop: 8 }}
+              >
+                {actionLoading ? <Loader2 size={16} className="spin" /> : <XCircle size={16} />}
+                {actionLoading ? 'Procesando...' : 'Rechazar oferta'}
+              </button>
+            </div>
           </div>
         )}
 

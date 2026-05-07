@@ -81,6 +81,30 @@ const ShieldIcon = () => (
   </svg>
 );
 
+const OfferPendingIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M10.29 3.86l-8 14A1 1 0 003.14 19h17.72a1 1 0 00.85-1.52l-8-14a1 1 0 00-1.72 0z" />
+  </svg>
+);
+
+const OnTheWayIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 12h15" />
+  </svg>
+);
+
+const VerificationCodeIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 2h12a2 2 0 002-2v-6a2 2 0 00-2-2h-1V7a5 5 0 10-10 0v2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+  </svg>
+);
+
+const ReviewIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.02 3.136a1 1 0 00.95.69h3.296c.969 0 1.371 1.24.588 1.81l-2.667 1.938a1 1 0 00-.364 1.118l1.02 3.136c.3.922-.755 1.688-1.54 1.118l-2.667-1.938a1 1 0 00-1.176 0l-2.667 1.938c-.784.57-1.838-.196-1.539-1.118l1.02-3.136a1 1 0 00-.364-1.118L2.196 8.563c-.783-.57-.38-1.81.588-1.81H6.08a1 1 0 00.95-.69l1.02-3.136z" />
+  </svg>
+);
+
 const ArrowRightIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -318,6 +342,81 @@ const Dashboard = () => {
       maximumFractionDigits: 2,
     }).format(amount || 0);
 
+  const isWorkerOfferPending = (contract) =>
+    contract?.estado === 'oferta_pendiente' &&
+    String(user?.id) === String(contract?.trabajador?.id);
+
+  const handleAcceptOffer = async (contractId) => {
+    try {
+      setSnackbar({ open: false, message: '', severity: 'success' });
+      const res = await contractService.aceptarOferta(contractId);
+      if (res?.status !== 'success') {
+        throw new Error(res?.message || 'No se pudo aceptar la oferta');
+      }
+
+      const refreshed = await contractService.getMyContracts();
+      if (refreshed?.status === 'success') {
+        setContracts(refreshed.data || []);
+      } else if (Array.isArray(refreshed)) {
+        setContracts(refreshed);
+      }
+
+      setSnackbar({
+        open: true,
+        message: 'Oferta aceptada correctamente',
+        severity: 'success',
+      });
+      navigate(`/contracts/${contractId}`);
+    } catch (err) {
+      logger.error('Error aceptando oferta desde dashboard:', err);
+      setSnackbar({
+        open: true,
+        message: err?.response?.data?.message || err?.message || 'No se pudo aceptar la oferta',
+        severity: 'error',
+      });
+    }
+  };
+
+  const handleRejectOffer = async (contractId) => {
+    const comentario = window.prompt('Escribe un comentario para rechazar la oferta:');
+    if (comentario === null) return;
+    if (!comentario.trim()) {
+      setSnackbar({
+        open: true,
+        message: 'Debes escribir un comentario para rechazar la oferta',
+        severity: 'error',
+      });
+      return;
+    }
+
+    try {
+      const res = await contractService.rechazarOferta(contractId, comentario);
+      if (res?.status !== 'success') {
+        throw new Error(res?.message || 'No se pudo rechazar la oferta');
+      }
+
+      const refreshed = await contractService.getMyContracts();
+      if (refreshed?.status === 'success') {
+        setContracts(refreshed.data || []);
+      } else if (Array.isArray(refreshed)) {
+        setContracts(refreshed);
+      }
+
+      setSnackbar({
+        open: true,
+        message: 'Oferta rechazada',
+        severity: 'success',
+      });
+    } catch (err) {
+      logger.error('Error rechazando oferta desde dashboard:', err);
+      setSnackbar({
+        open: true,
+        message: err?.response?.data?.message || err?.message || 'No se pudo rechazar la oferta',
+        severity: 'error',
+      });
+    }
+  };
+
   const monthlyContractsTotal = contracts.reduce((total, contract) => {
     if (!contract?.fecha_creacion) return total;
 
@@ -338,15 +437,15 @@ const Dashboard = () => {
     const esTrabajador = String(user?.id) === String(contract.trabajador?.id);
 
     if (contract.estado === 'oferta_pendiente' && esTrabajador)
-      return { color: '#fff3e0', border: '#f57c00', icon: '⚡', text: 'Tienes una oferta pendiente — responde antes de 72 h' };
+      return { color: '#fff3e0', border: '#f57c00', icon: OfferPendingIcon, text: 'Tienes una oferta pendiente — responde antes de 72 h' };
     if (contract.estado === 'en_camino' && esEmpleador)
-      return { color: '#e8f5e9', border: '#388e3c', icon: '🔑', text: 'El trabajador está en camino — pídele el código al llegar' };
+      return { color: '#e8f5e9', border: '#388e3c', icon: VerificationCodeIcon, text: 'El trabajador está en camino — pídele el código al llegar' };
     if (contract.estado === 'en_camino' && esTrabajador)
-      return { color: '#e3f2fd', border: '#1976d2', icon: '🚶', text: 'Muestra tu código al cliente cuando llegues' };
+      return { color: '#e3f2fd', border: '#1976d2', icon: OnTheWayIcon, text: 'Muestra tu código al cliente cuando llegues' };
     if (contract.estado === 'activo' && esTrabajador)
-      return { color: '#f3e5f5', border: '#7b1fa2', icon: '✅', text: 'Trabajo en progreso — marca como completado cuando termines' };
+      return { color: '#f3e5f5', border: '#7b1fa2', icon: OnTheWayIcon, text: 'Trabajo en progreso — marca como completado cuando termines' };
     if (contract.estado === 'completado' && esEmpleador)
-      return { color: '#fce4ec', border: '#c62828', icon: '⭐', text: 'El trabajador terminó — confirma y deja tu reseña' };
+      return { color: '#fce4ec', border: '#c62828', icon: ReviewIcon, text: 'El trabajador terminó — confirma y deja tu reseña' };
     return null;
   };
 
@@ -591,7 +690,9 @@ const Dashboard = () => {
                       borderRadius: '6px 6px 0 0',
                     }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontSize: 16 }}>{notification.icon}</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <notification.icon style={{ width: 16, height: 16 }} />
+                        </span>
                         {notification.text}
                       </span>
                       <button
@@ -626,11 +727,34 @@ const Dashboard = () => {
                     <div className="dashboard__contract-actions">
                       <button
                         className="dashboard__btn dashboard__btn--primary dashboard__btn--sm"
-                        onClick={() => navigate(`/contracts/${notification.contractId}`)}
+                        onClick={() => {
+                          const contract = contracts.find((item) => String(item.id) === String(notification.contractId));
+                          if (isWorkerOfferPending(contract)) {
+                            handleAcceptOffer(notification.contractId);
+                            return;
+                          }
+                          navigate(`/contracts/${notification.contractId}`);
+                        }}
                         type="button"
                       >
-                        Ver contrato
+                        {(() => {
+                          const contract = contracts.find((item) => String(item.id) === String(notification.contractId));
+                          return isWorkerOfferPending(contract) ? 'Aceptar oferta' : 'Ver contrato';
+                        })()}
                       </button>
+                      {(() => {
+                        const contract = contracts.find((item) => String(item.id) === String(notification.contractId));
+                        if (!isWorkerOfferPending(contract)) return null;
+                        return (
+                          <button
+                            className="dashboard__btn dashboard__btn--text"
+                            onClick={() => handleRejectOffer(notification.contractId)}
+                            type="button"
+                          >
+                            Rechazar
+                          </button>
+                        );
+                      })()}
                     </div>
                   </article>
                 ))}
@@ -693,7 +817,9 @@ const Dashboard = () => {
                       color: '#333',
                       borderRadius: '6px 6px 0 0',
                     }}>
-                      <span style={{ fontSize: 16 }}>{banner.icon}</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <banner.icon style={{ width: 16, height: 16 }} />
+                      </span>
                       {banner.text}
                     </div>
                   )}
@@ -730,19 +856,27 @@ const Dashboard = () => {
 
                   <div className="dashboard__contract-actions">
                     <button
-                      className="dashboard__btn dashboard__btn--text"
-                      onClick={() => navigate(`/contracts/${contract.id}`)}
+                      className={`dashboard__btn ${banner ? 'dashboard__btn--primary dashboard__btn--sm' : 'dashboard__btn--text'}`}
+                      onClick={() => {
+                        if (isWorkerOfferPending(contract)) {
+                          handleAcceptOffer(contract.id);
+                          return;
+                        }
+                        navigate(`/contracts/${contract.id}`);
+                      }}
                       type="button"
                     >
-                      {t('dashboard.contract.viewDetails')}
+                      {isWorkerOfferPending(contract)
+                        ? 'Aceptar oferta'
+                        : (banner ? 'Ir ahora →' : t('dashboard.contract.viewDetails'))}
                     </button>
-                    {banner && (
+                    {isWorkerOfferPending(contract) && (
                       <button
-                        className="dashboard__btn dashboard__btn--primary dashboard__btn--sm"
-                        onClick={() => navigate(`/contracts/${contract.id}`)}
+                        className="dashboard__btn dashboard__btn--text"
+                        onClick={() => handleRejectOffer(contract.id)}
                         type="button"
                       >
-                        Ir ahora →
+                        Rechazar
                       </button>
                     )}
                   </div>

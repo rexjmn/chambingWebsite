@@ -83,6 +83,57 @@ export const contractService = {
 
   // ========== FLUJO EN CAMINO / CONFIRMAR LLEGADA ==========
 
+  /**
+   * Acepta una oferta pendiente (solo trabajador)
+   */
+  async aceptarOferta(contratoId, mensaje = '') {
+    try {
+      logger.api('Aceptando oferta', { contratoId });
+      const payload = mensaje?.trim() ? { mensaje: mensaje.trim() } : {};
+
+      // Compatibilidad con distintos nombres de endpoint según backend.
+      try {
+        const response = await api.post(`/contracts/${contratoId}/aceptar-oferta`, payload);
+        return response.data;
+      } catch (firstError) {
+        if (firstError?.response?.status && firstError.response.status !== 404) {
+          throw firstError;
+        }
+
+        const fallbackResponse = await api.post(`/contracts/${contratoId}/aceptar`, payload);
+        return fallbackResponse.data;
+      }
+    } catch (error) {
+      logger.error('Error aceptando oferta:', error.message);
+      throw error;
+    }
+  },
+
+  /**
+   * Rechaza una oferta pendiente (solo trabajador)
+   */
+  async rechazarOferta(contratoId, comentario) {
+    try {
+      logger.api('Rechazando oferta', { contratoId });
+      const payload = { comentario: comentario?.trim() || '' };
+
+      try {
+        const response = await api.post(`/contracts/${contratoId}/rechazar-oferta`, payload);
+        return response.data;
+      } catch (firstError) {
+        if (firstError?.response?.status && firstError.response.status !== 404) {
+          throw firstError;
+        }
+
+        const fallbackResponse = await api.post(`/contracts/${contratoId}/rechazar`, payload);
+        return fallbackResponse.data;
+      }
+    } catch (error) {
+      logger.error('Error rechazando oferta:', error.message);
+      throw error;
+    }
+  },
+
   /** Trabajador pulsa "Estoy en camino" — genera código de verificación */
   async iniciarViaje(contratoId) {
     try {
