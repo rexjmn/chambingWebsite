@@ -349,7 +349,20 @@ return (
         {/* Trabajador */}
         {worker && (
           <div className="worker-info-card">
-            <div className="worker-avatar"><PersonIcon /></div>
+            <div className="worker-avatar">
+              {worker.foto_perfil ? (
+                <img
+                  src={worker.foto_perfil}
+                  alt={`${worker.nombre || ''} ${worker.apellido || ''}`.trim() || 'Foto de trabajador'}
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <PersonIcon />
+              )}
+            </div>
             <div className="worker-details">
               <p className="worker-label">Vas a contratar a</p>
               <p className="worker-name">{worker.nombre} {worker.apellido}</p>
