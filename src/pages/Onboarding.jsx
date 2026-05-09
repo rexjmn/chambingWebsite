@@ -17,7 +17,7 @@ import Cropper from 'react-easy-crop';
 import {
   User, Camera, MapPin, Briefcase, DollarSign,
   CheckCircle, ChevronRight, ChevronLeft, Search,
-  Star, ArrowRight, X, Phone,
+  Star, ArrowRight, X, Phone, FileText,
 } from 'lucide-react';
 import '../styles/onboarding.scss';
 
@@ -41,9 +41,9 @@ const buildSteps = (tipoUsuario, isOAuth) => {
   const userTypeStep = isOAuth ? ['userType'] : [];
   const phoneStep    = isOAuth ? ['phone']    : [];
   if (tipoUsuario === 'trabajador') {
-    return ['welcome', ...userTypeStep, 'photo', ...phoneStep, 'profile', 'skills', 'rates', 'done'];
+    return ['welcome', 'terms', ...userTypeStep, 'photo', ...phoneStep, 'profile', 'skills', 'rates', 'done'];
   }
-  return ['welcome', ...userTypeStep, 'photo', ...phoneStep, 'profile', 'done'];
+  return ['welcome', 'terms', ...userTypeStep, 'photo', ...phoneStep, 'profile', 'done'];
 };
 
 // ─── image cropping helpers ────────────────────────────────────────────────────────────────
@@ -164,6 +164,9 @@ const Onboarding = () => {
   const [tarifas, setTarifas] = useState({ tarifa_hora: '', tarifa_dia: '', tarifa_semana: '', tarifa_mes: '' });
   const [hasTarifas, setHasTarifas] = useState(false);
 
+  // Terms state
+  const [termsAccepted, setTermsAccepted] = useState(false);
+
   const currentStep = steps[currentIdx];
   const isFirstStep = currentIdx === 0;
   const progress    = Math.round((currentIdx / (steps.length - 1)) * 100);
@@ -264,6 +267,16 @@ const Onboarding = () => {
   // ── Navigation ─────────────────────────────────────────────────────────────
   const handleNext = async () => {
     setError(null);
+
+    // terms step — require acceptance before advancing
+    if (currentStep === 'terms') {
+      if (!termsAccepted) {
+        setError('Debes aceptar los Términos y Condiciones para continuar.');
+        return;
+      }
+      setCurrentIdx((i) => i + 1);
+      return;
+    }
 
     // userType step — save choice, rebuild steps, then advance
     if (currentStep === 'userType') {
@@ -469,17 +482,19 @@ const Onboarding = () => {
         const items = isWorker
           ? [
               ...(isOAuth ? [{ icon: <Briefcase size={18} />, title: 'Tu tipo de cuenta', desc: '¿Eres cliente o trabajador?' }] : []),
-              { icon: <Camera   size={18} />, title: 'Foto de perfil',        desc: 'Una foto genera más confianza' },
+              { icon: <FileText  size={18} />, title: 'Términos y condiciones', desc: 'Rápido de leer — te protege a ti también' },
+              { icon: <Camera   size={18} />, title: 'Foto de perfil',          desc: 'Una foto genera más confianza' },
               ...(isOAuth ? [{ icon: <Phone size={18} />, title: 'Número de WhatsApp', desc: 'Para recibir notificaciones de contratos' }] : []),
-              { icon: <User     size={18} />, title: 'Tu presentación',        desc: 'Cuéntanos sobre tu experiencia' },
-              { icon: <Briefcase size={18} />, title: 'Habilidades y tarifas', desc: 'Para que los clientes te encuentren' },
+              { icon: <User     size={18} />, title: 'Tu presentación',          desc: 'Cuéntanos sobre tu experiencia' },
+              { icon: <Briefcase size={18} />, title: 'Habilidades y tarifas',  desc: 'Para que los clientes te encuentren' },
             ]
           : [
               ...(isOAuth ? [{ icon: <Briefcase size={18} />, title: 'Tu tipo de cuenta', desc: '¿Eres cliente o trabajador?' }] : []),
-              { icon: <Camera size={18} />, title: 'Foto de perfil',   desc: 'Opcional, pero mejora tu experiencia' },
+              { icon: <FileText size={18} />, title: 'Términos y condiciones',  desc: 'Rápido de leer — te protege a ti también' },
+              { icon: <Camera size={18} />, title: 'Foto de perfil',            desc: 'Opcional, pero mejora tu experiencia' },
               ...(isOAuth ? [{ icon: <Phone size={18} />, title: 'Número de WhatsApp', desc: 'Para recibir notificaciones importantes' }] : []),
-              { icon: <MapPin size={18} />, title: 'Tu ubicación',     desc: 'Confirmamos dónde encontrarte' },
-              { icon: <Star   size={18} />, title: 'Listo para empezar', desc: 'Encuentra profesionales cerca de ti' },
+              { icon: <MapPin size={18} />, title: 'Tu ubicación',              desc: 'Confirmamos dónde encontrarte' },
+              { icon: <Star   size={18} />, title: 'Listo para empezar',        desc: 'Encuentra profesionales cerca de ti' },
             ];
 
         return (
@@ -516,6 +531,88 @@ const Onboarding = () => {
           </div>
         );
       }
+
+      // ── Terms & Conditions ───────────────────────────────────────────────────
+      case 'terms':
+        return (
+          <div className="onboarding__step">
+            <div className="onboarding__step-icon">
+              <FileText size={30} strokeWidth={1.75} />
+            </div>
+            <h1 className="onboarding__step-title">Términos y Condiciones</h1>
+            <p className="onboarding__step-subtitle">
+              Lee nuestros términos — son claros y te protegen a ti también.
+            </p>
+
+            {error && (
+              <div className="ob-alert ob-alert--error">
+                <X size={16} /> {error}
+              </div>
+            )}
+
+            <div className="ob-terms-scroll">
+              <div className="ob-terms-section">
+                <h3 className="ob-terms-section-title">1. ¿Qué es Chambing?</h3>
+                <p>Somos una plataforma que conecta clientes con trabajadores. Actuamos como intermediario tecnológico y <strong>no somos empleador ni parte contratante</strong> en ninguna transacción.</p>
+              </div>
+
+              <div className="ob-terms-section">
+                <h3 className="ob-terms-section-title">2. Responsabilidad limitada</h3>
+                <p>Chambing <strong>no se hace responsable</strong> por: robos, pérdidas o daños durante los servicios; disputas económicas entre usuarios; la calidad del trabajo prestado. Los pagos son directamente entre cliente y trabajador — Chambing no interviene.</p>
+              </div>
+
+              <div className="ob-terms-section">
+                <h3 className="ob-terms-section-title">3. Contratos descargables</h3>
+                <p>Ponemos a tu disposición contratos simplificados para que tengas un respaldo formal ante las autoridades competentes si lo necesitas.</p>
+              </div>
+
+              <div className="ob-terms-section">
+                <h3 className="ob-terms-section-title">4. Verificación por PIN</h3>
+                <p>Usamos un PIN único para confirmar la asistencia del trabajador. Recomendamos verificar siempre una identificación personal adicional.</p>
+              </div>
+
+              <div className="ob-terms-section">
+                <h3 className="ob-terms-section-title">5. Cero tolerancia a la agresión</h3>
+                <p>No toleramos ningún tipo de agresión física, verbal, acoso o discriminación. Las cuentas involucradas serán suspendidas permanentemente.</p>
+              </div>
+
+              <div className="ob-terms-section">
+                <h3 className="ob-terms-section-title">6. Sistema de reseñas</h3>
+                <p>Las reseñas deben ser honestas. Las reseñas falsas o malintencionadas son causa de suspensión de cuenta.</p>
+              </div>
+
+              <div className="ob-terms-section">
+                <h3 className="ob-terms-section-title">7. Conducta adecuada</h3>
+                <p>Te comprometes a proporcionar información verídica y a usar la plataforma solo para los fines para los que fue creada.</p>
+              </div>
+
+              <p style={{ fontSize: '0.8rem', color: '#9CA3AF', marginTop: '0.75rem' }}>
+                Ley aplicable: República de El Salvador • Mayo 2026 •{' '}
+                <a href="/terminos" target="_blank" rel="noopener noreferrer" style={{ color: '#233DFF' }}>
+                  Ver versión completa
+                </a>
+              </p>
+            </div>
+
+            <label className="ob-terms-check">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => {
+                  setTermsAccepted(e.target.checked);
+                  if (e.target.checked) setError(null);
+                }}
+              />
+              <span>
+                He leído y acepto los{' '}
+                <a href="/terminos" target="_blank" rel="noopener noreferrer">
+                  Términos y Condiciones
+                </a>{' '}
+                de Chambing
+              </span>
+            </label>
+          </div>
+        );
 
       // ── User type (OAuth only) ───────────────────────────────────────────────
       case 'userType':
@@ -1031,20 +1128,23 @@ const Onboarding = () => {
     if (saving) return <><span className="onboarding__nav-spinner" /> Guardando...</>;
     if (currentStep === 'done')    return <>Ir al Dashboard <ArrowRight size={18} /></>;
     if (currentStep === 'welcome') return <>Comenzar ahora <ChevronRight size={18} /></>;
+    if (currentStep === 'terms')   return termsAccepted
+      ? <>Aceptar y continuar <ChevronRight size={18} /></>
+      : <>Acepta los términos para continuar <ChevronRight size={18} /></>;
     if (currentStep === 'photo')   return photoUploaded
       ? <>Continuar con mi foto <ChevronRight size={18} /></>
       : <>Continuar sin foto <ChevronRight size={18} /></>;
     return <>Guardar y continuar <ChevronRight size={18} /></>;
   };
 
-  // ── Skip visibility (userType is mandatory — not skippable) ───────────────────────────
+  // ── Skip visibility (terms and userType are mandatory — not skippable) ─────
   const showSkip = ['photo', 'phone', 'profile', 'skills', 'rates'].includes(currentStep) && !cropperActive;
 
   // ── Nav button class ────────────────────────────────────────────────────────────
   const nextBtnClass = [
     'onboarding__nav-next',
     (isFirstStep || currentStep === 'done') ? 'onboarding__nav-next--full' : '',
-    (showPulse && !saving) ? 'onboarding__nav-next--pulse' : '',
+    (showPulse && !saving && currentStep !== 'terms') ? 'onboarding__nav-next--pulse' : '',
   ].filter(Boolean).join(' ');
 
   return (
@@ -1131,7 +1231,7 @@ const Onboarding = () => {
               type="button"
               className={nextBtnClass}
               onClick={() => { setShowPulse(false); handleNext(); }}
-              disabled={saving}
+              disabled={saving || (currentStep === 'terms' && !termsAccepted)}
             >
               {nextLabel()}
             </button>

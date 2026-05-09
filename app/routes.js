@@ -6,6 +6,7 @@ export default [
   route('/sitemap.xml', 'routes/sitemap.xml.jsx'),
   route('/service', 'routes/service.jsx'),
   route('/profile/:userId', 'routes/profile.$userId.jsx'),
+  route('/terminos', 'routes/terminos.jsx'),
 
   // ── Misión Chambing (público + protegido) ────────────────────────────────
   route('/misiones', 'routes/misiones.jsx'),
