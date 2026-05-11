@@ -58,6 +58,18 @@ const getWorkerRate = (modalidad, tarifas) => {
   return map[modalidad] || null;
 };
 
+const getWorkerRateLabel = (modalidad, tarifas, fallbackLabel) => {
+  if (!tarifas) return fallbackLabel;
+  const map = {
+    hora: tarifas.etiqueta_tarifa_hora,
+    dia: tarifas.etiqueta_tarifa_dia,
+    semana: tarifas.etiqueta_tarifa_semana,
+    mes: tarifas.etiqueta_tarifa_mes,
+  };
+  const customLabel = (map[modalidad] || '').trim();
+  return customLabel || fallbackLabel;
+};
+
 // ───────────────────────────────────────────────────────────────────────────
 
 const CreateContractSimple = () => {
@@ -356,7 +368,11 @@ if (success && createdContract) {
             </div>
             <div className="info-row">
               <span className="info-label">Modalidad</span>
-              <span>{PAYMENT_MODES.find(m => m.value === formData.modalidad)?.label}</span>
+              <span>{getWorkerRateLabel(
+                formData.modalidad,
+                workerTarifas,
+                PAYMENT_MODES.find(m => m.value === formData.modalidad)?.label || 'Precio',
+              )}</span>
             </div>
             {formData.fecha_inicio && (
               <div className="info-row">
@@ -380,6 +396,11 @@ if (success && createdContract) {
   }
 
   const selectedMode = PAYMENT_MODES.find(m => m.value === formData.modalidad);
+  const selectedModeLabel = getWorkerRateLabel(
+    formData.modalidad,
+    workerTarifas,
+    selectedMode?.label || 'Precio',
+  );
   const total = calculateTotal();
   const descLen = formData.descripcion.length;
 
@@ -515,6 +536,7 @@ return (
             <div className="payment-modes">
               {PAYMENT_MODES.map(mode => {
                 const workerRate = getWorkerRate(mode.value, workerTarifas);
+                const modeLabel = getWorkerRateLabel(mode.value, workerTarifas, mode.label);
                 const isSelected = formData.modalidad === mode.value;
                 return (
                   <button
@@ -530,7 +552,7 @@ return (
                     }}
                   >
                     {mode.icon}
-                    <span className="mode-label">{mode.label}</span>
+                    <span className="mode-label">{modeLabel}</span>
                     <span className="mode-desc">{mode.desc}</span>
                     {workerRate ? (
                       <span className="mode-rate">${parseFloat(workerRate).toFixed(2)}{mode.unit !== 'total' ? mode.unit : ''}</span>
@@ -802,7 +824,7 @@ return (
                 <div className="summary-grid">
                   <div className="summary-item">
                     <span className="s-label">Modalidad</span>
-                    <span className="s-value">{selectedMode?.label}</span>
+                    <span className="s-value">{selectedModeLabel}</span>
                   </div>
                   <div className="summary-item">
                     <span className="s-label">Precio unitario</span>

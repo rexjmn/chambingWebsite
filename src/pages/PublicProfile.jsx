@@ -129,6 +129,11 @@ const PublicProfile = () => {
     );
   };
 
+  const getRateLabel = (customLabel, fallbackLabel) => {
+    const trimmed = (customLabel || '').trim();
+    return trimmed || fallbackLabel;
+  };
+
   const handleHire = () => {
     if (!isAuthenticated) {
       // Redirect to login if not authenticated
@@ -383,7 +388,12 @@ const PublicProfile = () => {
                 {tarifas.tarifa_hora > 0 && (
                   <div className="rate-item">
                     <AccessTimeIcon className="rate-icon" />
-                    <div className="rate-label">{t('publicProfile.hourlyRate') || 'Por Hora'}</div>
+                    <div className="rate-label">
+                      {getRateLabel(
+                        tarifas.etiqueta_tarifa_hora,
+                        t('publicProfile.hourlyRate') || 'Por Hora',
+                      )}
+                    </div>
                     <div className="rate-value">
                       ${parseFloat(tarifas.tarifa_hora).toFixed(2)}
                     </div>
@@ -392,7 +402,12 @@ const PublicProfile = () => {
                 {tarifas.tarifa_dia > 0 && (
                   <div className="rate-item">
                     <CalendarTodayIcon className="rate-icon" />
-                    <div className="rate-label">{t('publicProfile.dailyRate') || 'Por Día'}</div>
+                    <div className="rate-label">
+                      {getRateLabel(
+                        tarifas.etiqueta_tarifa_dia,
+                        t('publicProfile.dailyRate') || 'Por Día',
+                      )}
+                    </div>
                     <div className="rate-value">
                       ${parseFloat(tarifas.tarifa_dia).toFixed(2)}
                     </div>
@@ -401,7 +416,12 @@ const PublicProfile = () => {
                 {tarifas.tarifa_semana > 0 && (
                   <div className="rate-item">
                     <DateRangeIcon className="rate-icon" />
-                    <div className="rate-label">{t('publicProfile.weeklyRate') || 'Por Semana'}</div>
+                    <div className="rate-label">
+                      {getRateLabel(
+                        tarifas.etiqueta_tarifa_semana,
+                        t('publicProfile.weeklyRate') || 'Por Semana',
+                      )}
+                    </div>
                     <div className="rate-value">
                       ${parseFloat(tarifas.tarifa_semana).toFixed(2)}
                     </div>
@@ -410,7 +430,12 @@ const PublicProfile = () => {
                 {tarifas.tarifa_mes > 0 && (
                   <div className="rate-item">
                     <CalendarTodayIcon className="rate-icon" />
-                    <div className="rate-label">{t('publicProfile.monthlyRate') || 'Por Mes'}</div>
+                    <div className="rate-label">
+                      {getRateLabel(
+                        tarifas.etiqueta_tarifa_mes,
+                        t('publicProfile.monthlyRate') || 'Por Mes',
+                      )}
+                    </div>
                     <div className="rate-value">
                       ${parseFloat(tarifas.tarifa_mes).toFixed(2)}
                     </div>

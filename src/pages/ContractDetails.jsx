@@ -47,6 +47,9 @@ const ContractDetails = () => {
   const [arrivalConsentModalOpen, setArrivalConsentModalOpen] = useState(false);
   const [initialEvidencePrompted, setInitialEvidencePrompted] = useState(false);
   const [rechazoComentario, setRechazoComentario] = useState('');
+  const [contraRechazoComentario, setContraRechazoComentario] = useState('');
+  const [contraMontoOferta, setContraMontoOferta] = useState('');
+  const [contraMensajeOferta, setContraMensajeOferta] = useState('');
 
   const getApiErrorMessage = (err, fallback) => {
     const raw = err?.response?.data?.message;
@@ -129,6 +132,7 @@ const ContractDetails = () => {
   const getStatusChip = (estado) => {
     const statusConfig = {
       'oferta_pendiente': { cls: 'warning', icon: <Hourglass size={15} />, label: 'Oferta pendiente' },
+      'contraoferta_pendiente': { cls: 'warning', icon: <Hourglass size={15} />, label: 'Contraoferta pendiente' },
       'confirmado': { cls: 'info', icon: <Hourglass size={15} />, label: 'Confirmado' },
       'en_camino': { cls: 'info', icon: <Hourglass size={15} />, label: 'En camino' },
       'activo': { cls: 'success', icon: <CheckCircle size={15} />, label: t('contractDetails.status.active') || 'Activo' },
@@ -269,6 +273,79 @@ const ContractDetails = () => {
     } catch (err) {
       logger.error('Error rechazando oferta:', err);
       setActionError(getApiErrorMessage(err, 'No se pudo rechazar la oferta.'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleContraofertarOferta = async () => {
+    const monto = Number(contraMontoOferta);
+    if (!monto || monto <= 0) {
+      setActionError('Ingresa un monto válido para la contraoferta.');
+      return;
+    }
+    if (!ofertaToken) {
+      setActionError('No se encontró token de oferta para enviar contraoferta.');
+      return;
+    }
+
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      const res = await contractService.contraofertarOferta(ofertaToken, {
+        monto,
+        mensaje: contraMensajeOferta?.trim() || undefined,
+      });
+      if (res?.status !== 'success') {
+        setActionError(res?.message || 'No se pudo enviar la contraoferta.');
+        return;
+      }
+      const updated = await contractService.getContractById(contractId);
+      if (updated.status === 'success') setContract(updated.data);
+      setContraMontoOferta('');
+      setContraMensajeOferta('');
+    } catch (err) {
+      logger.error('Error enviando contraoferta:', err);
+      setActionError(getApiErrorMessage(err, 'No se pudo enviar la contraoferta.'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleAceptarContraoferta = async () => {
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      const res = await contractService.aceptarContraoferta(contractId);
+      if (res?.status !== 'success') {
+        setActionError(res?.message || 'No se pudo aceptar la contraoferta.');
+        return;
+      }
+      const updated = await contractService.getContractById(contractId);
+      if (updated.status === 'success') setContract(updated.data);
+    } catch (err) {
+      logger.error('Error aceptando contraoferta:', err);
+      setActionError(getApiErrorMessage(err, 'No se pudo aceptar la contraoferta.'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRechazarContraoferta = async () => {
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      const res = await contractService.rechazarContraoferta(contractId, contraRechazoComentario);
+      if (res?.status !== 'success') {
+        setActionError(res?.message || 'No se pudo rechazar la contraoferta.');
+        return;
+      }
+      const updated = await contractService.getContractById(contractId);
+      if (updated.status === 'success') setContract(updated.data);
+      setContraRechazoComentario('');
+    } catch (err) {
+      logger.error('Error rechazando contraoferta:', err);
+      setActionError(getApiErrorMessage(err, 'No se pudo rechazar la contraoferta.'));
     } finally {
       setActionLoading(false);
     }
@@ -514,6 +591,124 @@ const ContractDetails = () => {
               >
                 {actionLoading ? <Loader2 size={16} className="spin" /> : <XCircle size={16} />}
                 {actionLoading ? 'Procesando...' : 'Rechazar oferta'}
+              </button>
+            </div>
+            <div style={{ marginTop: 14, borderTop: '1px solid #e5e7eb', paddingTop: 12 }}>
+              <p style={{ marginBottom: 8, fontWeight: 600 }}>¿Quieres proponer otro precio?</p>
+              <input
+                type="number"
+                min="1"
+                step="0.01"
+                value={contraMontoOferta}
+                onChange={(e) => setContraMontoOferta(e.target.value)}
+                placeholder="Monto de contraoferta"
+                style={{
+                  width: '100%',
+                  borderRadius: 8,
+                  border: '1px solid #d1d5db',
+                  padding: '10px 12px',
+                  marginBottom: 8,
+                }}
+              />
+              <textarea
+                value={contraMensajeOferta}
+                onChange={(e) => setContraMensajeOferta(e.target.value)}
+                placeholder="Mensaje opcional para el cliente"
+                maxLength={500}
+                style={{
+                  width: '100%',
+                  minHeight: 76,
+                  borderRadius: 8,
+                  border: '1px solid #d1d5db',
+                  padding: '10px 12px',
+                  fontSize: 14,
+                  resize: 'vertical',
+                }}
+              />
+              <button
+                className="cd-btn cd-btn--outline-success"
+                onClick={handleContraofertarOferta}
+                disabled={actionLoading}
+                style={{ marginTop: 8 }}
+              >
+                {actionLoading ? <Loader2 size={16} className="spin" /> : <CheckCircle size={16} />}
+                {actionLoading ? 'Enviando...' : 'Enviar contraoferta'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {contract.estado === 'contraoferta_pendiente' && esTrabajador && (
+          <div className="contract-alert contract-alert--warning">
+            <h3>
+              <Hourglass size={16} />
+              Contraoferta enviada
+            </h3>
+            <p>
+              Esperando decisión del cliente sobre tu propuesta.
+            </p>
+            {contract.contra_propuesta?.monto_total && (
+              <p>
+                Monto propuesto: <strong>{formatCurrency(contract.contra_propuesta.monto_total)}</strong>
+              </p>
+            )}
+            {contract.contra_propuesta?.mensaje && (
+              <p>Mensaje: {contract.contra_propuesta.mensaje}</p>
+            )}
+          </div>
+        )}
+
+        {contract.estado === 'contraoferta_pendiente' && esEmpleador && (
+          <div className="contract-alert contract-alert--info">
+            <h3>
+              <Hourglass size={16} />
+              El trabajador envió una contraoferta
+            </h3>
+            <p>
+              Revisa el nuevo monto y decide si deseas aceptar o rechazar.
+            </p>
+            {contract.contra_propuesta?.monto_total && (
+              <p>
+                Nuevo monto: <strong>{formatCurrency(contract.contra_propuesta.monto_total)}</strong>
+              </p>
+            )}
+            {contract.contra_propuesta?.mensaje && (
+              <p>Mensaje del trabajador: {contract.contra_propuesta.mensaje}</p>
+            )}
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
+              <button
+                className="cd-btn cd-btn--primary"
+                onClick={handleAceptarContraoferta}
+                disabled={actionLoading}
+              >
+                {actionLoading ? <Loader2 size={16} className="spin" /> : <CheckCircle size={16} />}
+                {actionLoading ? 'Procesando...' : 'Aceptar contraoferta'}
+              </button>
+            </div>
+            <div style={{ marginTop: 12 }}>
+              <textarea
+                value={contraRechazoComentario}
+                onChange={(e) => setContraRechazoComentario(e.target.value)}
+                placeholder="Comentario para rechazo (opcional)"
+                maxLength={500}
+                style={{
+                  width: '100%',
+                  minHeight: 88,
+                  borderRadius: 8,
+                  border: '1px solid #d1d5db',
+                  padding: '10px 12px',
+                  fontSize: 14,
+                  resize: 'vertical',
+                }}
+              />
+              <button
+                className="cd-btn cd-btn--outline"
+                onClick={handleRechazarContraoferta}
+                disabled={actionLoading}
+                style={{ marginTop: 8 }}
+              >
+                {actionLoading ? <Loader2 size={16} className="spin" /> : <XCircle size={16} />}
+                {actionLoading ? 'Procesando...' : 'Rechazar contraoferta'}
               </button>
             </div>
           </div>

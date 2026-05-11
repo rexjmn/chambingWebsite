@@ -1146,13 +1146,23 @@ $auth-shadow-input: 0 0 0 4px rgba(37, 64, 255, 0.08);
     align-items: flex-start;
 
     @media (max-width: 540px) {
-      flex-direction: column;
+      align-items: stretch;
     }
 
     .form-select--phone-country {
       flex: 0 0 min(11.5rem, 42vw);
       min-width: 9.75rem;
       padding-left: 0.875rem !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      @media (max-width: 540px) {
+        flex: 0 0 8.5rem;
+        min-width: 8.5rem;
+        max-width: 8.5rem;
+        font-size: 0.875rem;
+      }
     }
 
     .input-wrapper--phone-national {

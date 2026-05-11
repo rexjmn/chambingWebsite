@@ -35,6 +35,9 @@ export default function ResponderOferta() {
   const [enviando, setEnviando] = useState(false);
   const [resultadoMensaje, setResultadoMensaje] = useState('');
   const [resultadoExito, setResultadoExito] = useState(false);
+  const [errorReason, setErrorReason] = useState('');
+  const [contraMonto, setContraMonto] = useState('');
+  const [mostrarContraoferta, setMostrarContraoferta] = useState(false);
 
   useEffect(() => {
     if (!token) { setEstado('error'); return; }
@@ -42,6 +45,18 @@ export default function ResponderOferta() {
     api.get(`/contracts/oferta/${token}`)
       .then(res => {
         if (res.data.status === 'success') {
+          const offerState = res.data?.meta?.offerState || 'available';
+          if (offerState === 'expired') {
+            setErrorReason('expired');
+            setEstado('error');
+            return;
+          }
+          if (offerState === 'responded') {
+            setErrorReason('responded');
+            setEstado('error');
+            return;
+          }
+
           const data = res.data.data;
           setContrato(data);
           setEstado('loaded');
@@ -97,6 +112,32 @@ export default function ResponderOferta() {
     }
   };
 
+  const contraofertar = async () => {
+    const monto = Number(contraMonto);
+    if (!monto || monto <= 0) {
+      setResultadoMensaje('Ingresa un monto válido para la contraoferta.');
+      setResultadoExito(false);
+      setEstado('respondido');
+      return;
+    }
+    setEnviando(true);
+    try {
+      const res = await api.post(`/contracts/oferta/${token}/contraoferta`, {
+        monto,
+        mensaje: mensaje.trim() || undefined,
+      });
+      setResultadoMensaje(res.data.message);
+      setResultadoExito(res.data.status === 'success');
+      setEstado('respondido');
+    } catch (err) {
+      setResultadoMensaje(err.response?.data?.message || 'Error al enviar contraoferta.');
+      setResultadoExito(false);
+      setEstado('respondido');
+    } finally {
+      setEnviando(false);
+    }
+  };
+
   if (estado === 'cargando') {
     return (
       <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -106,14 +147,25 @@ export default function ResponderOferta() {
   }
 
   if (estado === 'error') {
+    const title =
+      errorReason === 'expired'
+        ? 'Oferta expirada'
+        : errorReason === 'responded'
+          ? 'Oferta ya respondida'
+          : 'Oferta no disponible';
+    const description =
+      errorReason === 'expired'
+        ? 'Esta oferta superó el tiempo de respuesta (72 horas). Pídele al cliente que te envíe una nueva oferta.'
+        : errorReason === 'responded'
+          ? 'Esta oferta ya fue aceptada o rechazada anteriormente.'
+          : 'Este enlace es inválido, ha expirado, o la oferta ya fue respondida anteriormente.';
+
     return (
       <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
         <Paper elevation={3} sx={{ p: 5, maxWidth: 480, textAlign: 'center', borderRadius: 3 }}>
           <CancelOutlinedIcon sx={{ fontSize: 72, color: 'error.main', mb: 2 }} />
-          <Typography variant="h5" fontWeight="bold" gutterBottom>Oferta no disponible</Typography>
-          <Typography color="text.secondary">
-            Este enlace es inválido, ha expirado, o la oferta ya fue respondida anteriormente.
-          </Typography>
+          <Typography variant="h5" fontWeight="bold" gutterBottom>{title}</Typography>
+          <Typography color="text.secondary">{description}</Typography>
         </Paper>
       </Box>
     );
@@ -298,6 +350,16 @@ export default function ResponderOferta() {
               >
                 ✗ Rechazar
               </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                size="large"
+                fullWidth
+                disabled={enviando}
+                onClick={() => setMostrarContraoferta((v) => !v)}
+              >
+                ↔ Contraofertar
+              </Button>
             </Stack>
           ) : (
             <Stack direction="row" spacing={2}>
@@ -312,6 +374,28 @@ export default function ResponderOferta() {
                 onClick={rechazar}
               >
                 {enviando ? <CircularProgress size={22} color="inherit" /> : 'Confirmar rechazo'}
+              </Button>
+            </Stack>
+          )}
+
+          {accion !== 'rechazar' && mostrarContraoferta && (
+            <Stack spacing={1.5} sx={{ mt: 2 }}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Monto de contraoferta"
+                placeholder="0.00"
+                inputProps={{ min: 1, step: '0.01' }}
+                value={contraMonto}
+                onChange={(e) => setContraMonto(e.target.value)}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={enviando}
+                onClick={contraofertar}
+              >
+                {enviando ? <CircularProgress size={22} color="inherit" /> : 'Enviar contraoferta'}
               </Button>
             </Stack>
           )}

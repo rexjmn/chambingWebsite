@@ -161,7 +161,16 @@ const Onboarding = () => {
   const [skillSearch, setSkillSearch]         = useState('');
 
   // Rates state
-  const [tarifas, setTarifas] = useState({ tarifa_hora: '', tarifa_dia: '', tarifa_semana: '', tarifa_mes: '' });
+  const [tarifas, setTarifas] = useState({
+    tarifa_hora: '',
+    etiqueta_tarifa_hora: '',
+    tarifa_dia: '',
+    etiqueta_tarifa_dia: '',
+    tarifa_semana: '',
+    etiqueta_tarifa_semana: '',
+    tarifa_mes: '',
+    etiqueta_tarifa_mes: '',
+  });
   const [hasTarifas, setHasTarifas] = useState(false);
 
   // Terms state
@@ -190,9 +199,13 @@ const Onboarding = () => {
           if (res?.tarifa_hora !== undefined) {
             setTarifas({
               tarifa_hora:    res.tarifa_hora   || '',
+              etiqueta_tarifa_hora: res.etiqueta_tarifa_hora || '',
               tarifa_dia:     res.tarifa_dia    || '',
+              etiqueta_tarifa_dia: res.etiqueta_tarifa_dia || '',
               tarifa_semana:  res.tarifa_semana || '',
+              etiqueta_tarifa_semana: res.etiqueta_tarifa_semana || '',
               tarifa_mes:     res.tarifa_mes    || '',
+              etiqueta_tarifa_mes: res.etiqueta_tarifa_mes || '',
             });
             setHasTarifas(true);
           }
@@ -437,11 +450,19 @@ const Onboarding = () => {
 
   const saveRates = async () => {
     const toNum = (v) => { const n = parseFloat(v); return isNaN(n) || n <= 0 ? null : n; };
+    const cleanLabel = (value) => {
+      const trimmed = (value || '').trim();
+      return trimmed ? trimmed.slice(0, 80) : null;
+    };
     const data = {
       tarifa_hora:   toNum(tarifas.tarifa_hora),
+      etiqueta_tarifa_hora: cleanLabel(tarifas.etiqueta_tarifa_hora),
       tarifa_dia:    toNum(tarifas.tarifa_dia),
+      etiqueta_tarifa_dia: cleanLabel(tarifas.etiqueta_tarifa_dia),
       tarifa_semana: toNum(tarifas.tarifa_semana),
+      etiqueta_tarifa_semana: cleanLabel(tarifas.etiqueta_tarifa_semana),
       tarifa_mes:    toNum(tarifas.tarifa_mes),
+      etiqueta_tarifa_mes: cleanLabel(tarifas.etiqueta_tarifa_mes),
       moneda: 'USD',
     };
     const hasAny = Object.values(data).slice(0,4).some((v) => v !== null);
@@ -1032,11 +1053,11 @@ const Onboarding = () => {
 
             <div className="ob-rates-grid">
               {[
-                { key: 'tarifa_hora',    label: 'Por hora' },
-                { key: 'tarifa_dia',     label: 'Por día' },
-                { key: 'tarifa_semana',  label: 'Por semana' },
-                { key: 'tarifa_mes',     label: 'Por mes' },
-              ].map(({ key, label }) => (
+                { key: 'tarifa_hora', labelKey: 'etiqueta_tarifa_hora', label: 'Por hora', labelPlaceholder: 'Ej: Diagnóstico a domicilio' },
+                { key: 'tarifa_dia', labelKey: 'etiqueta_tarifa_dia', label: 'Por día', labelPlaceholder: 'Ej: Jornada completa' },
+                { key: 'tarifa_semana', labelKey: 'etiqueta_tarifa_semana', label: 'Por semana', labelPlaceholder: 'Ej: Proyecto semanal' },
+                { key: 'tarifa_mes', labelKey: 'etiqueta_tarifa_mes', label: 'Por mes', labelPlaceholder: 'Ej: Mantenimiento mensual' },
+              ].map(({ key, labelKey, label, labelPlaceholder }) => (
                 <div key={key} className="ob-rate-card">
                   <label htmlFor={`ob-${key}`}>{label}</label>
                   <div className="ob-rate-input-wrap">
@@ -1055,6 +1076,15 @@ const Onboarding = () => {
                       }}
                     />
                   </div>
+                  <input
+                    id={`ob-${labelKey}`}
+                    type="text"
+                    maxLength={80}
+                    className="ob-rate-tag-input"
+                    placeholder={labelPlaceholder}
+                    value={tarifas[labelKey] || ''}
+                    onChange={(e) => setTarifas((prev) => ({ ...prev, [labelKey]: e.target.value }))}
+                  />
                 </div>
               ))}
             </div>

@@ -143,6 +143,35 @@ export const contractService = {
     }
   },
 
+  /**
+   * Envía una contraoferta desde el enlace público de oferta
+   */
+  async contraofertarOferta(ofertaToken, payload) {
+    try {
+      logger.api('Enviando contraoferta');
+      const response = await api.post(`/contracts/oferta/${ofertaToken}/contraoferta`, payload);
+      return response.data;
+    } catch (error) {
+      logger.error('Error enviando contraoferta:', error.message);
+      throw error;
+    }
+  },
+
+  /**
+   * Empleador responde contraoferta
+   */
+  async aceptarContraoferta(contratoId) {
+    const response = await api.post(`/contracts/${contratoId}/contraoferta/aceptar`, {});
+    return response.data;
+  },
+
+  async rechazarContraoferta(contratoId, comentario = '') {
+    const response = await api.post(`/contracts/${contratoId}/contraoferta/rechazar`, {
+      comentario,
+    });
+    return response.data;
+  },
+
   /** Trabajador pulsa "Estoy en camino" — genera código de verificación */
   async iniciarViaje(contratoId) {
     try {

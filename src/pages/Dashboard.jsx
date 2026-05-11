@@ -382,6 +382,8 @@ const Dashboard = () => {
 
     if (contract.estado === 'oferta_pendiente' && esTrabajador)
       return { color: '#fff3e0', border: '#f57c00', icon: OfferPendingIcon, text: 'Tienes una oferta pendiente — responde antes de 72 h' };
+    if (contract.estado === 'contraoferta_pendiente' && esEmpleador)
+      return { color: '#fff8e1', border: '#ff8f00', icon: OfferPendingIcon, text: 'Recibiste una contraoferta — revisa y decide' };
     if (contract.estado === 'en_camino' && esEmpleador)
       return { color: '#e8f5e9', border: '#388e3c', icon: VerificationCodeIcon, text: 'El trabajador está en camino — pídele el código al llegar' };
     if (contract.estado === 'en_camino' && esTrabajador)

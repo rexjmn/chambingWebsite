@@ -32,9 +32,13 @@ const EditProfile = () => {
   // 🆕 NUEVO - Estado para tarifas
   const [tarifas, setTarifas] = useState({
     tarifa_hora: '',
+    etiqueta_tarifa_hora: '',
     tarifa_dia: '',
+    etiqueta_tarifa_dia: '',
     tarifa_semana: '',
+    etiqueta_tarifa_semana: '',
     tarifa_mes: '',
+    etiqueta_tarifa_mes: '',
     moneda: 'USD'
   });
 
@@ -92,9 +96,13 @@ const EditProfile = () => {
               if (tarifasResponse && tarifasResponse.tarifa_hora !== undefined) {
                 setTarifas({
                   tarifa_hora: tarifasResponse.tarifa_hora || '',
+                  etiqueta_tarifa_hora: tarifasResponse.etiqueta_tarifa_hora || '',
                   tarifa_dia: tarifasResponse.tarifa_dia || '',
+                  etiqueta_tarifa_dia: tarifasResponse.etiqueta_tarifa_dia || '',
                   tarifa_semana: tarifasResponse.tarifa_semana || '',
+                  etiqueta_tarifa_semana: tarifasResponse.etiqueta_tarifa_semana || '',
                   tarifa_mes: tarifasResponse.tarifa_mes || '',
+                  etiqueta_tarifa_mes: tarifasResponse.etiqueta_tarifa_mes || '',
                   moneda: tarifasResponse.moneda || 'USD'
                 });
                 setHasTarifas(true);
@@ -149,6 +157,10 @@ const EditProfile = () => {
       setTarifas(prev => ({ ...prev, [name]: value }));
     }
   };
+  const handleTarifaLabelChange = (e) => {
+    const { name, value } = e.target;
+    setTarifas(prev => ({ ...prev, [name]: value.slice(0, 80) }));
+  };
 
   const toggleSkill = (skill) => {
     setSelectedSkills(prev => {
@@ -184,9 +196,13 @@ const EditProfile = () => {
 
         const tarifasToSave = {
           tarifa_hora: validateTarifa(tarifas.tarifa_hora),
+          etiqueta_tarifa_hora: tarifas.etiqueta_tarifa_hora?.trim() || null,
           tarifa_dia: validateTarifa(tarifas.tarifa_dia),
+          etiqueta_tarifa_dia: tarifas.etiqueta_tarifa_dia?.trim() || null,
           tarifa_semana: validateTarifa(tarifas.tarifa_semana),
+          etiqueta_tarifa_semana: tarifas.etiqueta_tarifa_semana?.trim() || null,
           tarifa_mes: validateTarifa(tarifas.tarifa_mes),
+          etiqueta_tarifa_mes: tarifas.etiqueta_tarifa_mes?.trim() || null,
           moneda: tarifas.moneda || 'USD'
         };
 
@@ -482,6 +498,16 @@ const EditProfile = () => {
                     className="input-with-prefix"
                   />
                 </div>
+                <input
+                  type="text"
+                  id="etiqueta_tarifa_hora"
+                  name="etiqueta_tarifa_hora"
+                  value={tarifas.etiqueta_tarifa_hora}
+                  onChange={handleTarifaLabelChange}
+                  placeholder="Etiqueta opcional (ej: Diagnóstico)"
+                  className="edit-profile__tarifa-tag-input"
+                  maxLength={80}
+                />
               </div>
 
               <div className="edit-profile__field">
@@ -501,6 +527,16 @@ const EditProfile = () => {
                     className="input-with-prefix"
                   />
                 </div>
+                <input
+                  type="text"
+                  id="etiqueta_tarifa_dia"
+                  name="etiqueta_tarifa_dia"
+                  value={tarifas.etiqueta_tarifa_dia}
+                  onChange={handleTarifaLabelChange}
+                  placeholder="Etiqueta opcional (ej: Jornada completa)"
+                  className="edit-profile__tarifa-tag-input"
+                  maxLength={80}
+                />
               </div>
 
               <div className="edit-profile__field">
@@ -520,6 +556,16 @@ const EditProfile = () => {
                     className="input-with-prefix"
                   />
                 </div>
+                <input
+                  type="text"
+                  id="etiqueta_tarifa_semana"
+                  name="etiqueta_tarifa_semana"
+                  value={tarifas.etiqueta_tarifa_semana}
+                  onChange={handleTarifaLabelChange}
+                  placeholder="Etiqueta opcional (ej: Proyecto semanal)"
+                  className="edit-profile__tarifa-tag-input"
+                  maxLength={80}
+                />
               </div>
 
               <div className="edit-profile__field">
@@ -539,6 +585,16 @@ const EditProfile = () => {
                     className="input-with-prefix"
                   />
                 </div>
+                <input
+                  type="text"
+                  id="etiqueta_tarifa_mes"
+                  name="etiqueta_tarifa_mes"
+                  value={tarifas.etiqueta_tarifa_mes}
+                  onChange={handleTarifaLabelChange}
+                  placeholder="Etiqueta opcional (ej: Mantenimiento mensual)"
+                  className="edit-profile__tarifa-tag-input"
+                  maxLength={80}
+                />
               </div>
             </div>
 
