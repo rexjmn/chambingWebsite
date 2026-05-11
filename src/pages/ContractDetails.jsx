@@ -418,11 +418,15 @@ const ContractDetails = () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      await contractService.cerrarContrato(contractId, {
+      const cerrarRes = await contractService.cerrarContrato(contractId, {
         clienteConsentimientoEvidencia: true,
       });
+      if (cerrarRes?.status !== 'success') {
+        throw new Error(cerrarRes?.message || 'No se pudo cerrar el contrato.');
+      }
       const res = await contractService.getContractById(contractId);
       if (res.status === 'success') setContract(res.data);
+      setAutoReviewPrompted(true);
       setReviewTarget({
         calificadoId: contract.trabajador?.id,
         calificadoNombre: `${contract.trabajador?.nombre} ${contract.trabajador?.apellido}`,
