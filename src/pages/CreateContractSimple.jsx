@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { contractService } from '../services/contractService';
-import adminService from '../services/adminService';
 import { workerService } from '../services/workerService';
 import { serviceService } from '../services/serviceService';
 import { logger } from '../utils/logger';
@@ -88,6 +87,7 @@ const CreateContractSimple = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [stepError, setStepError] = useState(null);
+  const [slotsError, setSlotsError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [createdContract, setCreatedContract] = useState(null);
   const [confirmedSlots, setConfirmedSlots] = useState([]);
@@ -113,10 +113,16 @@ const CreateContractSimple = () => {
       return;
     }
 
+    if (!workerId) {
+      setLoading(false);
+      setError('Primero debes seleccionar un trabajador desde su perfil para crear el contrato.');
+      return;
+    }
+
     const loadData = async () => {
       try {
         setLoading(true);
-        const categoriesData = await adminService.getCategories();
+        const categoriesData = await serviceService.getCategorias();
         setCategories(categoriesData || []);
 
         if (workerId) {
@@ -209,6 +215,7 @@ const handleChange = (e) => {
     setFormData(prev => ({ ...prev, modalidad, cantidad: '1' }));
     setConfirmedSlots([]);
     setSlotRange({ inicio: '', fin: '' });
+    setSlotsError(null);
   };
 
   const handleDateSelect = (date) => {
@@ -218,11 +225,13 @@ const handleChange = (e) => {
     }));
     setConfirmedSlots([]);
     setSlotRange({ inicio: '', fin: '' });
+    setSlotsError(null);
   };
 
   const handleDaysConfirm = ({ fechaInicio, fechaFin, count }) => {
     setConfirmedSlots([]);
     setSlotRange({ inicio: '', fin: '' });
+    setSlotsError(null);
     setFormData(prev => ({
       ...prev,
       fecha_inicio: fechaInicio,
@@ -232,41 +241,61 @@ const handleChange = (e) => {
   };
 
   const handleSlotsConfirm = (slots) => {
-    setConfirmedSlots(slots);
-    if (slots.length > 0) {
-      const sortedDates = slots
-        .map((s) => toSlotDateTime(s.dateStr, s.hour))
-        .sort((a, b) => a.getTime() - b.getTime());
-      const first = sortedDates[0];
-      const last = sortedDates[sortedDates.length - 1];
-      const end = new Date(last);
-      end.setHours(end.getHours() + 1);
-
-      const toIsoLocal = (d) => {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        const h = String(d.getHours()).padStart(2, '0');
-        const min = String(d.getMinutes()).padStart(2, '0');
-        return `${y}-${m}-${day}T${h}:${min}:00`;
-      };
-
-      setSlotRange({
-        inicio: toIsoLocal(first),
-        fin: toIsoLocal(end),
-      });
-
-      setFormData(prev => ({
-        ...prev,
-        fecha_inicio: slots[0].dateStr,
-        fecha_fin: '',
-        cantidad: prev.modalidad === 'hora' ? String(slots.length) : prev.cantidad,
-      }));
+    setSlotsError(null);
+    if (!slots || slots.length === 0) {
+      setConfirmedSlots([]);
+      setSlotRange({ inicio: '', fin: '' });
+      return;
     }
+
+    const sortedDates = slots
+      .map((s) => toSlotDateTime(s.dateStr, s.hour))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    const hasGap = sortedDates.some((d, idx) => {
+      if (idx === 0) return false;
+      const prev = sortedDates[idx - 1];
+      return d.getTime() - prev.getTime() !== 60 * 60 * 1000;
+    });
+
+    if (hasGap) {
+      setSlotsError('Las horas deben ser consecutivas para evitar bloqueos ambiguos. Ajusta la selección.');
+      return;
+    }
+
+    setConfirmedSlots(slots);
+    const first = sortedDates[0];
+    const last = sortedDates[sortedDates.length - 1];
+    const end = new Date(last);
+    end.setHours(end.getHours() + 1);
+
+    const toIsoLocal = (d) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const h = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      return `${y}-${m}-${day}T${h}:${min}:00`;
+    };
+
+    setSlotRange({
+      inicio: toIsoLocal(first),
+      fin: toIsoLocal(end),
+    });
+
+    setFormData(prev => ({
+      ...prev,
+      fecha_inicio: slots[0].dateStr,
+      fecha_fin: '',
+      cantidad: prev.modalidad === 'hora' ? String(slots.length) : prev.cantidad,
+    }));
   };
 
   const handleSelectTarifa = (modalidad, monto) => {
     setFormData(prev => ({ ...prev, modalidad, monto: String(monto), cantidad: '1' }));
+    setConfirmedSlots([]);
+    setSlotRange({ inicio: '', fin: '' });
+    setSlotsError(null);
   };
 
   const handleSubmit = async () => {
@@ -347,6 +376,23 @@ if (loading) {
     );
   }
 
+  if (!workerId) {
+    return (
+      <div className="create-contract-page">
+        <div className="container">
+          <div className="error-message">
+            ⚠️ Debes elegir un trabajador desde su perfil antes de crear un contrato.
+          </div>
+          <div className="step-nav">
+            <button type="button" onClick={() => navigate('/service')} className="btn btn-primary">
+              Buscar trabajadores
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ── Pantalla de éxito ───────────────────────────────────────────────────────────────────────
 if (success && createdContract) {
     const total = calculateTotal();
@@ -386,7 +432,32 @@ if (success && createdContract) {
             <button onClick={() => navigate('/dashboard')} className="btn btn-primary">
               Ir al Dashboard
             </button>
-            <button onClick={() => window.location.reload()} className="btn btn-secondary">
+            <button
+              onClick={() => {
+                setSuccess(false);
+                setCreatedContract(null);
+                setCurrentStep(1);
+                setStepError(null);
+                setSlotsError(null);
+                setError(null);
+                setConfirmedSlots([]);
+                setSlotRange({ inicio: '', fin: '' });
+                setFormData(prev => ({
+                  ...prev,
+                  categoria_id: '',
+                  modalidad: 'proyecto',
+                  descripcion: '',
+                  direccion: '',
+                  monto: '',
+                  cantidad: '1',
+                  fecha_inicio: '',
+                  fecha_fin: '',
+                  notas: '',
+                }));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="btn btn-secondary"
+            >
               Crear Otro Contrato
             </button>
           </div>
@@ -465,6 +536,7 @@ return (
 
         {error && <div className="error-message">⚠️ {error}</div>}
         {stepError && <div className="error-message step-error">⚠️ {stepError}</div>}
+        {slotsError && <div className="error-message step-error">⚠️ {slotsError}</div>}
 
         {/* ══ PASO 1: ¿Qué necesitas? ══ */}
         {currentStep === 1 && (
@@ -606,7 +678,13 @@ return (
                     min="1"
                     step="1"
                     className="form-input"
+                    disabled={formData.modalidad === 'hora' && confirmedSlots.length > 0}
                   />
+                  {formData.modalidad === 'hora' && confirmedSlots.length > 0 && (
+                    <small className="form-help help-ok">
+                      La cantidad se sincroniza con las horas confirmadas en el calendario.
+                    </small>
+                  )}
                 </div>
               )}
             </div>

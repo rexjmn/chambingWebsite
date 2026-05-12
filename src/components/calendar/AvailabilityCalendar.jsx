@@ -108,6 +108,15 @@ const toLocalYmd = (dateLike) => {
   return `${y}-${m}-${day}`;
 };
 
+const getIsoWeekKey = (dayKey) => {
+  const date = new Date(`${dayKey}T12:00:00`);
+  const dayNum = date.getDay() || 7;
+  date.setDate(date.getDate() + 4 - dayNum);
+  const yearStart = new Date(date.getFullYear(), 0, 1);
+  const weekNo = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  return `${date.getFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+};
+
 // ───────────────────────────────────────────────────────────────────────────
 
 /**
@@ -454,7 +463,12 @@ const AvailabilityCalendar = ({
   };
 
   const toggleWeekSelection = (fecha) => {
-    const weekDays = getWeekDays(fecha);
+    const weekDays = getWeekDays(fecha).filter((dayKey) => {
+      const d = new Date(`${dayKey}T12:00:00`);
+      const dayInfo = getDisponibilidadDia(d);
+      return dayInfo.tipo !== 'pasado' && dayInfo.tipo !== 'sin-disponibilidad';
+    });
+    if (weekDays.length === 0) return;
     const anySelected = weekDays.some(d => selectedDays.has(d));
     setSelectedDays(prev => {
       const next = new Set(prev);
@@ -465,7 +479,12 @@ const AvailabilityCalendar = ({
   };
 
   const toggleMonthSelection = (fecha) => {
-    const monthDays = getMonthDays(fecha);
+    const monthDays = getMonthDays(fecha).filter((dayKey) => {
+      const d = new Date(`${dayKey}T12:00:00`);
+      const dayInfo = getDisponibilidadDia(d);
+      return dayInfo.tipo !== 'pasado' && dayInfo.tipo !== 'sin-disponibilidad';
+    });
+    if (monthDays.length === 0) return;
     const anySelected = monthDays.some(d => selectedDays.has(d));
     setSelectedDays(prev => {
       const next = new Set(prev);
@@ -480,7 +499,7 @@ const AvailabilityCalendar = ({
     const sorted = Array.from(selectedDays).sort();
     let count;
     if (selectionMode === 'dia') count = sorted.length;
-    else if (selectionMode === 'semana') count = Math.round(sorted.length / 7);
+    else if (selectionMode === 'semana') count = new Set(sorted.map(getIsoWeekKey)).size;
     else count = new Set(sorted.map(d => d.slice(0, 7))).size;
     onDaysConfirm?.({ fechaInicio: sorted[0], fechaFin: sorted[sorted.length - 1], count });
   };
@@ -803,7 +822,7 @@ const AvailabilityCalendar = ({
             <span>
               {selectionMode === 'dia' && `${selectedDays.size} día${selectedDays.size !== 1 ? 's' : ''} seleccionado${selectedDays.size !== 1 ? 's' : ''}`}
               {selectionMode === 'semana' && (() => {
-                const w = Math.round(selectedDays.size / 7);
+                const w = new Set(Array.from(selectedDays).map(getIsoWeekKey)).size;
                 return `${w} semana${w !== 1 ? 's' : ''} seleccionada${w !== 1 ? 's' : ''}`;
               })()}
               {selectionMode === 'mes' && (() => {
