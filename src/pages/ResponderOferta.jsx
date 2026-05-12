@@ -12,6 +12,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import api from '../services/api';
+import MapAppLinks from '../components/MapAppLinks';
 
 const MODALIDAD_LABELS = {
   hora: 'Por hora',
@@ -272,9 +273,14 @@ export default function ResponderOferta() {
 
           <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
             <LocationOnOutlinedIcon sx={{ color: 'primary.main', mt: 0.3 }} />
-            <Box>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography variant="subtitle2">Lugar</Typography>
               <Typography>{detalles_servicio?.direccion || 'No especificado'}</Typography>
+              <MapAppLinks
+                address={detalles_servicio?.direccion}
+                coordenadas={detalles_servicio?.coordenadas}
+                variant="mui"
+              />
             </Box>
           </Box>
 

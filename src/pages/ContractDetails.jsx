@@ -24,6 +24,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import '../styles/contractDetails.scss';
+import MapAppLinks from '../components/MapAppLinks';
 
 const ContractDetails = () => {
   const { t } = useTranslation();
@@ -199,11 +200,10 @@ const ContractDetails = () => {
   // MVP: no descontar comision de plataforma todavia.
   // Cuando integremos pasarela de pago, volver a usar `contract.monto_trabajador`.
   const montoTrabajadorMvp = contract?.monto_total ?? contract?.monto_trabajador ?? 0;
+  const detallesServicio = contract?.detalles_servicio || contract?.detallesServicio || {};
   const direccionServicio =
-    contract?.detalles_servicio?.direccion ||
-    contract?.detallesServicio?.direccion ||
-    contract?.detalles_servicio?.direccion_servicio ||
-    contract?.detallesServicio?.direccion_servicio ||
+    detallesServicio?.direccion ||
+    detallesServicio?.direccion_servicio ||
     contract?.direccion_servicio ||
     '';
   const ofertaToken =
@@ -992,6 +992,11 @@ const ContractDetails = () => {
                         <p className="value">
                           {direccionServicio || t('contractDetails.notSpecified')}
                         </p>
+                        <MapAppLinks
+                          address={direccionServicio}
+                          coordenadas={detallesServicio?.coordenadas}
+                          variant="contract"
+                        />
                       </div>
                   </div>
 

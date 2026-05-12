@@ -62,8 +62,12 @@ const TerminosCondiciones = () => {
           marginBottom: '0.5rem',
         }}>Términos y Condiciones de Uso</h1>
 
-        <p style={{ color: '#6B7280', fontSize: '0.875rem', marginBottom: '2.5rem' }}>
-          Última actualización: Mayo 2026
+        <p style={{ color: '#6B7280', fontSize: '0.875rem', marginBottom: '0.75rem' }}>
+          Última actualización: 12 de mayo de 2026
+        </p>
+        <p style={{ color: '#6B7280', fontSize: '0.8125rem', marginBottom: '2.5rem', lineHeight: 1.6 }}>
+          Este documento resume las reglas de uso de la plataforma. No sustituye asesoría legal,
+          fiscal o laboral personalizada; ante dudas específicas consulte a un profesional.
         </p>
 
         <Section title="1. ¿Qué es Chambing?">
@@ -135,7 +139,8 @@ const TerminosCondiciones = () => {
         <Section title="9. Uso Adecuado de la Plataforma">
           <p>Los usuarios se comprometen a:</p>
           <ul style={{ paddingLeft: '1.25rem', marginTop: '0.5rem', lineHeight: 2 }}>
-            <li>Proporcionar información verídica al registrarse</li>
+            <li>Proporcionar información verídica al registrarse y al publicar ofertas o datos del servicio</li>
+            <li>Indicar con la mayor precisión posible el lugar de prestación del servicio cuando lo soliciten las funciones de la plataforma</li>
             <li>Utilizar la plataforma únicamente para los fines para los que fue creada</li>
             <li>Respetar la privacidad de otros usuarios</li>
             <li>No compartir datos de contacto de terceros sin consentimiento</li>
@@ -144,13 +149,56 @@ const TerminosCondiciones = () => {
 
         <Section title="10. Modificaciones">
           Chambing se reserva el derecho de modificar estos términos en cualquier momento.
-          Los cambios serán notificados a través de la plataforma. El uso continuo después
-          de la notificación implica aceptación de los nuevos términos.
+          Los cambios relevantes serán comunicados por medios razonables (por ejemplo, aviso en
+          la plataforma o actualización de la fecha al inicio de este documento). El uso
+          continuado después de la publicación de los cambios implica la aceptación de la
+          versión vigente. Le recomendamos revisar esta página periódicamente.
         </Section>
 
-        <Section title="11. Jurisdicción">
-          Estos términos se rigen por las leyes de la República de El Salvador. Cualquier
-          disputa se someterá a los tribunales competentes de El Salvador.
+        <Section title="11. Ley aplicable y jurisdicción">
+          Estos Términos y Condiciones se rigen por las leyes de la República de El Salvador.
+          Salvo normas imperativas de otro ordenamiento que resulten aplicables al consumidor
+          en su país de residencia habitual, las controversias que enfrenten al usuario con el
+          operador de la plataforma Chambing respecto del uso de la herramienta digital se
+          someterán a los tribunales competentes de El Salvador. Las disputas contractuales o
+          civiles entre clientes y trabajadores son en principio ajenas a Chambing, sin
+          perjuicio de lo previsto en estos términos (por ejemplo, suspensión de cuenta o
+          colaboración con autoridades cuando la ley lo exija).
+        </Section>
+
+        <Section title="12. Domicilio del servicio, coordenadas y geolocalización">
+          La plataforma puede permitir indicar el lugar de prestación del servicio mediante
+          texto y, de forma opcional, coordenadas obtenidas del dispositivo del usuario o
+          servicios de geocodificación de terceros. Esas coordenadas y direcciones generadas
+          de forma automática son <strong>orientativas</strong> y pueden variar según el
+          equipo, la red, la señal GPS o el proveedor externo. <strong>No se exige</strong>{' '}
+          que las coordenadas correspondan a un país o territorio determinado. Clientes y
+          trabajadores son responsables de acordar y verificar el lugar real del servicio,
+          independientemente del país desde el que accedan a Chambing.
+        </Section>
+
+        <Section title="13. Datos personales y privacidad">
+          El tratamiento de datos personales tiene como finalidad operar la cuenta, las
+          ofertas, los contratos simplificados y las comunicaciones necesarias en la
+          plataforma. Los usuarios deben proporcionar datos veraces y actualizarlos cuando
+          cambien. Chambing podrá conservar información mientras sea necesario para prestar
+          el servicio, mejorar la seguridad de la comunidad o cumplir obligaciones legales,
+          conforme a los avisos o políticas de privacidad publicados en el sitio. El usuario
+          puede solicitar rectificación o cese de tratamiento cuando corresponda según la ley
+          aplicable y los canales indicados en la plataforma.
+        </Section>
+
+        <Section title="14. Enlaces y aplicaciones de terceros">
+          Chambing puede ofrecer enlaces o abrir aplicaciones externas (por ejemplo, mapas o
+          navegación). Esos servicios tienen sus propios términos y políticas de privacidad.
+          Chambing no los controla y no se responsabiliza por su disponibilidad, exactitud ni
+          contenido.
+        </Section>
+
+        <Section title="15. Edad y capacidad">
+          Al registrarse, el usuario declara ser mayor de edad y tener capacidad legal para
+          obligarse según las leyes que le resulten aplicables. Si se detectara uso por
+          menores sin la debida autorización, las cuentas asociadas podrán ser cerradas.
         </Section>
 
         <div style={{

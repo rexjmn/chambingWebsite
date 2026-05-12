@@ -111,6 +111,8 @@ const CreateContractSimple = () => {
   /** Coordenadas del lugar de trabajo (opcional), desde GPS + geocodificación inversa */
   const [direccionCoords, setDireccionCoords] = useState(null);
   const [geoLoading, setGeoLoading] = useState(false);
+  /** Aviso informativo (p. ej. GPS impreciso), no es error de envío */
+  const [addressHint, setAddressHint] = useState(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -223,20 +225,33 @@ const handleChange = (e) => {
     }
     setGeoLoading(true);
     setError(null);
+    setAddressHint(null);
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
+        const acc = pos.coords.accuracy;
         try {
           const res = await geocodeService.reverse(lat, lng);
-          const displayName = res?.data?.display_name || '';
-          const outLat = res?.data?.lat ?? lat;
-          const outLng = res?.data?.lng ?? lng;
+          const d = res?.data;
+          const line =
+            (d?.short_address && String(d.short_address).trim()) ||
+            (d?.display_name && String(d.display_name).trim()) ||
+            '';
+          const outLat = d?.lat ?? lat;
+          const outLng = d?.lng ?? lng;
           setDireccionCoords({ lat: outLat, lng: outLng });
           setFormData((prev) => ({
             ...prev,
-            direccion: displayName.slice(0, 500),
+            direccion: line.slice(0, 500),
           }));
+          const hints = [];
+          if (acc != null && acc > 2000) {
+            hints.push(
+              `Señal GPS aproximada (±${Math.round(acc)} m). Comprueba que el texto coincida con el lugar real.`,
+            );
+          }
+          setAddressHint(hints.length ? hints.join(' ') : null);
         } catch (err) {
           logger.error('Reverse geocode failed', err);
           setDireccionCoords({ lat, lng });
@@ -260,12 +275,13 @@ const handleChange = (e) => {
           'No pudimos acceder a tu ubicación. Activa el permiso o escribe la dirección.',
         );
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
     );
   };
 
   const clearDireccionCoords = () => {
     setDireccionCoords(null);
+    setAddressHint(null);
   };
 
   const handleModalidadChange = (modalidad) => {
@@ -422,10 +438,15 @@ const handleChange = (e) => {
       }
     } catch (err) {
       logger.error('Error creating contract:', err);
-      setError(
+      const status = err.response?.status;
+      const msg =
         err.response?.data?.message ||
         err.message ||
-        'Error al crear el contrato. Por favor intenta de nuevo.'
+        'Error al crear el contrato. Por favor intenta de nuevo.';
+      setError(
+        status === 401
+          ? `${msg} En la pestaña Red a veces aparece un 401 en el primer intento y un 200 en el segundo: el cliente renueva la cookie y el contrato puede haberse creado correctamente.`
+          : msg,
       );
     } finally {
       setSubmitting(false);
@@ -926,6 +947,11 @@ return (
                   <span style={{ opacity: 0.85 }}>
                     (dirección aproximada © OpenStreetMap contributors)
                   </span>
+                </small>
+              )}
+              {addressHint && (
+                <small className="form-help" style={{ color: '#b45309', marginTop: '0.35rem' }}>
+                  {addressHint}
                 </small>
               )}
             </div>
