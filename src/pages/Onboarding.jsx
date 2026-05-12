@@ -133,10 +133,10 @@ const Onboarding = () => {
   const [coberturaTipo, setCoberturaTipo]   = useState(user?.cobertura_tipo || 'pais');
   const [radioKm, setRadioKm]               = useState(user?.radio_km ? String(user.radio_km) : '');
   const [lat, setLat]                       = useState(
-    user?.ubicacion_base?.coordinates?.[1]?.toString?.() || '',
+    user?.ubicacion_lat != null ? String(user.ubicacion_lat) : '',
   );
   const [lng, setLng]                       = useState(
-    user?.ubicacion_base?.coordinates?.[0]?.toString?.() || '',
+    user?.ubicacion_lng != null ? String(user.ubicacion_lng) : '',
   );
   const [geoConsent, setGeoConsent]         = useState(
     !!user?.consentimiento_geolocalizacion,

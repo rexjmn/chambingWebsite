@@ -83,8 +83,14 @@ const EditProfile = () => {
             titulo_profesional: user.titulo_profesional || '', // 🆕 NUEVO
             cobertura_tipo: user.cobertura_tipo || 'pais',
             radio_km: user.radio_km ? String(user.radio_km) : '',
-            lat: user?.ubicacion_base?.coordinates?.[1]?.toString?.() || '',
-            lng: user?.ubicacion_base?.coordinates?.[0]?.toString?.() || '',
+            lat:
+              user?.ubicacion_lat != null
+                ? String(user.ubicacion_lat)
+                : '',
+            lng:
+              user?.ubicacion_lng != null
+                ? String(user.ubicacion_lng)
+                : '',
             consentimiento_geolocalizacion: !!user?.consentimiento_geolocalizacion,
           });
           setPhoneCountryIso(parsedPhone.iso);
