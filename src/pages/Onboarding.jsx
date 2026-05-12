@@ -128,7 +128,19 @@ const Onboarding = () => {
   const [biografia, setBiografia]           = useState(user?.biografia || '');
   const [departamento, setDepartamento]     = useState(user?.departamento || '');
   const [municipio, setMunicipio]           = useState(user?.municipio || '');
+  const [direccion, setDireccion]           = useState(user?.direccion || '');
   const [tituloProfesional, setTituloProfesional] = useState(user?.titulo_profesional || '');
+  const [coberturaTipo, setCoberturaTipo]   = useState(user?.cobertura_tipo || 'pais');
+  const [radioKm, setRadioKm]               = useState(user?.radio_km ? String(user.radio_km) : '');
+  const [lat, setLat]                       = useState(
+    user?.ubicacion_base?.coordinates?.[1]?.toString?.() || '',
+  );
+  const [lng, setLng]                       = useState(
+    user?.ubicacion_base?.coordinates?.[0]?.toString?.() || '',
+  );
+  const [geoConsent, setGeoConsent]         = useState(
+    !!user?.consentimiento_geolocalizacion,
+  );
 
   // Phone state (for OAuth users) — país + número nacional; guardado como código+nacional
   const initialPhone = splitInternationalTelefono(user?.telefono || '');
@@ -424,8 +436,18 @@ const Onboarding = () => {
         biografia,
         departamento,
         municipio,
+        direccion,
         ...(selectedUserType === 'trabajador' && { titulo_profesional: tituloProfesional }),
       };
+      if (selectedUserType === 'trabajador') {
+        payload.cobertura_tipo = coberturaTipo;
+        payload.radio_km = coberturaTipo === 'radio' ? Number(radioKm) : undefined;
+        if (lat && lng) {
+          payload.lat = Number(lat);
+          payload.lng = Number(lng);
+          payload.consentimiento_geolocalizacion = geoConsent;
+        }
+      }
       await profileService.updateProfile(payload);
       return true;
     } catch (err) {
@@ -980,6 +1002,112 @@ const Onboarding = () => {
                 ))}
               </select>
             </div>
+
+            {selectedUserType === 'trabajador' && (
+              <>
+                <div className="ob-form-group">
+                  <label className="ob-label" htmlFor="ob-direccion">
+                    Dirección base de trabajo
+                    <span className="ob-optional">(opcional, no pública)</span>
+                  </label>
+                  <input
+                    id="ob-direccion"
+                    className="ob-input"
+                    type="text"
+                    placeholder="Ej: Colonia Escalón, San Salvador"
+                    value={direccion}
+                    onChange={(e) => setDireccion(e.target.value)}
+                    maxLength={255}
+                  />
+                </div>
+
+                <div className="ob-form-group">
+                  <label className="ob-label" htmlFor="ob-cobertura">
+                    Zona de trabajo
+                  </label>
+                  <select
+                    id="ob-cobertura"
+                    className="ob-select"
+                    value={coberturaTipo}
+                    onChange={(e) => setCoberturaTipo(e.target.value)}
+                  >
+                    <option value="pais">Todo El Salvador</option>
+                    <option value="radio">Solo cerca de mi ubicación</option>
+                  </select>
+                </div>
+
+                {coberturaTipo === 'radio' && (
+                  <div className="ob-form-group">
+                    <label className="ob-label" htmlFor="ob-radio-km">
+                      Distancia máxima (km)
+                    </label>
+                    <input
+                      id="ob-radio-km"
+                      className="ob-input"
+                      type="number"
+                      min={1}
+                      max={300}
+                      value={radioKm}
+                      onChange={(e) => setRadioKm(e.target.value)}
+                    />
+                  </div>
+                )}
+
+                <div className="ob-form-group">
+                  <label className="ob-label">Ubicación para calcular cercanía</label>
+                  <div style={{ display: 'grid', gap: '0.5rem', gridTemplateColumns: '1fr 1fr' }}>
+                    <input
+                      className="ob-input"
+                      type="number"
+                      step="any"
+                      placeholder="Latitud"
+                      value={lat}
+                      onChange={(e) => setLat(e.target.value)}
+                    />
+                    <input
+                      className="ob-input"
+                      type="number"
+                      step="any"
+                      placeholder="Longitud"
+                      value={lng}
+                      onChange={(e) => setLng(e.target.value)}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="ob-upload-btn"
+                    onClick={() => {
+                      if (!navigator.geolocation) {
+                        setError('Tu navegador no soporta geolocalización');
+                        return;
+                      }
+                      navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                          setLat(String(pos.coords.latitude));
+                          setLng(String(pos.coords.longitude));
+                          setError(null);
+                        },
+                        () => setError('No pudimos obtener tu ubicación actual'),
+                        { enableHighAccuracy: true, timeout: 10000 },
+                      );
+                    }}
+                  >
+                    <MapPin size={16} />
+                    Usar mi ubicación actual
+                  </button>
+                  <label className="ob-terms-check" style={{ marginTop: '0.5rem' }}>
+                    <input
+                      type="checkbox"
+                      checked={geoConsent}
+                      onChange={(e) => setGeoConsent(e.target.checked)}
+                    />
+                    <span>
+                      Autorizo usar mi ubicación para mostrar trabajos cercanos. Esta ubicación no se publica de forma exacta.
+                    </span>
+                  </label>
+                </div>
+              </>
+            )}
           </div>
         );
 

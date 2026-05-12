@@ -24,7 +24,13 @@ const EditProfile = () => {
     biografia: '',
     departamento: '',
     municipio: '',
+    direccion: '',
     titulo_profesional: '', // 🆕 NUEVO
+    cobertura_tipo: 'pais',
+    radio_km: '',
+    lat: '',
+    lng: '',
+    consentimiento_geolocalizacion: false,
   });
   const [phoneCountryIso, setPhoneCountryIso] = useState('SV');
   const [phoneNational, setPhoneNational] = useState('');
@@ -49,6 +55,7 @@ const EditProfile = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [geoClearNotice, setGeoClearNotice] = useState('');
   const [hasTarifas, setHasTarifas] = useState(false); // 🆕 NUEVO
 
   // Cargar datos iniciales
@@ -72,7 +79,13 @@ const EditProfile = () => {
             biografia: user.biografia || '',
             departamento: user.departamento || '',
             municipio: user.municipio || '',
+            direccion: user.direccion || '',
             titulo_profesional: user.titulo_profesional || '', // 🆕 NUEVO
+            cobertura_tipo: user.cobertura_tipo || 'pais',
+            radio_km: user.radio_km ? String(user.radio_km) : '',
+            lat: user?.ubicacion_base?.coordinates?.[1]?.toString?.() || '',
+            lng: user?.ubicacion_base?.coordinates?.[0]?.toString?.() || '',
+            consentimiento_geolocalizacion: !!user?.consentimiento_geolocalizacion,
           });
           setPhoneCountryIso(parsedPhone.iso);
           setPhoneNational(parsedPhone.national);
@@ -129,6 +142,59 @@ const EditProfile = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const requestCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setError('Tu navegador no soporta geolocalización');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setFormData((prev) => ({
+          ...prev,
+          lat: String(pos.coords.latitude),
+          lng: String(pos.coords.longitude),
+        }));
+      },
+      () => setError('No pudimos obtener tu ubicación actual'),
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  };
+
+  const handleClearStoredLocation = async () => {
+    if (
+      !window.confirm(
+        '¿Eliminar la ubicación guardada en tu perfil y revocar el consentimiento de geolocalización? La cobertura pasará a "Todo El Salvador".',
+      )
+    ) {
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    setGeoClearNotice('');
+    try {
+      await profileService.updateProfile({ limpiar_ubicacion: true });
+      setFormData((prev) => ({
+        ...prev,
+        lat: '',
+        lng: '',
+        consentimiento_geolocalizacion: false,
+        cobertura_tipo: 'pais',
+        radio_km: '',
+      }));
+      await refreshUser();
+      setGeoClearNotice('Ubicación eliminada y consentimiento revocado.');
+      setTimeout(() => setGeoClearNotice(''), 6000);
+    } catch (err) {
+      logger.error('Error eliminando ubicación:', err);
+      setError(
+        err.response?.data?.message ||
+          'No se pudo eliminar la ubicación. Intenta de nuevo.',
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handlePhoneCountryChange = (e) => {
     const nextIso = e.target.value;
     setPhoneCountryIso(nextIso);
@@ -180,7 +246,16 @@ const EditProfile = () => {
 
     try {
       // 1. Actualizar información del perfil (incluyendo titulo_profesional)
-      await profileService.updateProfile(formData);
+      const profilePayload = { ...formData };
+      if (user.tipo_usuario === 'trabajador') {
+        profilePayload.radio_km =
+          profilePayload.cobertura_tipo === 'radio' && profilePayload.radio_km
+            ? Number(profilePayload.radio_km)
+            : undefined;
+        profilePayload.lat = profilePayload.lat ? Number(profilePayload.lat) : undefined;
+        profilePayload.lng = profilePayload.lng ? Number(profilePayload.lng) : undefined;
+      }
+      await profileService.updateProfile(profilePayload);
 
       // 2. Actualizar habilidades (solo para trabajadores)
       if (user.tipo_usuario === 'trabajador') {
@@ -442,8 +517,125 @@ const EditProfile = () => {
                 placeholder="Ej: San Salvador"
               />
             </div>
+
+            <div className="edit-profile__field">
+              <label htmlFor="direccion">
+                Dirección base de trabajo
+                <span className="edit-profile__hint-inline">(opcional, no pública)</span>
+              </label>
+              <input
+                type="text"
+                id="direccion"
+                name="direccion"
+                value={formData.direccion}
+                onChange={handleInputChange}
+                placeholder="Ej: Colonia Escalón, San Salvador"
+                maxLength={255}
+              />
+            </div>
           </div>
         </section>
+
+        {user?.tipo_usuario === 'trabajador' && (
+          <section className="edit-profile__section">
+            <div className="edit-profile__section-header">
+              <h2>Cobertura y distancias</h2>
+              <p>Define si trabajas en todo el país o por radio de distancia.</p>
+            </div>
+            <div className="edit-profile__grid">
+              <div className="edit-profile__field">
+                <label htmlFor="cobertura_tipo">Cobertura</label>
+                <select
+                  id="cobertura_tipo"
+                  name="cobertura_tipo"
+                  value={formData.cobertura_tipo}
+                  onChange={handleInputChange}
+                >
+                  <option value="pais">Todo El Salvador</option>
+                  <option value="radio">Solo cerca de mi ubicación</option>
+                </select>
+              </div>
+
+              {formData.cobertura_tipo === 'radio' && (
+                <div className="edit-profile__field">
+                  <label htmlFor="radio_km">Distancia máxima (km)</label>
+                  <input
+                    type="number"
+                    id="radio_km"
+                    name="radio_km"
+                    min={1}
+                    max={300}
+                    value={formData.radio_km}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              )}
+
+              <div className="edit-profile__field">
+                <label htmlFor="lat">Latitud</label>
+                <input
+                  type="number"
+                  step="any"
+                  id="lat"
+                  name="lat"
+                  value={formData.lat}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div className="edit-profile__field">
+                <label htmlFor="lng">Longitud</label>
+                <input
+                  type="number"
+                  step="any"
+                  id="lng"
+                  name="lng"
+                  value={formData.lng}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+            <div className="edit-profile__actions" style={{ marginTop: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <button
+                type="button"
+                className="edit-profile__btn edit-profile__btn--secondary"
+                onClick={requestCurrentLocation}
+                disabled={saving}
+              >
+                Usar mi ubicación actual
+              </button>
+              <button
+                type="button"
+                className="edit-profile__btn edit-profile__btn--ghost"
+                onClick={handleClearStoredLocation}
+                disabled={saving}
+              >
+                Eliminar ubicación guardada
+              </button>
+            </div>
+            {geoClearNotice && (
+              <div className="edit-profile__success" style={{ marginTop: '0.75rem' }}>
+                {geoClearNotice}
+              </div>
+            )}
+            <label style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', alignItems: 'flex-start' }}>
+              <input
+                type="checkbox"
+                name="consentimiento_geolocalizacion"
+                checked={!!formData.consentimiento_geolocalizacion}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    consentimiento_geolocalizacion: e.target.checked,
+                  }))
+                }
+              />
+              <span style={{ fontSize: '0.9rem', lineHeight: 1.4 }}>
+                Autorizo el uso de mi ubicación para calcular cercanía. No se muestra mi coordenada exacta públicamente.
+              </span>
+            </label>
+          </section>
+        )}
 
         {/* Biografía */}
         <section className="edit-profile__section">

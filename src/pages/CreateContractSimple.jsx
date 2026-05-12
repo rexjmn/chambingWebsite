@@ -6,6 +6,7 @@ import { contractService } from '../services/contractService';
 import { workerService } from '../services/workerService';
 import { serviceService } from '../services/serviceService';
 import { logger } from '../utils/logger';
+import { geocodeService } from '../services/geocodeService';
 import AvailabilityCalendar from '../components/calendar/AvailabilityCalendar';
 import '../styles/createContract.scss';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -106,6 +107,10 @@ const CreateContractSimple = () => {
     fecha_fin: '',
     notas: '',
   });
+
+  /** Coordenadas del lugar de trabajo (opcional), desde GPS + geocodificación inversa */
+  const [direccionCoords, setDireccionCoords] = useState(null);
+  const [geoLoading, setGeoLoading] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -209,6 +214,58 @@ const validateStep = (step) => {
 const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const fillAddressFromDeviceLocation = () => {
+    if (!navigator.geolocation) {
+      setError('Tu navegador no permite geolocalización');
+      return;
+    }
+    setGeoLoading(true);
+    setError(null);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        try {
+          const res = await geocodeService.reverse(lat, lng);
+          const displayName = res?.data?.display_name || '';
+          const outLat = res?.data?.lat ?? lat;
+          const outLng = res?.data?.lng ?? lng;
+          setDireccionCoords({ lat: outLat, lng: outLng });
+          setFormData((prev) => ({
+            ...prev,
+            direccion: displayName.slice(0, 500),
+          }));
+        } catch (err) {
+          logger.error('Reverse geocode failed', err);
+          setDireccionCoords({ lat, lng });
+          setFormData((prev) => ({
+            ...prev,
+            direccion: prev.direccion?.trim()
+              ? prev.direccion
+              : `Ubicación aproximada (${lat.toFixed(5)}, ${lng.toFixed(5)})`,
+          }));
+          setError(
+            err.response?.data?.message ||
+              'No se pudo obtener la dirección automática; puedes editarla manualmente.',
+          );
+        } finally {
+          setGeoLoading(false);
+        }
+      },
+      () => {
+        setGeoLoading(false);
+        setError(
+          'No pudimos acceder a tu ubicación. Activa el permiso o escribe la dirección.',
+        );
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
+    );
+  };
+
+  const clearDireccionCoords = () => {
+    setDireccionCoords(null);
   };
 
   const handleModalidadChange = (modalidad) => {
@@ -323,9 +380,20 @@ const handleChange = (e) => {
             : {}),
         detallesServicio: {
           descripcion: formData.descripcion,
-          // MVP: no persistir placeholder "Por definir".
-          // Si no hay dirección, enviamos vacío y el backend la acepta como opcional.
-          direccion: formData.direccion?.trim() || '',
+          ...(function () {
+            const trimmed = formData.direccion?.trim() || '';
+            const out = {};
+            if (trimmed.length >= 5) {
+              out.direccion = trimmed;
+            }
+            if (direccionCoords) {
+              out.coordenadas = {
+                lat: Number(direccionCoords.lat),
+                lng: Number(direccionCoords.lng),
+              };
+            }
+            return out;
+          })(),
           ...((formData.notas || confirmedSlots.length > 0) && {
             notas_adicionales: [
               formData.notas?.trim(),
@@ -454,6 +522,7 @@ if (success && createdContract) {
                   fecha_fin: '',
                   notas: '',
                 }));
+                setDireccionCoords(null);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               className="btn btn-secondary"
@@ -807,15 +876,58 @@ return (
                 <LocationIcon sx={{ fontSize: 18 }} />
                 Dirección del trabajo <span className="optional-label">(opcional)</span>
               </label>
-              <input
-                type="text"
-                id="direccion"
-                name="direccion"
-                value={formData.direccion}
-                onChange={handleChange}
-                placeholder="Ej: San Salvador, Col. Escalón, Calle Principal #123"
-                className="form-input"
-              />
+              <p className="form-help" style={{ marginBottom: '0.5rem' }}>
+                Indica dónde debe ir el trabajador. Puedes usar tu ubicación para rellenar el texto y guardar el punto en el contrato (no actualiza tu perfil público).
+              </p>
+              <div
+                className="direccion-row"
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem',
+                  alignItems: 'stretch',
+                }}
+              >
+                <input
+                  type="text"
+                  id="direccion"
+                  name="direccion"
+                  value={formData.direccion}
+                  onChange={handleChange}
+                  placeholder="Ej: San Salvador, Col. Escalón, Calle Principal #123"
+                  className="form-input"
+                  style={{ flex: '1 1 220px', minWidth: 0 }}
+                />
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={fillAddressFromDeviceLocation}
+                  disabled={geoLoading || submitting}
+                >
+                  {geoLoading ? 'Ubicando…' : 'Usar mi ubicación'}
+                </button>
+                {direccionCoords && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={clearDireccionCoords}
+                    disabled={submitting}
+                    title="Quitar solo las coordenadas guardadas para este contrato"
+                  >
+                    Quitar coordenadas
+                  </button>
+                )}
+              </div>
+              {direccionCoords && (
+                <small className="form-help">
+                  Coordenadas incluidas en la oferta: {Number(direccionCoords.lat).toFixed(5)},{' '}
+                  {Number(direccionCoords.lng).toFixed(5)}
+                  {' '}
+                  <span style={{ opacity: 0.85 }}>
+                    (dirección aproximada © OpenStreetMap contributors)
+                  </span>
+                </small>
+              )}
             </div>
 
             <div className="form-group">
