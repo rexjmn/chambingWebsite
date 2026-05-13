@@ -200,6 +200,33 @@ function mergeDashboardWithApi(aggregated, apiPartial) {
   const apiPmr = toNum(apiPartial.previousMonthlyRevenue, 0);
   if (apiMr > 0) merged.monthlyRevenue = apiMr;
   if (apiPmr > 0) merged.previousMonthlyRevenue = apiPmr;
+
+  const apiGrowth = apiPartial.userGrowthData;
+  if (Array.isArray(apiGrowth) && apiGrowth.length > 0) {
+    merged.userGrowthData = apiGrowth.map((p) => ({
+      month: p.month ?? p.mes ?? p.label ?? p.period ?? '',
+      users: toNum(p.users ?? p.count ?? p.total ?? p.usuarios, 0),
+    }));
+  }
+
+  const apiActivity = apiPartial.recentActivity;
+  if (Array.isArray(apiActivity) && apiActivity.length > 0) {
+    merged.recentActivity = apiActivity;
+  }
+
+  const apiDist = normalizeContractsDistribution(
+    apiPartial.contractsDistribution ?? apiPartial.contracts_distribution
+  );
+  if (
+    apiDist &&
+    (apiDist.pending > 0 ||
+      apiDist.inProgress > 0 ||
+      apiDist.completed > 0 ||
+      apiDist.cancelled > 0)
+  ) {
+    merged.contractsDistribution = apiDist;
+  }
+
   return merged;
 }
 
@@ -331,15 +358,34 @@ const adminService = {
 
   // ============ ESTADÍSTICAS ============
   async aggregateAdminStatsFromSources(period = 'month') {
-    const [usersRes, contractsRes, pendingDocsRes] = await Promise.all([
+    const [usersSettled, contractsSettled, docsSettled] = await Promise.allSettled([
       this.getAllUsers(),
       this.getAllContracts({}),
       this.getPendingDocuments(),
     ]);
 
-    const usersList = asArray(usersRes);
-    const contractsList = asArray(contractsRes);
-    const docsList = asArray(pendingDocsRes);
+    if (usersSettled.status === 'rejected') {
+      logger.error('aggregateAdminStats: getAllUsers failed', usersSettled.reason?.message);
+      throw usersSettled.reason;
+    }
+
+    const usersList = asArray(usersSettled.value);
+    const contractsList =
+      contractsSettled.status === 'fulfilled' ? asArray(contractsSettled.value) : [];
+    if (contractsSettled.status === 'rejected') {
+      logger.warn(
+        'aggregateAdminStats: getAllContracts skipped',
+        contractsSettled.reason?.message
+      );
+    }
+    const docsList =
+      docsSettled.status === 'fulfilled' ? asArray(docsSettled.value) : [];
+    if (docsSettled.status === 'rejected') {
+      logger.warn(
+        'aggregateAdminStats: getPendingDocuments skipped',
+        docsSettled.reason?.message
+      );
+    }
 
     const now = new Date();
     const trendStart =
@@ -487,7 +533,8 @@ const adminService = {
       'Dashboard metrics aggregate failed',
       aggregatedResult.reason?.message
     );
-    return this.getAdminStats(period);
+    const statsFallback = await this.getAdminStats(period);
+    return mergeDashboardWithApi(statsFallback, apiPartial);
   },
 
   async getWorkersStats() {
