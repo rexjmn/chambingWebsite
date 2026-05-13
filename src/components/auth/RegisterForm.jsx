@@ -19,6 +19,7 @@ import {
   buildInternationalTelefonoDigits,
 } from '../../utils/phoneCountries';
 import { logger } from '../../utils/logger';
+import { sanitizeInternalReturnUrl } from '../../utils/returnUrl';
 import '../../styles/auth.scss';
 import {
   User, Mail, Phone, MapPin, Home,
@@ -153,12 +154,15 @@ const RegisterForm = () => {
   }, [error, clearError]);
 
   const handleGoogleLogin = () => {
-    const existing = sessionStorage.getItem('chambing_return_url');
-    if (!existing) {
-      const returnUrl = location.state?.from || document.referrer;
-      if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
-        sessionStorage.setItem('chambing_return_url', returnUrl);
-      }
+    const candidate =
+      sessionStorage.getItem('chambing_return_url') ||
+      location.state?.from ||
+      document.referrer;
+    const returnUrl = sanitizeInternalReturnUrl(candidate);
+    if (returnUrl) {
+      sessionStorage.setItem('chambing_return_url', returnUrl);
+    } else {
+      sessionStorage.removeItem('chambing_return_url');
     }
     const apiUrl = import.meta.env.VITE_API_URL ||
       (import.meta.env.PROD ? 'https://chambing.com/api' : 'http://localhost:3000/api');

@@ -5,6 +5,13 @@ import TextInputModal from '../TextInputModal';
 import ConfirmDialog from '../ConfirmDialog';
 import SuccessSnackbar from '../SuccessSnackbar';
 
+function formatRegistrationDate(value) {
+  if (value == null || value === '' || value === 0 || value === '0') return '—';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString();
+}
+
 const UsersManager = () => {
   const [users, setUsers] = useState([]);
   const [pendingWorkers, setPendingWorkers] = useState([]);
@@ -240,7 +247,7 @@ const UsersManager = () => {
                         📍 {worker.municipio}, {worker.departamento}
                       </p>
                       <p className="worker-card__date">
-                        Registrado: {new Date(worker.fecha_registro).toLocaleDateString()}
+                        Registrado: {formatRegistrationDate(worker.fecha_registro)}
                       </p>
                     </div>
                   </div>
@@ -409,7 +416,7 @@ const UsersManager = () => {
                     </td>
                     <td>
                       <span className="admin-table__date">
-                        {new Date(user.fecha_registro).toLocaleDateString()}
+                        {formatRegistrationDate(user.fecha_registro)}
                       </span>
                     </td>
                     <td>
@@ -517,7 +524,7 @@ const UsersManager = () => {
                   <div className="admin-info-row">
                     <span className="admin-info-label">Fecha de Registro:</span>
                     <span className="admin-info-value">
-                      {new Date(selectedUser.fecha_registro).toLocaleDateString()}
+                      {formatRegistrationDate(selectedUser.fecha_registro)}
                     </span>
                   </div>
                   {selectedUser.biografia && (

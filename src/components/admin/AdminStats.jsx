@@ -2,6 +2,43 @@ import React, { useState, useEffect } from 'react';
 import adminService from '../../services/adminService';
 import { logger } from '../../utils/logger';
 
+/**
+ * Normaliza la fecha de actividad del API (timestamp puede venir null → evitar new Date(null) = 1970).
+ * Acepta ISO, ms, segundos unix y campos alternativos (createdAt, fecha_registro, etc.).
+ */
+function parseActivityDate(activity) {
+  if (!activity || typeof activity !== 'object') return null;
+  const raw =
+    activity.timestamp ??
+    activity.createdAt ??
+    activity.created_at ??
+    activity.fecha_registro ??
+    activity.date ??
+    activity.registeredAt;
+
+  if (raw == null || raw === '') return null;
+
+  if (typeof raw === 'number') {
+    const ms = raw > 0 && raw < 1e12 ? raw * 1000 : raw;
+    const d = new Date(ms);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (/^\d+$/.test(trimmed)) {
+      const n = Number(trimmed);
+      const ms = n < 1e12 ? n * 1000 : n;
+      const d = new Date(ms);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+    const d = new Date(trimmed);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  return null;
+}
+
 const AdminStats = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -49,8 +86,11 @@ const AdminStats = () => {
     return (((current - previous) / previous) * 100).toFixed(1);
   };
 
-  const formatTimeAgo = (dateString) => {
-    const date = new Date(dateString);
+  const formatTimeAgo = (input) => {
+    const date =
+      input instanceof Date ? input : input != null ? new Date(input) : null;
+    if (!date || Number.isNaN(date.getTime())) return 'Fecha desconocida';
+
     const minutes = Math.floor((Date.now() - date.getTime()) / 60000);
     if (minutes < 1) return 'Justo ahora';
     if (minutes === 1) return 'Hace 1 minuto';
@@ -444,39 +484,74 @@ const AdminStats = () => {
           </h3>
 
           {stats.userGrowthData && stats.userGrowthData.length > 0 ? (
-            <div style={{ 
-              height: '200px',
-              display: 'flex',
-              alignItems: 'flex-end',
-              gap: '0.5rem',
-              padding: '1rem 0'
-            }}>
+            <div
+              style={{
+                height: '220px',
+                display: 'flex',
+                alignItems: 'stretch',
+                gap: '0.5rem',
+                padding: '1rem 0'
+              }}
+            >
               {stats.userGrowthData.slice(-6).map((data, i) => {
-                const maxValue = Math.max(...stats.userGrowthData.slice(-6).map(d => d.users));
-                const height = maxValue > 0 ? (data.users / maxValue) * 100 : 0;
-                
+                const slice = stats.userGrowthData.slice(-6);
+                const counts = slice.map((d) =>
+                  Number(d.users ?? d.count ?? d.total ?? 0)
+                );
+                const maxValue = Math.max(...counts, 1);
+                const users = Number(data.users ?? data.count ?? data.total ?? 0);
+                const heightPct = maxValue > 0 ? (users / maxValue) * 100 : 0;
+                const label = data.month ?? data.label ?? data.period ?? '';
+
                 return (
-                  <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div
+                    key={i}
+                    style={{
+                      flex: 1,
+                      minWidth: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      height: '100%'
+                    }}
+                  >
                     <div
                       style={{
+                        flex: 1,
                         width: '100%',
-                        height: `${height}%`,
-                        background: 'linear-gradient(180deg, #667eea 0%, #764ba2 100%)',
-                        borderRadius: '8px 8px 0 0',
-                        transition: 'all 0.5s ease',
-                        transitionDelay: `${i * 100}ms`,
-                        opacity: animateCards ? 1 : 0,
-                        transform: animateCards ? 'scaleY(1)' : 'scaleY(0)',
-                        transformOrigin: 'bottom'
+                        minHeight: 0,
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        justifyContent: 'center'
                       }}
-                    />
-                    <span style={{
-                      fontSize: '0.75rem',
-                      color: '#64748b',
-                      marginTop: '0.5rem',
-                      fontWeight: '500'
-                    }}>
-                      {data.month}
+                    >
+                      <div
+                        style={{
+                          width: '100%',
+                          maxWidth: '52px',
+                          height: `${heightPct}%`,
+                          minHeight: users > 0 ? '6px' : 0,
+                          background:
+                            'linear-gradient(180deg, #667eea 0%, #764ba2 100%)',
+                          borderRadius: '8px 8px 0 0',
+                          transition: 'all 0.5s ease',
+                          transitionDelay: `${i * 100}ms`,
+                          opacity: animateCards ? 1 : 0,
+                          transform: animateCards ? 'scaleY(1)' : 'scaleY(0)',
+                          transformOrigin: 'bottom'
+                        }}
+                      />
+                    </div>
+                    <span
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#64748b',
+                        marginTop: '0.5rem',
+                        fontWeight: '500',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {label}
                     </span>
                   </div>
                 );
@@ -582,7 +657,7 @@ const AdminStats = () => {
                       fontSize: '0.8rem',
                       color: '#94a3b8'
                     }}>
-                      {formatTimeAgo(activity.timestamp)}
+                      {formatTimeAgo(parseActivityDate(activity))}
                     </span>
                   </div>
                 </div>

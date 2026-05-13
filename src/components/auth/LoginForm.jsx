@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { sanitizeInput, isValidEmail } from '../../utils/security';
+import { sanitizeInternalReturnUrl } from '../../utils/returnUrl';
 import { logger } from '../../utils/logger';
 import '../../styles/auth.scss';
 import { Lock, Mail, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
@@ -57,9 +58,13 @@ const LoginForm = () => {
   });
 
   const handleGoogleLogin = () => {
-    const returnUrl = sessionStorage.getItem('chambing_return_url') || location.state?.from;
-    if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
+    const stored = sessionStorage.getItem('chambing_return_url');
+    const candidate = stored || location.state?.from;
+    const returnUrl = sanitizeInternalReturnUrl(candidate);
+    if (returnUrl) {
       sessionStorage.setItem('chambing_return_url', returnUrl);
+    } else {
+      sessionStorage.removeItem('chambing_return_url');
     }
     const apiUrl = import.meta.env.VITE_API_URL ||
       (import.meta.env.PROD ? 'https://chambing.com/api' : 'http://localhost:3000/api');
@@ -94,10 +99,11 @@ const LoginForm = () => {
         }
       }
 
-      const returnUrl = sessionStorage.getItem('chambing_return_url');
+      const rawReturn = sessionStorage.getItem('chambing_return_url');
       sessionStorage.removeItem('chambing_return_url');
+      const returnUrl = sanitizeInternalReturnUrl(rawReturn);
 
-      if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
+      if (returnUrl) {
         navigate(returnUrl, { replace: true });
       } else {
         const storedUser = JSON.parse(localStorage.getItem('user') || 'null');

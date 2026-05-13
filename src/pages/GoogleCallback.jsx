@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { sanitizeInternalReturnUrl } from '../utils/returnUrl';
 import '../styles/auth.scss';
 
 const GoogleCallback = () => {
@@ -32,10 +33,11 @@ const GoogleCallback = () => {
         return;
       }
 
-      const returnUrl = sessionStorage.getItem('chambing_return_url');
+      const rawReturn = sessionStorage.getItem('chambing_return_url');
       sessionStorage.removeItem('chambing_return_url');
+      const returnUrl = sanitizeInternalReturnUrl(rawReturn);
 
-      if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
+      if (returnUrl) {
         navigate(returnUrl, { replace: true });
       } else {
         navigate(user.tipo_usuario === 'cliente' ? '/service' : '/dashboard', { replace: true });

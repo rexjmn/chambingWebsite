@@ -13,6 +13,11 @@ import {
   getCountryByIso,
 } from '../utils/phoneCountries';
 import api from '../services/api';
+import CoverageRadiusPicker, {
+  COVERAGE_RADIUS_KM_PRESETS,
+  snapRadiusKmToPreset,
+} from '../components/profile/CoverageRadiusPicker';
+import { sanitizeInternalReturnUrl } from '../utils/returnUrl';
 import Cropper from 'react-easy-crop';
 import {
   User, Camera, MapPin, Briefcase, DollarSign,
@@ -131,7 +136,11 @@ const Onboarding = () => {
   const [direccion, setDireccion]           = useState(user?.direccion || '');
   const [tituloProfesional, setTituloProfesional] = useState(user?.titulo_profesional || '');
   const [coberturaTipo, setCoberturaTipo]   = useState(user?.cobertura_tipo || 'pais');
-  const [radioKm, setRadioKm]               = useState(user?.radio_km ? String(user.radio_km) : '');
+  const [radioKm, setRadioKm]               = useState(() =>
+    user?.cobertura_tipo === 'radio' && user?.radio_km != null
+      ? snapRadiusKmToPreset(user.radio_km)
+      : '',
+  );
   const [lat, setLat]                       = useState(
     user?.ubicacion_lat != null ? String(user.ubicacion_lat) : '',
   );
@@ -374,10 +383,11 @@ const Onboarding = () => {
     profileService.completeOnboarding().catch(() => {});
     refreshUser().catch(() => {});
 
-    const returnUrl = sessionStorage.getItem('chambing_return_url');
+    const rawReturn = sessionStorage.getItem('chambing_return_url');
     sessionStorage.removeItem('chambing_return_url');
+    const returnUrl = sanitizeInternalReturnUrl(rawReturn);
 
-    if (returnUrl && returnUrl !== '/login' && returnUrl !== '/register') {
+    if (returnUrl) {
       navigate(returnUrl, { replace: true });
     } else {
       // Use selectedUserType (not user.tipo_usuario) so OAuth users who just
@@ -427,6 +437,26 @@ const Onboarding = () => {
   };
 
   const saveProfile = async () => {
+    if (selectedUserType === 'trabajador' && coberturaTipo === 'radio') {
+      const rk = Number(radioKm);
+      if (!COVERAGE_RADIUS_KM_PRESETS.includes(rk)) {
+        setError('Elige una distancia en la barra azul o «Todo El Salvador».');
+        return false;
+      }
+      const la = lat !== '' ? Number(lat) : NaN;
+      const lo = lng !== '' ? Number(lng) : NaN;
+      if (!Number.isFinite(la) || !Number.isFinite(lo)) {
+        setError(
+          'Para trabajar por zona, usa «Usar mi ubicación aproximada» o elige «Todo El Salvador».',
+        );
+        return false;
+      }
+      if (!geoConsent) {
+        setError('Debes autorizar el uso de ubicación aproximada para el modo por distancia.');
+        return false;
+      }
+    }
+
     setSaving(true);
     try {
       const payload = {
@@ -441,18 +471,25 @@ const Onboarding = () => {
       };
       if (selectedUserType === 'trabajador') {
         payload.cobertura_tipo = coberturaTipo;
-        payload.radio_km = coberturaTipo === 'radio' ? Number(radioKm) : undefined;
-        if (lat && lng) {
+        if (coberturaTipo === 'radio') {
+          payload.radio_km = Number(radioKm);
           payload.lat = Number(lat);
           payload.lng = Number(lng);
-          payload.consentimiento_geolocalizacion = geoConsent;
+          payload.consentimiento_geolocalizacion = true;
+        } else {
+          payload.radio_km = undefined;
         }
       }
       await profileService.updateProfile(payload);
       return true;
     } catch (err) {
       logger.error('Error saving profile:', err);
-      setError('Error al guardar. Intenta de nuevo.');
+      const msg =
+        err.response?.data?.message ||
+        (Array.isArray(err.response?.data?.message)
+          ? err.response.data.message.join(', ')
+          : null);
+      setError(msg || 'Error al guardar. Intenta de nuevo.');
       return false;
     } finally {
       setSaving(false);
@@ -1022,90 +1059,91 @@ const Onboarding = () => {
                 </div>
 
                 <div className="ob-form-group">
-                  <label className="ob-label" htmlFor="ob-cobertura">
-                    Zona de trabajo
-                  </label>
-                  <select
-                    id="ob-cobertura"
-                    className="ob-select"
-                    value={coberturaTipo}
-                    onChange={(e) => setCoberturaTipo(e.target.value)}
-                  >
-                    <option value="pais">Todo El Salvador</option>
-                    <option value="radio">Solo cerca de mi ubicación</option>
-                  </select>
+                  <CoverageRadiusPicker
+                    coverageType={coberturaTipo}
+                    radiusKm={radioKm}
+                    disabled={saving}
+                    onChange={(next) => {
+                      if (next.tipo === 'pais') {
+                        setCoberturaTipo('pais');
+                        setLat('');
+                        setLng('');
+                        setGeoConsent(false);
+                        setRadioKm('');
+                      } else {
+                        setCoberturaTipo('radio');
+                        setRadioKm(String(next.km));
+                      }
+                    }}
+                  />
                 </div>
 
                 {coberturaTipo === 'radio' && (
-                  <div className="ob-form-group">
-                    <label className="ob-label" htmlFor="ob-radio-km">
-                      Distancia máxima (km)
-                    </label>
-                    <input
-                      id="ob-radio-km"
-                      className="ob-input"
-                      type="number"
-                      min={1}
-                      max={300}
-                      value={radioKm}
-                      onChange={(e) => setRadioKm(e.target.value)}
-                    />
-                  </div>
+                  <>
+                    <div className="ob-form-group">
+                      <label className="ob-label">Ubicación aproximada</label>
+                      <p
+                        style={{
+                          fontSize: '0.85rem',
+                          color: '#6b7280',
+                          margin: '0 0 0.75rem',
+                          lineHeight: 1.45,
+                        }}
+                      >
+                        No mostramos coordenadas: solo pulsa el botón para guardar un punto
+                        aproximado (no publicamos tu dirección exacta en el perfil).
+                      </p>
+                      {lat && lng && (
+                        <p
+                          style={{
+                            fontSize: '0.85rem',
+                            color: '#059669',
+                            margin: '0 0 0.75rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                          }}
+                        >
+                          <CheckCircle size={16} aria-hidden />
+                          Ubicación aproximada lista
+                        </p>
+                      )}
+                      <button
+                        type="button"
+                        className="ob-upload-btn"
+                        onClick={() => {
+                          if (!navigator.geolocation) {
+                            setError('Tu navegador no soporta geolocalización');
+                            return;
+                          }
+                          navigator.geolocation.getCurrentPosition(
+                            (pos) => {
+                              setLat(String(pos.coords.latitude));
+                              setLng(String(pos.coords.longitude));
+                              setError(null);
+                            },
+                            () => setError('No pudimos obtener tu ubicación. Revisa permisos del navegador.'),
+                            { enableHighAccuracy: true, timeout: 15000 },
+                          );
+                        }}
+                      >
+                        <MapPin size={16} />
+                        Usar mi ubicación aproximada
+                      </button>
+                      <label className="ob-terms-check" style={{ marginTop: '0.75rem' }}>
+                        <input
+                          type="checkbox"
+                          checked={geoConsent}
+                          onChange={(e) => setGeoConsent(e.target.checked)}
+                        />
+                        <span>
+                          Autorizo usar mi ubicación aproximada para calcular distancias. No se
+                          publica de forma exacta en mi perfil.
+                        </span>
+                      </label>
+                    </div>
+                  </>
                 )}
-
-                <div className="ob-form-group">
-                  <label className="ob-label">Ubicación para calcular cercanía</label>
-                  <div style={{ display: 'grid', gap: '0.5rem', gridTemplateColumns: '1fr 1fr' }}>
-                    <input
-                      className="ob-input"
-                      type="number"
-                      step="any"
-                      placeholder="Latitud"
-                      value={lat}
-                      onChange={(e) => setLat(e.target.value)}
-                    />
-                    <input
-                      className="ob-input"
-                      type="number"
-                      step="any"
-                      placeholder="Longitud"
-                      value={lng}
-                      onChange={(e) => setLng(e.target.value)}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    className="ob-upload-btn"
-                    onClick={() => {
-                      if (!navigator.geolocation) {
-                        setError('Tu navegador no soporta geolocalización');
-                        return;
-                      }
-                      navigator.geolocation.getCurrentPosition(
-                        (pos) => {
-                          setLat(String(pos.coords.latitude));
-                          setLng(String(pos.coords.longitude));
-                          setError(null);
-                        },
-                        () => setError('No pudimos obtener tu ubicación actual'),
-                        { enableHighAccuracy: true, timeout: 10000 },
-                      );
-                    }}
-                  >
-                    <MapPin size={16} />
-                    Usar mi ubicación actual
-                  </button>
-                  <label className="ob-terms-check" style={{ marginTop: '0.5rem' }}>
-                    <input
-                      type="checkbox"
-                      checked={geoConsent}
-                      onChange={(e) => setGeoConsent(e.target.checked)}
-                    />
-                    <span>
-                      Autorizo usar mi ubicación para mostrar trabajos cercanos. Esta ubicación no se publica de forma exacta.
-                    </span>
-                  </label>
-                </div>
               </>
             )}
           </div>

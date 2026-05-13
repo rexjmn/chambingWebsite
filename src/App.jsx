@@ -75,11 +75,24 @@ function App() {
               <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                minHeight: '100vh'
+                minHeight: '100vh',
+                minWidth: 0,
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
               }}>
                 <Navbar />
 
-              <Box component="main" sx={{ flexGrow: 1 }}>
+              <Box
+                component="main"
+                sx={{
+                  flexGrow: 1,
+                  minWidth: 0,
+                  width: '100%',
+                  maxWidth: '100%',
+                  boxSizing: 'border-box',
+                }}
+              >
                 <Suspense fallback={<LoadingFallback />}>
                   <Routes>
                   {/* Rutas públicas */}
