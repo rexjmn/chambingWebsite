@@ -42,9 +42,12 @@ const WorkerCard = memo(({ worker }) => {
   const [tarifas, setTarifas]           = useState(null);
   const [loadingTarifas, setLoadingTarifas] = useState(true);
 
+  const isMockWorker =
+    worker?.isMock === true || String(worker?.id || '').startsWith('mock-');
+
   useEffect(() => {
     const fetchTarifas = async () => {
-      if (!worker?.id) { setLoadingTarifas(false); return; }
+      if (!worker?.id || isMockWorker) { setLoadingTarifas(false); return; }
       try {
         const data = await serviceService.getTarifasByWorker(worker.id);
         setTarifas(data);
@@ -55,7 +58,7 @@ const WorkerCard = memo(({ worker }) => {
       }
     };
     fetchTarifas();
-  }, [worker?.id]);
+  }, [worker?.id, isMockWorker]);
 
   /* ── helpers ─────────────────────────────────────────────── */
   const rating        = worker?.stats?.rating               || worker?.rating       || 0;
@@ -119,9 +122,8 @@ const WorkerCard = memo(({ worker }) => {
 
   logger.debug('Rendering WorkerCard:', worker.id);
 
-  return (
-    <Link to={`/profile/${worker.id}`} className="worker-card-link">
-      <article className="worker-card">
+  const card = (
+      <article className={`worker-card${isMockWorker ? ' worker-card--mock' : ''}`}>
 
         {/* ── Cover ──────────────────────────────────────────── */}
         <div className="wcard-cover">
@@ -197,14 +199,25 @@ const WorkerCard = memo(({ worker }) => {
         </footer>
 
         {/* ── Hover CTA strip ────────────────────────────────── */}
-        <div className="wcard-cta" aria-hidden="true">
-          <span>Ver perfil completo</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
+        {!isMockWorker && (
+          <div className="wcard-cta" aria-hidden="true">
+            <span>Ver perfil completo</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+        )}
 
       </article>
+  );
+
+  if (isMockWorker) {
+    return <div className="worker-card-link worker-card-link--mock">{card}</div>;
+  }
+
+  return (
+    <Link to={`/profile/${worker.id}`} className="worker-card-link">
+      {card}
     </Link>
   );
 }, (prev, next) => prev.worker.id === next.worker.id);

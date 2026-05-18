@@ -109,6 +109,7 @@ const Home = () => {
     const munis  = ['San Salvador','Santa Tecla','Antiguo Cuscatlán','Soyapango'];
     return Array.from({ length: count }, (_, i) => ({
       id: `mock-${i + 1}`,
+      isMock: true,
       nombre: names[i % names.length],
       apellido: surns[i % surns.length],
       titulo_profesional: titles[i % titles.length],

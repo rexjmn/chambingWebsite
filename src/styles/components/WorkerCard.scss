@@ -16,6 +16,11 @@ $avatar-border: 3px;
   outline-offset: 4px;
   border-radius: $card-radius;
 
+  &--mock {
+    cursor: default;
+    pointer-events: none;
+  }
+
   &:focus-visible .worker-card {
     outline: 2px solid $primary;
     outline-offset: 2px;
