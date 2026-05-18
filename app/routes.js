@@ -29,4 +29,7 @@ export default [
   route('/admin', 'routes/admin.jsx'),
   route('/ofertas/responder', 'routes/ofertas.responder.jsx'),
   route('/auth/google-callback', 'routes/auth.google-callback.jsx'),
+
+  // ── Verificación pública de contratos ─────────────────────────────────────
+  route('/verificar/:codigo', 'routes/verificar.$codigo.jsx'),
 ];

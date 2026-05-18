@@ -310,6 +310,18 @@ export const contractService = {
     return response.data?.data ?? response.data;
   },
 
+  // ========== DESCARGA DE PDF ==========
+
+  /**
+   * Descarga el PDF del contrato cerrado como blob
+   */
+  async descargarContratoPdf(contratoId) {
+    const response = await api.get(`/contracts/${contratoId}/descargar`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+
   /**
    * Sube un archivo a S3 con URL firmada y marca la evidencia como lista.
    */
