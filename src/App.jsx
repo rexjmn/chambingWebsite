@@ -34,6 +34,8 @@ const GoogleCallback = lazy(() => import('./pages/GoogleCallback'));
 const Misiones = lazy(() => import('./pages/Misiones'));
 const MisionDetalle = lazy(() => import('./pages/MisionDetalle'));
 const CrearMision = lazy(() => import('./pages/CrearMision'));
+// ✅ Verificación pública de contratos
+const VerificarContrato = lazy(() => import('./pages/VerificarContrato'));
 
 // Loading fallback component - optimizado
 const LoadingFallback = () => (
@@ -223,6 +225,7 @@ function App() {
                 <Route path="/verificar-email" element={<ErrorBoundaryWrapper><VerificarEmail /></ErrorBoundaryWrapper>} />
                 <Route path="/ofertas/responder" element={<ErrorBoundaryWrapper><ResponderOferta /></ErrorBoundaryWrapper>} />
                 <Route path="/auth/google-callback" element={<ErrorBoundaryWrapper><GoogleCallback /></ErrorBoundaryWrapper>} />
+                <Route path="/verificar/:codigo" element={<ErrorBoundaryWrapper><VerificarContrato /></ErrorBoundaryWrapper>} />
 
                 <Route
                   path="*"

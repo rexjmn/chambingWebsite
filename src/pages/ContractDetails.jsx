@@ -22,6 +22,7 @@ import {
   Hourglass,
   KeyRound,
   Loader2,
+  Download,
 } from 'lucide-react';
 import '../styles/contractDetails.scss';
 import MapAppLinks from '../components/MapAppLinks';
@@ -51,6 +52,7 @@ const ContractDetails = () => {
   const [contraRechazoComentario, setContraRechazoComentario] = useState('');
   const [contraMontoOferta, setContraMontoOferta] = useState('');
   const [contraMensajeOferta, setContraMensajeOferta] = useState('');
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   const getApiErrorMessage = (err, fallback) => {
     const raw = err?.response?.data?.message;
@@ -514,6 +516,26 @@ const ContractDetails = () => {
     setInitialEvidencePrompted(true);
   }, [contract, esTrabajador, initialEvidencePrompted]);
 
+  const handleDescargarPdf = async () => {
+    setDownloadingPdf(true);
+    try {
+      const blob = await contractService.descargarContratoPdf(contract.id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contrato-${contract.codigo_contrato}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      logger.error('Error descargando PDF:', err);
+      setActionError(getApiErrorMessage(err, 'No se pudo descargar el contrato en PDF.'));
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="contract-details-loading">
@@ -916,6 +938,26 @@ const ContractDetails = () => {
               <CheckCircle size={16} />
               Ya dejaste tu reseña para este contrato.
             </h3>
+          </div>
+        )}
+
+        {contract.estado === 'cerrado' && (esEmpleador || esTrabajador) && (
+          <div className="contract-alert contract-alert--neutral">
+            <h3>
+              <Download size={16} />
+              Descargar constancia del contrato
+            </h3>
+            <p>
+              Descarga el PDF oficial del contrato cerrado como comprobante legal del servicio prestado.
+            </p>
+            <button
+              className="cd-btn cd-btn--outline"
+              onClick={handleDescargarPdf}
+              disabled={downloadingPdf}
+            >
+              {downloadingPdf ? <Loader2 size={16} className="spin" /> : <Download size={16} />}
+              {downloadingPdf ? 'Generando PDF...' : 'Descargar contrato PDF'}
+            </button>
           </div>
         )}
 
