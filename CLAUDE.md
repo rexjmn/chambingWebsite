@@ -113,5 +113,7 @@ All review components (`ReviewForm`, `ReviewModal`) and `reviewService` are comp
 | Variable | Purpose |
 |---|---|
 | `VITE_API_URL` | Overrides the default API base URL |
+| `VITE_CDN_URL` | CloudFront base for images, e.g. `https://d18o1scxevdeid.cloudfront.net` (no trailing slash) |
+| `VITE_S3_BUCKET` / `VITE_AWS_REGION` | Optional; used with `VITE_CDN_URL` to rewrite legacy S3 URLs in the client |
 
-No `.env` file is committed. Create `.env.local` for local overrides.
+No `.env` file is committed. Create `.env.local` for local overrides (see `.env.example`).

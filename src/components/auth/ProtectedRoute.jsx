@@ -40,6 +40,14 @@ const ProtectedRoute = ({ children, requiredRoles = [] }) => {
     return <Navigate to="/login" replace />;
   }
 
+  const onboardingExempt =
+    location.pathname === '/onboarding' ||
+    location.pathname.startsWith('/auth/');
+
+  if (user.onboarding_completado === false && !onboardingExempt) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
   // Si se requieren roles específicos, verificar
   if (requiredRoles.length > 0) {
     const hasRequiredRole = requiredRoles.some((role) =>

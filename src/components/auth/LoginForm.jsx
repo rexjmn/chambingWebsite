@@ -23,7 +23,7 @@ const GOOGLE_ICON = (
 const LoginForm = () => {
   const { t, common } = useTranslations();
   const [showPassword, setShowPassword] = useState(false);
-  const { login, loading, error } = useAuth();
+  const { login, loading, error, refreshUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [sessionExpiredMessage, setSessionExpiredMessage] = useState('');
@@ -82,22 +82,21 @@ const LoginForm = () => {
       await login(sanitizedData);
       logger.form('Login exitoso, redirigiendo');
 
-      // Read the freshly stored user from localStorage (set by LOGIN_SUCCESS reducer)
-      const loggedUser = JSON.parse(localStorage.getItem('user') || 'null');
+      const loggedUser =
+        (await refreshUser()) ||
+        JSON.parse(localStorage.getItem('user') || 'null');
 
-      if (loggedUser?.onboarding_completado === true) {
-        // Existing account that already completed onboarding — clear any stale key
+      const needsOnboarding =
+        loggedUser?.onboarding_completado === false ||
+        localStorage.getItem('chambing_pending_onboarding') === sanitizedData.email;
+
+      if (needsOnboarding) {
         localStorage.removeItem('chambing_pending_onboarding');
-      } else {
-        // New account (onboarding_completado=false) or field not yet returned by API
-        // — fall back to the chambing_pending_onboarding key set by RegisterForm
-        const pendingOnboarding = localStorage.getItem('chambing_pending_onboarding');
-        if (pendingOnboarding === sanitizedData.email) {
-          localStorage.removeItem('chambing_pending_onboarding');
-          navigate('/onboarding', { replace: true });
-          return;
-        }
+        navigate('/onboarding', { replace: true });
+        return;
       }
+
+      localStorage.removeItem('chambing_pending_onboarding');
 
       const rawReturn = sessionStorage.getItem('chambing_return_url');
       sessionStorage.removeItem('chambing_return_url');

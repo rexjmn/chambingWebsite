@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { Star, MapPin, Briefcase, MessageCircle, BadgeCheck } from 'lucide-react';
 import { serviceService } from '../services/serviceService';
 import { logger } from '../utils/logger';
+import { toCdnMediaUrl } from '../utils/mediaUrl';
 import '../styles/components/WorkerCard.scss';
 
 const DEFAULT_COVER_IMAGE =
@@ -125,7 +126,7 @@ const WorkerCard = memo(({ worker }) => {
         {/* ── Cover ──────────────────────────────────────────── */}
         <div className="wcard-cover">
           <img
-            src={worker.foto_portada || DEFAULT_COVER_IMAGE}
+            src={toCdnMediaUrl(worker.foto_portada) || DEFAULT_COVER_IMAGE}
             alt=""
             aria-hidden="true"
             onError={(e) => { e.currentTarget.src = DEFAULT_COVER_IMAGE; }}
@@ -156,7 +157,7 @@ const WorkerCard = memo(({ worker }) => {
         <div className="wcard-avatar-wrap">
           <img
             className="wcard-avatar"
-            src={worker.foto_perfil || DEFAULT_AVATAR_IMAGE}
+            src={toCdnMediaUrl(worker.foto_perfil) || DEFAULT_AVATAR_IMAGE}
             alt={`${worker.nombre || ''} ${worker.apellido || ''}`}
             loading="lazy"
             onError={(e) => { e.currentTarget.src = DEFAULT_AVATAR_IMAGE; }}

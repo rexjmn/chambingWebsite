@@ -18,6 +18,7 @@ import CoverageRadiusPicker, {
   snapRadiusKmToPreset,
 } from '../components/profile/CoverageRadiusPicker';
 import { sanitizeInternalReturnUrl } from '../utils/returnUrl';
+import { buildOnboardingSteps } from '../utils/onboardingSteps';
 import Cropper from 'react-easy-crop';
 import {
   User, Camera, MapPin, Briefcase, DollarSign,
@@ -39,16 +40,6 @@ const municipiosPorDepartamento = {
   'Santa Ana':['Santa Ana','Metapán','Chalchuapa','Candelaria de la Frontera','Coatepeque','El Congo','Texistepeque'],
   'San Miguel':['San Miguel','Usulután','Santiago de María','Chinameca','Nueva Guadalupe','San Rafael Oriente'],
   'Sonsonate':['Sonsonate','Acajutla','Izalco','Nahuizalco','Sonzacate','Armenia','Caluco'],
-};
-
-// Step identifiers — userType + phone steps injected for OAuth users (no password set)
-const buildSteps = (tipoUsuario, isOAuth) => {
-  const userTypeStep = isOAuth ? ['userType'] : [];
-  const phoneStep    = isOAuth ? ['phone']    : [];
-  if (tipoUsuario === 'trabajador') {
-    return ['welcome', 'terms', ...userTypeStep, 'photo', ...phoneStep, 'profile', 'skills', 'rates', 'done'];
-  }
-  return ['welcome', 'terms', ...userTypeStep, 'photo', ...phoneStep, 'profile', 'done'];
 };
 
 // ─── image cropping helpers ────────────────────────────────────────────────────────────────
@@ -104,7 +95,9 @@ const Onboarding = () => {
   const [selectedUserType, setSelectedUserType] = useState(user?.tipo_usuario || 'cliente');
 
   // steps is state so it can be rebuilt after the userType selection
-  const [steps, setSteps] = useState(() => buildSteps(user?.tipo_usuario || 'cliente', isOAuth));
+  const [steps, setSteps] = useState(() =>
+    buildOnboardingSteps(user?.tipo_usuario || 'cliente', isOAuth),
+  );
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -118,6 +111,12 @@ const Onboarding = () => {
     const t = setTimeout(() => setShowPulse(false), 6000);
     return () => clearTimeout(t);
   }, [currentIdx]);
+
+  useEffect(() => {
+    if (!user || user.onboarding_completado !== true) return;
+    const dest = user.tipo_usuario === 'cliente' ? '/service' : '/dashboard';
+    navigate(dest, { replace: true });
+  }, [user, navigate]);
 
   // Photo state
   const [previewUrl, setPreviewUrl]         = useState(user?.foto_perfil || null);
@@ -206,8 +205,9 @@ const Onboarding = () => {
 
   // ── Load data for worker (fires when selectedUserType changes to 'trabajador') ──
   useEffect(() => {
-    if (selectedUserType === 'trabajador') {
-      profileService.getAvailableSkills()
+    if (selectedUserType !== 'trabajador' || !user?.id) return;
+
+    profileService.getAvailableSkills()
         .then((res) => setAvailableSkills(res?.data || []))
         .catch(() => {});
 
@@ -232,8 +232,7 @@ const Onboarding = () => {
           }
         })
         .catch(() => {});
-    }
-  }, [selectedUserType]);  
+  }, [selectedUserType, user?.id]);
 
   // ── Photo handlers ────────────────────────────────────────────────────────────
   const handleFileSelect = (e) => {
@@ -316,7 +315,7 @@ const Onboarding = () => {
     if (currentStep === 'userType') {
       const ok = await saveUserType();
       if (!ok) return;
-      const newSteps = buildSteps(selectedUserType, true);
+      const newSteps = buildOnboardingSteps(selectedUserType, true);
       setSteps(newSteps);
       setCurrentIdx((i) => i + 1);
       return;
@@ -346,7 +345,7 @@ const Onboarding = () => {
     }
 
     if (currentStep === 'done') {
-      finishOnboarding();
+      await finishOnboarding();
       return;
     }
 
@@ -369,19 +368,22 @@ const Onboarding = () => {
     setError(null);
     setImageSrc(null);
     if (currentStep === 'done') {
-      finishOnboarding();
+      finishOnboarding().catch(() => {});
     } else {
       setCurrentIdx((i) => i + 1);
     }
   };
 
-  const finishOnboarding = () => {
+  const finishOnboarding = async () => {
     if (user?.id) {
       localStorage.setItem(`chambing_onboarding_done_${user.id}`, '1');
     }
-    // Persist completion server-side so any browser/device skips onboarding on future logins
-    profileService.completeOnboarding().catch(() => {});
-    refreshUser().catch(() => {});
+    try {
+      await profileService.completeOnboarding();
+      await refreshUser();
+    } catch (err) {
+      logger.error('Error completing onboarding:', err);
+    }
 
     const rawReturn = sessionStorage.getItem('chambing_return_url');
     sessionStorage.removeItem('chambing_return_url');
@@ -390,8 +392,6 @@ const Onboarding = () => {
     if (returnUrl) {
       navigate(returnUrl, { replace: true });
     } else {
-      // Use selectedUserType (not user.tipo_usuario) so OAuth users who just
-      // chose their type land on the right page before refreshUser() resolves.
       navigate(selectedUserType === 'cliente' ? '/service' : '/dashboard', { replace: true });
     }
   };
@@ -401,6 +401,7 @@ const Onboarding = () => {
     setSaving(true);
     try {
       await profileService.changeUserType(selectedUserType);
+      await refreshUser().catch(() => {});
       return true;
     } catch (err) {
       logger.error('Error saving user type:', err);
@@ -497,6 +498,7 @@ const Onboarding = () => {
         }
       }
       await profileService.updateProfile(payload);
+      await refreshUser().catch(() => {});
       return true;
     } catch (err) {
       logger.error('Error saving profile:', err);
@@ -540,7 +542,12 @@ const Onboarding = () => {
       etiqueta_tarifa_mes: cleanLabel(tarifas.etiqueta_tarifa_mes),
       moneda: 'USD',
     };
-    const hasAny = Object.values(data).slice(0,4).some((v) => v !== null);
+    const hasAny = [
+      data.tarifa_hora,
+      data.tarifa_dia,
+      data.tarifa_semana,
+      data.tarifa_mes,
+    ].some((v) => v !== null);
     if (!hasAny) return;
 
     setSaving(true);
