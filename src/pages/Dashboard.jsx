@@ -376,6 +376,12 @@ const Dashboard = () => {
     return total + amount;
   }, 0);
 
+  const getContractSortTime = (contract) => {
+    const raw = contract?.fecha_actualizacion || contract?.fecha_creacion;
+    const ms = raw ? new Date(raw).getTime() : 0;
+    return Number.isFinite(ms) ? ms : 0;
+  };
+
   const getActionBanner = (contract) => {
     const esEmpleador  = String(user?.id) === String(contract.empleador?.id);
     const esTrabajador = String(user?.id) === String(contract.trabajador?.id);
@@ -413,8 +419,23 @@ const Dashboard = () => {
       })
       .filter(Boolean);
 
-    return generated.filter(n => !dismissedNotifications.includes(n.id));
-  }, [contracts, dismissedNotifications]);
+    return generated
+      .filter((n) => !dismissedNotifications.includes(n.id))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [contracts, dismissedNotifications, user?.id]);
+
+  const sortedContracts = useMemo(() => {
+    return [...contracts].sort((a, b) => {
+      const aAttention = getActionBanner(a) ? 1 : 0;
+      const bAttention = getActionBanner(b) ? 1 : 0;
+      if (bAttention !== aAttention) return bAttention - aAttention;
+      return getContractSortTime(b) - getContractSortTime(a);
+    });
+  }, [contracts, user?.id]);
+
+  const displayedContracts = showAllContracts
+    ? sortedContracts
+    : sortedContracts.slice(0, 3);
 
   const renderProfileAvatar = () => {
     if (user?.foto_perfil) {
@@ -619,7 +640,7 @@ const Dashboard = () => {
                 {dashboardNotifications.map((notification) => (
                   <article
                     key={notification.id}
-                    className="dashboard__contract-card"
+                    className="dashboard__contract-card dashboard__contract-card--attention"
                     style={{ border: `2px solid ${notification.border}` }}
                   >
                     <div style={{
@@ -716,15 +737,12 @@ const Dashboard = () => {
 
           {contracts.length > 0 ? (
             <div className="dashboard__contracts">
-              {(showAllContracts ? contracts : contracts.slice(0, 3))
-                .slice()
-                .sort((a, b) => (getActionBanner(b) ? 1 : 0) - (getActionBanner(a) ? 1 : 0))
-                .map((contract) => {
+              {displayedContracts.map((contract) => {
                 const banner = getActionBanner(contract);
                 return (
                 <article
                   key={contract.id}
-                  className="dashboard__contract-card"
+                  className={`dashboard__contract-card${banner ? ' dashboard__contract-card--attention' : ''}`}
                   style={banner ? { border: `2px solid ${banner.border}` } : undefined}
                 >
                   {banner && (

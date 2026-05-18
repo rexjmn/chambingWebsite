@@ -1257,6 +1257,15 @@ body {
       @include card-3d-hover;
       border-color: rgba($brand-primary, 0.2);
     }
+
+    &--attention {
+      animation: dashboard-contract-pulse 2.2s ease-in-out infinite;
+      position: relative;
+
+      &:hover {
+        animation: none;
+      }
+    }
   }
 
   &__contract-header {
@@ -1832,6 +1841,27 @@ body {
 }
 
 // Animación del spinner (la única que se mantiene)
+@keyframes dashboard-contract-pulse {
+  0%,
+  100% {
+    box-shadow:
+      $shadow-soft,
+      0 0 0 0 rgba($brand-primary, 0.4);
+  }
+
+  50% {
+    box-shadow:
+      $shadow-soft,
+      0 0 0 8px rgba($brand-primary, 0.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard__contract-card--attention {
+    animation: none;
+  }
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
