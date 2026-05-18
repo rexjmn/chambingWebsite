@@ -106,7 +106,7 @@ const ContractDetails = () => {
 
   useEffect(() => {
     const action = location.state?.action;
-    if (!action || !contractId) return;
+    if (!action || !contractId || loading || !contract) return;
     if (action === 'completeEvidence') {
       setEvidencePhase('final');
       setEvidenceModalOpen(true);
@@ -115,7 +115,7 @@ const ContractDetails = () => {
       runCerrarContrato().catch(() => {});
     }
     navigate(location.pathname, { replace: true, state: {} });
-  }, [location.state, contractId, location.pathname, navigate]);
+  }, [location.state, contractId, location.pathname, navigate, loading, contract]);
 
   useEffect(() => {
     if (contract?.estado === 'cerrado') {
@@ -412,7 +412,20 @@ const ContractDetails = () => {
     }
   };
 
-  const openCerrarContratoFlow = () => runCerrarContrato().catch(() => {});
+  const openCerrarContratoFlow = () => {
+    runCerrarContrato().catch(() => {});
+  };
+
+  const refreshContractReviews = async () => {
+    try {
+      const reviewsRes = await reviewService.getContractReviews(contractId);
+      setContractReviews(reviewsRes.data || []);
+    } catch {
+      setContractReviews([]);
+    } finally {
+      setReviewsLoaded(true);
+    }
+  };
 
   const runCerrarContrato = async () => {
     setActionLoading(true);
@@ -421,11 +434,19 @@ const ContractDetails = () => {
       await contractService.cerrarContrato(contractId, {
         clienteConsentimientoEvidencia: true,
       });
+
       const res = await contractService.getContractById(contractId);
-      if (res.status === 'success') setContract(res.data);
+      const updated = res.status === 'success' ? res.data : null;
+      if (updated) setContract(updated);
+
+      const trabajador = updated?.trabajador ?? contract?.trabajador;
+      if (!trabajador?.id) {
+        throw new Error('No se pudo identificar al trabajador para la reseña.');
+      }
+
       setReviewTarget({
-        calificadoId: contract.trabajador?.id,
-        calificadoNombre: `${contract.trabajador?.nombre} ${contract.trabajador?.apellido}`,
+        calificadoId: trabajador.id,
+        calificadoNombre: `${trabajador.nombre || ''} ${trabajador.apellido || ''}`.trim(),
         titulo: 'Califica al trabajador',
       });
     } catch (err) {
@@ -435,6 +456,17 @@ const ContractDetails = () => {
       throw err;
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleReviewSuccess = async () => {
+    setReviewTarget(null);
+    await refreshContractReviews();
+    try {
+      const res = await contractService.getContractById(contractId);
+      if (res.status === 'success') setContract(res.data);
+    } catch (err) {
+      logger.error('Error actualizando contrato tras reseña:', err);
     }
   };
 
@@ -1108,7 +1140,7 @@ const ContractDetails = () => {
         calificadoId={reviewTarget?.calificadoId}
         calificadoNombre={reviewTarget?.calificadoNombre}
         titulo={reviewTarget?.titulo}
-        onSuccess={() => { setReviewTarget(null); setContractReviews(prev => [...prev, { calificador: { id: user?.id } }]); }}
+        onSuccess={handleReviewSuccess}
         onClose={() => setReviewTarget(null)}
         canSkip={true}
       />

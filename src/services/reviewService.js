@@ -14,6 +14,7 @@
  */
 import api from './api';
 import { logger } from '../utils/logger';
+import { throwIfApiError } from '../utils/apiResponse';
 
 export const reviewService = {
   /**
@@ -24,7 +25,7 @@ export const reviewService = {
       logger.api('Creando reseña', { contratoId });
       const response = await api.post('/reviews', { contratoId, calificadoId, estrellas, comentario });
       logger.api('Reseña creada exitosamente');
-      return response.data;
+      return throwIfApiError(response.data, 'No se pudo enviar la reseña.');
     } catch (error) {
       logger.error('Error creando reseña:', error.message);
       throw error;

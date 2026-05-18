@@ -1,5 +1,6 @@
 import api from './api';
 import { logger } from '../utils/logger';
+import { throwIfApiError } from '../utils/apiResponse';
 
 export const contractService = {
   // ========== OBTENER CONTRATOS ==========
@@ -211,7 +212,7 @@ export const contractService = {
         notas
       });
       logger.api('Contrato completado exitosamente');
-      return response.data;
+      return throwIfApiError(response.data, 'No se pudo completar el contrato.');
     } catch (error) {
       logger.error('Error completando contrato:', error.message);
       throw error;
@@ -237,7 +238,7 @@ export const contractService = {
         clienteConsentimientoEvidencia,
       });
       logger.api('Contrato cerrado exitosamente');
-      return response.data;
+      return throwIfApiError(response.data, 'No se pudo cerrar el contrato.');
     } catch (error) {
       logger.error('Error cerrando contrato:', error.message);
       throw error;
