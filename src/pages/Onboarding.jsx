@@ -426,6 +426,7 @@ const Onboarding = () => {
         apellido: user?.apellido || '',
         telefono: fullDigits,
       });
+      await refreshUser().catch(() => {});
       return true;
     } catch (err) {
       logger.error('Error saving phone:', err);
@@ -434,6 +435,16 @@ const Onboarding = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const resolveTelefonoForApi = () => {
+    const stored = (user?.telefono || '').replace(/\D/g, '');
+    if (stored.length >= 8) return stored;
+    const national = telefono.replace(/\D/g, '');
+    if (national.length >= 8 && isValidNationalPhone(national, phoneCountryIso)) {
+      return buildInternationalTelefonoDigits(phoneCountryIso, national).replace(/\D/g, '');
+    }
+    return null;
   };
 
   const saveProfile = async () => {
@@ -459,17 +470,22 @@ const Onboarding = () => {
 
     setSaving(true);
     try {
+      const telefonoDigits = resolveTelefonoForApi();
       const payload = {
         nombre:    user?.nombre    || '',
         apellido:  user?.apellido  || '',
-        telefono:  user?.telefono  || '',
         biografia,
         departamento,
         municipio,
         direccion,
-        ...(selectedUserType === 'trabajador' && { titulo_profesional: tituloProfesional }),
       };
+      if (telefonoDigits) {
+        payload.telefono = telefonoDigits;
+      }
       if (selectedUserType === 'trabajador') {
+        if (tituloProfesional.trim()) {
+          payload.titulo_profesional = tituloProfesional.trim();
+        }
         payload.cobertura_tipo = coberturaTipo;
         if (coberturaTipo === 'radio') {
           payload.radio_km = Number(radioKm);
@@ -477,7 +493,7 @@ const Onboarding = () => {
           payload.lng = Number(lng);
           payload.consentimiento_geolocalizacion = true;
         } else {
-          payload.radio_km = undefined;
+          payload.consentimiento_geolocalizacion = false;
         }
       }
       await profileService.updateProfile(payload);
@@ -1070,9 +1086,11 @@ const Onboarding = () => {
                         setLng('');
                         setGeoConsent(false);
                         setRadioKm('');
+                        setError(null);
                       } else {
                         setCoberturaTipo('radio');
                         setRadioKm(String(next.km));
+                        setError(null);
                       }
                     }}
                   />
@@ -1122,8 +1140,11 @@ const Onboarding = () => {
                               setLng(String(pos.coords.longitude));
                               setError(null);
                             },
-                            () => setError('No pudimos obtener tu ubicación. Revisa permisos del navegador.'),
-                            { enableHighAccuracy: true, timeout: 15000 },
+                            () =>
+                              setError(
+                                'No pudimos obtener tu ubicación. Revisa permisos del navegador o elige «Todo El Salvador».',
+                              ),
+                            { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 },
                           );
                         }}
                       >

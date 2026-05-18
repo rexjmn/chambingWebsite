@@ -1,4 +1,5 @@
 import React from 'react';
+import { CheckCircle, MapPin } from 'lucide-react';
 import './coverage-radius-picker.scss';
 
 /** Valores enviados al API (km). El último se muestra como «50+». */
@@ -41,10 +42,20 @@ export default function CoverageRadiusPicker({
         type="button"
         className={`crp__all-sv ${coverageType === 'pais' ? 'crp__all-sv--active' : ''}`}
         disabled={disabled}
+        aria-pressed={coverageType === 'pais'}
         onClick={() => onChange({ tipo: 'pais' })}
       >
+        <MapPin size={18} aria-hidden className="crp__all-sv-icon" />
         Todo El Salvador
       </button>
+
+      {coverageType === 'pais' && (
+        <p className="crp__status crp__status--pais" role="status">
+          <CheckCircle size={16} aria-hidden />
+          Puedes recibir solicitudes en cualquier departamento del país. No necesitas
+          compartir tu ubicación exacta.
+        </p>
+      )}
 
       <p className="crp__hint">
         O elige hasta qué distancia quieres recibir solicitudes desde tu ubicación aproximada:
@@ -73,6 +84,12 @@ export default function CoverageRadiusPicker({
           })}
         </div>
       </div>
+
+      {coverageType === 'radio' && Number.isFinite(selectedNum) && (
+        <p className="crp__status crp__status--radio" role="status">
+          Trabajarás en un radio de {presetLabel(selectedNum)} km desde tu ubicación aproximada.
+        </p>
+      )}
     </div>
   );
 }
