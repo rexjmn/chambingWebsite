@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLoaderData } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
-import { X, SlidersHorizontal, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { X, SlidersHorizontal, Search, MapPin } from 'lucide-react';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import PlumbingIcon from '@mui/icons-material/Plumbing';
 import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
@@ -13,6 +14,11 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import SecurityIcon from '@mui/icons-material/Security';
 import WorkerCard from '../components/WorkerCard';
+import { workerService } from '../services/workerService';
+import {
+  getStoredClientLocation,
+  requestClientLocation,
+} from '../utils/clientLocation';
 import { logger } from '../utils/logger';
 import '../styles/services.scss';
 
@@ -98,6 +104,7 @@ const MODALITIES = [
 ];
 
 const Service = () => {
+  const { t } = useTranslation();
   const loaderData = useLoaderData();
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
@@ -106,6 +113,9 @@ const Service = () => {
   const [loading, setLoading] = useState(!loaderData?.initialWorkers?.length);
   const [error, setError] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [clientLocation, setClientLocation] = useState(() => getStoredClientLocation());
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState(null);
 
   const [searchText, setSearchText] = useState(initialSearch);
   const [committedSearch, setCommittedSearch] = useState(initialSearch);
@@ -125,36 +135,32 @@ const Service = () => {
     return () => clearTimeout(searchDebounce.current);
   }, [searchText]);
 
-  useEffect(() => {
-    fetchWorkers();
-  }, [filters, committedSearch]);  
-
-  const fetchWorkers = async () => {
+  const fetchWorkers = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-      const params = new URLSearchParams({ tipo_usuario: 'trabajador', verificado: 'true' });
+      const apiFilters = {
+        verificado: true,
+        sort: 'relevance',
+        departamento: filters.departamento || undefined,
+        search: committedSearch.trim() || undefined,
+        categoria: filters.categoria || undefined,
+        modalidad: filters.modalidad || undefined,
+        fecha_inicio: filters.fechaInicio || undefined,
+        fecha_fin: filters.fechaFin || undefined,
+      };
 
-      if (filters.departamento) params.append('departamento', filters.departamento);
-      if (committedSearch.trim()) params.append('search', committedSearch.trim());
-      // Nota: el backend no siempre mapea categoria->skills de forma consistente.
-      // Hacemos filtro robusto en frontend con habilidades reales del trabajador.
-      if (filters.fechaInicio)  params.append('fechaInicio', filters.fechaInicio);
-      if (filters.fechaFin)     params.append('fechaFin', filters.fechaFin);
-      if (filters.modalidad)    params.append('modalidad', filters.modalidad);
+      if (clientLocation) {
+        apiFilters.lat = clientLocation.lat;
+        apiFilters.lng = clientLocation.lng;
+      }
 
-      const response = await fetch(`${API_BASE_URL}/users/workers?${params}`, {
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!response.ok) throw new Error('No se pudo cargar la lista de profesionales');
-
-      const data = await response.json();
-      const arr = data.status === 'success' ? data.data
+      const data = await workerService.getVerifiedWorkers(apiFilters);
+      const arr =
+        data?.status === 'success' ? data.data
         : Array.isArray(data) ? data
-        : data.data || [];
+        : data?.data || [];
 
       const filteredByCategory = filters.categoria
         ? arr.filter((worker) => workerMatchesCategory(worker, filters.categoria))
@@ -163,9 +169,26 @@ const Service = () => {
       setWorkers(filteredByCategory);
     } catch (err) {
       logger.error('Error fetching workers:', err);
-      setError(err.message);
+      setError(err.message || 'No se pudo cargar la lista de profesionales');
     } finally {
       setLoading(false);
+    }
+  }, [filters, committedSearch, clientLocation]);
+
+  useEffect(() => {
+    fetchWorkers();
+  }, [fetchWorkers]);
+
+  const handleUseLocation = async () => {
+    setLocationLoading(true);
+    setLocationError(null);
+    try {
+      const coords = await requestClientLocation();
+      setClientLocation(coords);
+    } catch {
+      setLocationError(t('servicePage.locationDenied'));
+    } finally {
+      setLocationLoading(false);
     }
   };
 
@@ -267,6 +290,29 @@ const Service = () => {
               ))}
             </div>
           </nav>
+
+          <div className="svc-location-row">
+            <button
+              type="button"
+              className={`svc-location-btn${clientLocation ? ' active' : ''}`}
+              onClick={handleUseLocation}
+              disabled={locationLoading}
+              aria-pressed={Boolean(clientLocation)}
+            >
+              <MapPin size={15} aria-hidden="true" />
+              {locationLoading
+                ? t('servicePage.locationLoading')
+                : clientLocation
+                  ? t('servicePage.locationActive')
+                  : t('servicePage.useLocation')}
+            </button>
+            {locationError && (
+              <span className="svc-location-hint svc-location-hint--error">{locationError}</span>
+            )}
+            {!locationError && !clientLocation && (
+              <span className="svc-location-hint">{t('servicePage.locationHint')}</span>
+            )}
+          </div>
 
           {/* Advanced filters toggle */}
           <div className="svc-adv-toggle">

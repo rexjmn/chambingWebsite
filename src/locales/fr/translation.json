@@ -821,6 +821,16 @@
       "confirmArrival": "Confirmer l’arrivée et continuer"
     }
   },
+  "workerCard": {
+    "nearby": "Près de vous · {{distance}} km"
+  },
+  "servicePage": {
+    "useLocation": "Utiliser ma position",
+    "locationActive": "Triés près de vous",
+    "locationLoading": "Localisation en cours…",
+    "locationHint": "Améliorez les résultats avec les professionnels proches",
+    "locationDenied": "Sans position — triés par réputation"
+  },
   "MoreDetails": {
     "moreDetailsTitle": "Chambing : Votre Plateforme de Confiance pour les Services Domestiques Freelance au Salvador",
     "moreDetailsDescription": "Chambing met en relation les particuliers avec des professionnels freelance vérifiés pour un large éventail de services domestiques au Salvador. Que vous ayez besoin d'un ménage expert, d'une plomberie fiable, d'un jardinage professionnel ou d'autres services à domicile, trouvez des travailleurs qualifiés rapidement et en toute sécurité. Autonomisant les travailleurs indépendants et simplifiant votre quotidien.",

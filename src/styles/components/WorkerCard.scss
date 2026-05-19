@@ -89,6 +89,22 @@ $avatar-border: 3px;
 }
 
 // ── Verified badge ────────────────────────────────────────────
+.wcard-nearby {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(35, 61, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.25rem 0.625rem;
+  border-radius: 99px;
+}
+
 .wcard-verified {
   position: absolute;
   top: 10px;

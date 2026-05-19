@@ -927,6 +927,16 @@
       "confirmArrival": "Confirmar llegada y continuar"
     }
   },
+  "workerCard": {
+    "nearby": "Cerca de ti · {{distance}} km"
+  },
+  "servicePage": {
+    "useLocation": "Usar mi ubicación",
+    "locationActive": "Ordenando cerca de ti",
+    "locationLoading": "Obteniendo ubicación…",
+    "locationHint": "Mejora el orden mostrando profesionales cercanos",
+    "locationDenied": "Sin ubicación — ordenados por reputación"
+  },
   "MoreDetails": {
     "moreDetailsTitle": "Chambing: Tu Plataforma de Confianza para Servicios Domésticos Freelance en El Salvador",
     "moreDetailsDescription": "Chambing conecta a particulares con profesionales freelance verificados para una amplia gama de servicios domésticos en El Salvador. Ya sea que necesites limpieza experta, fontanería fiable, jardinería profesional u otros servicios para el hogar, encuentra trabajadores cualificados de forma rápida y segura. Empoderando a los trabajadores independientes y simplificando tu vida diaria.",

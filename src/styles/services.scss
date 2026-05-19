@@ -153,6 +153,52 @@
   }
 }
 
+// ── Location (smart ranking) ──────────────────────────────────────
+.svc-location-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.svc-location-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  background: #fff;
+  border: 1.5px solid #dedad5;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #3a3a3a;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+
+  &:hover:not(:disabled) { border-color: #b5b0aa; }
+
+  &.active {
+    border-color: $primary-color;
+    color: $primary-color;
+    background: rgba($primary-color, 0.06);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: wait;
+  }
+}
+
+.svc-location-hint {
+  font-size: 0.8125rem;
+  color: #6b6b6b;
+
+  &--error {
+    color: #b45309;
+  }
+}
+
 // ── Advanced toggle ───────────────────────────────────────────────
 .svc-adv-toggle {
   margin-bottom: 0.75rem;

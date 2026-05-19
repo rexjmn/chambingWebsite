@@ -1,6 +1,7 @@
 // src/components/WorkerCard.jsx
 import { useEffect, useState, memo } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { Star, MapPin, Briefcase, MessageCircle, BadgeCheck } from 'lucide-react';
 import { serviceService } from '../services/serviceService';
@@ -39,6 +40,7 @@ const StarRating = ({ value = 0 }) => {
    WORKER CARD
 ════════════════════════════════════════════════════════════════ */
 const WorkerCard = memo(({ worker }) => {
+  const { t } = useTranslation();
   const [tarifas, setTarifas]           = useState(null);
   const [loadingTarifas, setLoadingTarifas] = useState(true);
 
@@ -64,6 +66,7 @@ const WorkerCard = memo(({ worker }) => {
   const rating        = worker?.stats?.rating               || worker?.rating       || 0;
   const reviewCount   = worker?.stats?.total_reviews        || worker?.reviewCount  || 0;
   const jobsCompleted = worker?.stats?.trabajos_completados || worker?.jobsCompleted|| 0;
+  const distanceKm = worker?.distance_km;
 
   const getTitle = () => {
     if (worker?.titulo_profesional && typeof worker.titulo_profesional === 'string')
@@ -139,6 +142,13 @@ const WorkerCard = memo(({ worker }) => {
             <span className="wcard-verified" title="Perfil Verificado" aria-label="Verificado">
               <BadgeCheck size={14} strokeWidth={2.5} />
               Verificado
+            </span>
+          )}
+
+          {typeof distanceKm === 'number' && (
+            <span className="wcard-nearby" aria-label={t('workerCard.nearby', { distance: distanceKm })}>
+              <MapPin size={12} strokeWidth={2.5} aria-hidden="true" />
+              {t('workerCard.nearby', { distance: distanceKm })}
             </span>
           )}
 

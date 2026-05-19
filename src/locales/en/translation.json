@@ -821,6 +821,16 @@
       "confirmArrival": "Confirm arrival and continue"
     }
   },
+  "workerCard": {
+    "nearby": "Near you · {{distance}} km"
+  },
+  "servicePage": {
+    "useLocation": "Use my location",
+    "locationActive": "Sorted near you",
+    "locationLoading": "Getting location…",
+    "locationHint": "Improve results by showing nearby professionals",
+    "locationDenied": "No location — sorted by reputation"
+  },
   "MoreDetails": {
     "moreDetailsTitle": "Chambing: Your Trusted Platform for Freelance Domestic Services in El Salvador",
     "moreDetailsDescription": "Chambing connects individuals with verified freelance professionals for a wide range of domestic services in El Salvador. Whether you need expert cleaning, reliable plumbing, professional gardening, or other home services, find skilled workers quickly and securely. Empowering independent workers and simplifying your daily life.",
