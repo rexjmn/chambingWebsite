@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { profileService } from '../services/profileService';
@@ -19,6 +19,11 @@ import CoverageRadiusPicker, {
 } from '../components/profile/CoverageRadiusPicker';
 import { sanitizeInternalReturnUrl } from '../utils/returnUrl';
 import { buildOnboardingSteps } from '../utils/onboardingSteps';
+import {
+  getCategoriesWithSkills,
+  groupSkillsByCategory,
+  getSkillCategoryLabel,
+} from '../utils/skillCategories';
 import Cropper from 'react-easy-crop';
 import {
   User, Camera, MapPin, Briefcase, DollarSign,
@@ -179,6 +184,7 @@ const Onboarding = () => {
   const [availableSkills, setAvailableSkills] = useState([]);
   const [selectedSkills, setSelectedSkills]   = useState([]);
   const [skillSearch, setSkillSearch]         = useState('');
+  const [activeSkillCategory, setActiveSkillCategory] = useState('');
 
   // Rates state
   const [tarifas, setTarifas] = useState({
@@ -578,9 +584,50 @@ const Onboarding = () => {
     });
   };
 
-  const filteredSkills = availableSkills.filter((s) =>
-    s.nombre.toLowerCase().includes(skillSearch.toLowerCase())
+  const skillCategories = useMemo(
+    () => getCategoriesWithSkills(availableSkills),
+    [availableSkills],
   );
+
+  const skillsByCategory = useMemo(
+    () => groupSkillsByCategory(availableSkills),
+    [availableSkills],
+  );
+
+  useEffect(() => {
+    if (skillCategories.length === 0) return;
+    setActiveSkillCategory((prev) =>
+      prev && skillCategories.some((c) => c.id === prev) ? prev : skillCategories[0].id,
+    );
+  }, [skillCategories]);
+
+  const skillsInActiveCategory = useMemo(() => {
+    const list = skillsByCategory.get(activeSkillCategory) ?? [];
+    const q = skillSearch.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((s) => s.nombre.toLowerCase().includes(q));
+  }, [skillsByCategory, activeSkillCategory, skillSearch]);
+
+  const selectedCountInActiveCategory = useMemo(() => {
+    const ids = new Set(skillsInActiveCategory.map((s) => s.id));
+    return selectedSkills.filter((s) => ids.has(s.id)).length;
+  }, [selectedSkills, skillsInActiveCategory]);
+
+  const selectAllInActiveCategory = () => {
+    setSelectedSkills((prev) => {
+      const map = new Map(prev.map((s) => [s.id, s]));
+      skillsInActiveCategory.forEach((s) => map.set(s.id, s));
+      return Array.from(map.values());
+    });
+  };
+
+  const clearCategorySelection = () => {
+    const ids = new Set(skillsInActiveCategory.map((s) => s.id));
+    setSelectedSkills((prev) => prev.filter((s) => !ids.has(s.id)));
+  };
+
+  // Alias para el bloque de UI del paso skills (lista filtrada por categoría)
+  const filteredSkills = skillsInActiveCategory;
 
   // ── Render steps ────────────────────────────────────────────────────────────
   const renderStep = () => {
@@ -1187,54 +1234,134 @@ const Onboarding = () => {
       // ── Skills ─────────────────────────────────────────────────────────────
       case 'skills':
         return (
-          <div className="onboarding__step">
+          <div className="onboarding__step onboarding__step--skills">
             <div className="onboarding__step-icon">
               <Briefcase size={30} strokeWidth={1.75} />
             </div>
-            <h1 className="onboarding__step-title">Tus servicios</h1>
+            <h1 className="onboarding__step-title">¿Qué servicios ofreces?</h1>
             <p className="onboarding__step-subtitle">
-              Selecciona los servicios que ofreces. Los clientes podran filtrarte por categoria.
+              Elige una categoría y marca lo que haces. Así te encuentran más rápido.
             </p>
+
+            {selectedSkills.length > 0 && (
+              <div className="ob-skills-picked" aria-label="Servicios seleccionados">
+                <div className="ob-skills-picked__head">
+                  <span>
+                    {selectedSkills.length} seleccionado{selectedSkills.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <div className="ob-skills-picked__chips">
+                  {selectedSkills.map((skill) => (
+                    <button
+                      key={skill.id}
+                      type="button"
+                      className="ob-skill-chip ob-skill-chip--selected ob-skill-chip--removable"
+                      onClick={() => toggleSkill(skill)}
+                      title="Quitar"
+                    >
+                      {skill.nombre}
+                      <X size={14} aria-hidden="true" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {skillCategories.length > 0 && (
+              <nav className="ob-skills-categories" aria-label="Categorías de servicio">
+                <div className="ob-skills-categories__scroll">
+                  {skillCategories.map((cat) => {
+                    const pickedInCat = (skillsByCategory.get(cat.id) ?? []).filter((s) =>
+                      selectedSkills.some((x) => x.id === s.id),
+                    ).length;
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        className={`ob-skills-cat-pill${activeSkillCategory === cat.id ? ' ob-skills-cat-pill--active' : ''}`}
+                        onClick={() => {
+                          setActiveSkillCategory(cat.id);
+                          setSkillSearch('');
+                        }}
+                        aria-pressed={activeSkillCategory === cat.id}
+                      >
+                        {cat.label}
+                        {pickedInCat > 0 && (
+                          <span className="ob-skills-cat-pill__badge">{pickedInCat}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </nav>
+            )}
 
             <div className="ob-skills-search">
               <Search size={16} />
               <input
-                type="text"
-                placeholder="Buscar habilidades…"
+                type="search"
+                placeholder={`Buscar en ${getSkillCategoryLabel(activeSkillCategory)}…`}
                 value={skillSearch}
                 onChange={(e) => setSkillSearch(e.target.value)}
               />
             </div>
 
+            {activeSkillCategory && skillsInActiveCategory.length > 0 && (
+              <div className="ob-skills-bulk">
+                <span className="ob-skills-bulk__label">
+                  {getSkillCategoryLabel(activeSkillCategory)} · {skillsInActiveCategory.length} opciones
+                </span>
+                <div className="ob-skills-bulk__actions">
+                  <button type="button" className="ob-skills-bulk__btn" onClick={selectAllInActiveCategory}>
+                    Marcar todos
+                  </button>
+                  {selectedCountInActiveCategory > 0 && (
+                    <button
+                      type="button"
+                      className="ob-skills-bulk__btn ob-skills-bulk__btn--muted"
+                      onClick={clearCategorySelection}
+                    >
+                      Limpiar categoría
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="ob-skills-scroll">
               {filteredSkills.length > 0 ? (
-                <div className="ob-skills-grid">
+                <ul className="ob-skills-list" role="list">
                   {filteredSkills.map((skill) => {
                     const isSelected = selectedSkills.some((s) => s.id === skill.id);
                     return (
-                      <button
-                        key={skill.id}
-                        type="button"
-                        className={`ob-skill-chip ${isSelected ? 'ob-skill-chip--selected' : ''}`}
-                        onClick={() => toggleSkill(skill)}
-                      >
-                        {isSelected && <CheckCircle size={14} />}
-                        {skill.nombre}
-                      </button>
+                      <li key={skill.id}>
+                        <button
+                          type="button"
+                          className={`ob-skill-row${isSelected ? ' ob-skill-row--on' : ''}`}
+                          onClick={() => toggleSkill(skill)}
+                          aria-pressed={isSelected}
+                        >
+                          <span className="ob-skill-row__check" aria-hidden="true">
+                            {isSelected ? <CheckCircle size={18} /> : <span className="ob-skill-row__box" />}
+                          </span>
+                          <span className="ob-skill-row__label">{skill.nombre}</span>
+                        </button>
+                      </li>
                     );
                   })}
-                </div>
+                </ul>
               ) : (
-                <p style={{ color: 'var(--color-gray-400)', fontSize: '0.9rem', textAlign: 'center', padding: '1rem 0' }}>
-                  No se encontraron habilidades
+                <p className="ob-skills-empty">
+                  {skillSearch.trim()
+                    ? 'No hay coincidencias en esta categoría.'
+                    : 'No hay servicios en esta categoría.'}
                 </p>
               )}
             </div>
 
-            {selectedSkills.length > 0 && (
-              <p className="ob-skills-selected">
-                <CheckCircle size={14} style={{ verticalAlign: 'middle', color: 'var(--color-primary)', marginRight: '0.25rem' }} />
-                {selectedSkills.length} habilidad{selectedSkills.length !== 1 ? 'es' : ''} seleccionada{selectedSkills.length !== 1 ? 's' : ''}
+            {selectedSkills.length === 0 && (
+              <p className="ob-skills-hint">
+                Tip: marca al menos 3 servicios para aparecer en más búsquedas.
               </p>
             )}
           </div>
