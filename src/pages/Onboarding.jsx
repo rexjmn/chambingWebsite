@@ -182,6 +182,7 @@ const Onboarding = () => {
 
   // Skills state
   const [availableSkills, setAvailableSkills] = useState([]);
+  const [serviceCategories, setServiceCategories] = useState([]);
   const [selectedSkills, setSelectedSkills]   = useState([]);
   const [skillSearch, setSkillSearch]         = useState('');
   const [activeSkillCategory, setActiveSkillCategory] = useState('');
@@ -216,6 +217,10 @@ const Onboarding = () => {
     profileService.getAvailableSkills()
         .then((res) => setAvailableSkills(res?.data || []))
         .catch(() => {});
+
+    serviceService.getCategorias()
+      .then((data) => setServiceCategories(Array.isArray(data) ? data : []))
+      .catch(() => setServiceCategories([]));
 
       profileService.getMySkills()
         .then((res) => setSelectedSkills(res?.data || []))
@@ -585,19 +590,21 @@ const Onboarding = () => {
   };
 
   const skillCategories = useMemo(
-    () => getCategoriesWithSkills(availableSkills),
-    [availableSkills],
+    () => getCategoriesWithSkills(availableSkills, serviceCategories),
+    [availableSkills, serviceCategories],
   );
 
   const skillsByCategory = useMemo(
-    () => groupSkillsByCategory(availableSkills),
-    [availableSkills],
+    () => groupSkillsByCategory(availableSkills, serviceCategories),
+    [availableSkills, serviceCategories],
   );
 
   useEffect(() => {
     if (skillCategories.length === 0) return;
+    const defaultCategory =
+      skillCategories.find((c) => c.count > 0)?.id ?? skillCategories[0].id;
     setActiveSkillCategory((prev) =>
-      prev && skillCategories.some((c) => c.id === prev) ? prev : skillCategories[0].id,
+      prev && skillCategories.some((c) => c.id === prev) ? prev : defaultCategory,
     );
   }, [skillCategories]);
 
@@ -1300,7 +1307,7 @@ const Onboarding = () => {
               <Search size={16} />
               <input
                 type="search"
-                placeholder={`Buscar en ${getSkillCategoryLabel(activeSkillCategory)}…`}
+                placeholder={`Buscar en ${getSkillCategoryLabel(activeSkillCategory, serviceCategories)}…`}
                 value={skillSearch}
                 onChange={(e) => setSkillSearch(e.target.value)}
               />

@@ -14,6 +14,12 @@ import ProfilePhotoModal from '../components/ProfilePhotoModal';
 import CoverPhotoModal from '../components/CoverPhotoModal';
 import { DashboardSkeleton } from '../components/SkeletonLoader';
 import { logger } from '../utils/logger';
+import {
+  buildServiceCategories,
+  workerMatchesServiceCategory,
+  getServiceCategoryIconKey,
+  getServiceCategoryColorKey,
+} from '../utils/serviceCategoryFilters';
 import '../styles/dashboard.scss';
 import '../styles/components/SkeletonLoader.scss';
 
@@ -163,48 +169,6 @@ const CATEGORY_COLORS = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const normalizeText = (value = '') =>
-  String(value)
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-
-const SERVICE_FILTER_CATEGORIES = [
-  { id: 'limpieza_domestica', label: 'Limpieza' },
-  { id: 'plomeria', label: 'Plomería' },
-  { id: 'electricidad', label: 'Electricidad' },
-  { id: 'jardineria', label: 'Jardinería' },
-  { id: 'carpinteria', label: 'Carpintería' },
-  { id: 'construccion', label: 'Construcción' },
-  { id: 'pintura', label: 'Pintura' },
-  { id: 'mecanica', label: 'Mecánica' },
-  { id: 'catering', label: 'Cocina' },
-  { id: 'seguridad', label: 'Seguridad' },
-];
-
-const CATEGORY_ALIASES = {
-  limpieza_domestica: ['limpieza domestica', 'limpieza', 'lavanderia', 'limpieza de oficinas'],
-  plomeria: ['plomeria', 'instalacion sanitarios', 'destapes', 'fontaneria'],
-  electricidad: ['electricidad', 'instalacion electrica', 'electrico', 'reparacion electrodomesticos'],
-  jardineria: ['jardineria', 'jardin', 'paisajismo', 'poda'],
-  carpinteria: ['carpinteria', 'muebles', 'ebanisteria'],
-  construccion: ['construccion', 'albanileria', 'albanilería', 'obra', 'obras'],
-  pintura: ['pintura', 'pintor', 'pintar'],
-  mecanica: ['mecanica', 'mecanica automotriz', 'mecánico', 'mecanico'],
-  catering: ['cocina', 'catering', 'chef', 'comida'],
-  seguridad: ['seguridad', 'vigilancia', 'guardia'],
-};
-
-const getWorkerSkillNames = (worker) => {
-  const source = worker?.skills || worker?.habilidades || [];
-  if (!Array.isArray(source)) return [];
-  return source
-    .map((skill) => (typeof skill === 'string' ? skill : (skill?.nombre || skill?.name || '')))
-    .filter(Boolean)
-    .map(normalizeText);
-};
-
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const Dashboard = () => {
@@ -233,16 +197,9 @@ const Dashboard = () => {
         const minLoadingTime = new Promise(resolve => setTimeout(resolve, 500));
 
         const dataPromises = Promise.all([
-          serviceService.getCategorias().catch(err => {
+          serviceService.getCategorias().catch((err) => {
             logger.error('Error cargando categorías:', err);
-            return [
-              { id: 1, nombre: 'domesticCleaning', descripcion: 'Servicio de limpieza' },
-              { id: 2, nombre: 'plumbing', descripcion: 'Reparaciones' },
-              { id: 3, nombre: 'electricity', descripcion: 'Trabajos eléctricos' },
-              { id: 4, nombre: 'gardening', descripcion: 'Mantenimiento' },
-              { id: 5, nombre: 'carpentry', descripcion: 'Trabajos en madera' },
-              { id: 6, nombre: 'construction', descripcion: 'Obras' },
-            ];
+            return [];
           }),
           workerService.getVerifiedWorkers({ verificado: true }).catch(err => {
             logger.error('Error cargando trabajadores verificados:', err);
@@ -291,37 +248,29 @@ const Dashboard = () => {
 
   const serviceCategories = useMemo(() => {
     const workers = Array.isArray(verifiedWorkers) ? verifiedWorkers : [];
+    const catalog = buildServiceCategories(categories);
 
-    const result = SERVICE_FILTER_CATEGORIES.map((category) => {
-      const aliases = (CATEGORY_ALIASES[category.id] || []).map(normalizeText);
-      const workersCount = workers.reduce((acc, worker) => {
-        const skills = getWorkerSkillNames(worker);
-        const matches = skills.some((skill) =>
-          aliases.some((alias) => skill.includes(alias) || alias.includes(skill))
-        );
-        return acc + (matches ? 1 : 0);
-      }, 0);
-
-      return {
-        id: category.id,
-        nombre: category.label,
-        descripcion: `${workersCount} trabajador${workersCount === 1 ? '' : 'es'} disponible${workersCount === 1 ? '' : 's'}`,
-        workersCount,
-      };
-    })
+    return catalog
+      .map((category) => {
+        const workersCount = workers.filter((worker) =>
+          workerMatchesServiceCategory(worker, category),
+        ).length;
+        return {
+          ...category,
+          descripcion: `${workersCount} trabajador${workersCount === 1 ? '' : 'es'} disponible${workersCount === 1 ? '' : 's'}`,
+          workersCount,
+        };
+      })
       .filter((category) => category.workersCount > 0)
       .sort((a, b) => b.workersCount - a.workersCount);
-
-    return result.length > 0 ? result : categories;
   }, [verifiedWorkers, categories]);
 
   const handleViewWorkers = (category) => {
-    const categoryId = category?.id || '';
-    if (categoryId) {
-      navigate(`/service?categoria=${encodeURIComponent(categoryId)}`);
+    if (category?.id) {
+      navigate(`/service?categoria=${encodeURIComponent(category.id)}`);
       return;
     }
-    const categoryLabel = category?.nombre || '';
+    const categoryLabel = category?.nombre || category?.label || '';
     navigate(`/service?search=${encodeURIComponent(categoryLabel)}`);
   };
 
@@ -843,8 +792,9 @@ const Dashboard = () => {
 
           <div className="dashboard__services">
             {serviceCategories.map((category) => {
-              const CategoryIcon = CATEGORY_ICONS[category.nombre] || DefaultCategoryIcon;
-              const color = CATEGORY_COLORS[category.nombre] || 'blue';
+              const iconKey = getServiceCategoryIconKey(category);
+              const CategoryIcon = (iconKey && CATEGORY_ICONS[iconKey]) || DefaultCategoryIcon;
+              const color = getServiceCategoryColorKey(category);
               return (
                 <article key={category.id} className={`dashboard__service-card dashboard__service-card--${color}`}>
                   <div className="dashboard__service-icon">

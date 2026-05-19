@@ -1,26 +1,16 @@
 /**
- * Agrupa habilidades del catálogo por categoría para onboarding y filtros.
- * Las categorías de oficio se resuelven por sinónimos; lo que no encaja queda en
- * `custom:*` (texto del admin) o en `sin_categoria` (vacío / habilidades sociales).
+ * Agrupa habilidades del catálogo usando las categorías reales de la BD
+ * (`GET /services/categorias`) y un bucket aparte para habilidades sociales.
  */
-export const SIN_CATEGORIA_ID = 'sin_categoria';
 
-export const SKILL_CATEGORY_META = [
-  { id: 'limpieza_domestica', label: 'Limpieza' },
-  { id: 'plomeria', label: 'Plomería' },
-  { id: 'electricidad', label: 'Electricidad' },
-  { id: 'jardineria', label: 'Jardinería' },
-  { id: 'carpinteria', label: 'Carpintería' },
-  { id: 'construccion', label: 'Construcción' },
-  { id: 'pintura', label: 'Pintura' },
-  { id: 'mecanica', label: 'Mecánica' },
-  { id: 'catering', label: 'Cocina' },
-  { id: 'seguridad', label: 'Seguridad' },
-  { id: SIN_CATEGORIA_ID, label: 'Sin categoría' },
-];
+export const SOCIAL_SKILLS_ID = 'habilidades_sociales';
+export const SOCIAL_SKILLS_LABEL = 'Habilidades sociales';
 
-/** Valores de `categoria` en BD que representan habilidades generales / sociales. */
-const SIN_CATEGORIA_ALIASES = new Set([
+/** @deprecated usar SOCIAL_SKILLS_ID */
+export const SIN_CATEGORIA_ID = SOCIAL_SKILLS_ID;
+
+/** Valores de `skill.categoria` que van al bucket de habilidades sociales. */
+const SOCIAL_CATEGORY_ALIASES = new Set([
   'sin_categoria',
   'sin_categoría',
   'habilidades_sociales',
@@ -37,27 +27,21 @@ const SIN_CATEGORIA_ALIASES = new Set([
 ]);
 
 /**
- * Sinónimos por categoría de oficio (alineado con users.service CATEGORY_SYNONYMS).
- * Se usan para coincidencia parcial en `categoria` y en `nombre` de la habilidad.
+ * Sinónimos legacy para emparejar textos viejos del catálogo con categorías de BD.
+ * Se aplican solo si hay una categoría en `catalogCategories` que coincida.
  */
-export const CATEGORY_ALIASES = {
+const LEGACY_SLUG_ALIASES = {
   limpieza_domestica: [
     'limpieza domestica',
     'limpieza doméstica',
     'limpieza',
     'lavanderia',
-    'lavandería',
     'aseo',
     'domestica',
-    'doméstica',
     'hogar',
     'sirvienta',
-    'empleada domestica',
-    'empleada doméstica',
     'limpiadora',
     'limpiador',
-    'mucama',
-    'ama de llaves',
   ],
   plomeria: [
     'plomeria',
@@ -65,89 +49,25 @@ export const CATEGORY_ALIASES = {
     'plomero',
     'fontaneria',
     'fontanería',
-    'fontanero',
     'sanitario',
-    'sanitarios',
     'tuberia',
-    'tubería',
     'destape',
     'destapes',
-    'agua',
-    'instalacion de agua',
   ],
   electricidad: [
     'electricidad',
     'electricista',
     'electrico',
-    'eléctrico',
     'instalacion electrica',
-    'instalación eléctrica',
     'cableado',
     'electrodomesticos',
-    'electrodomésticos',
   ],
-  jardineria: [
-    'jardineria',
-    'jardinería',
-    'jardin',
-    'jardín',
-    'jardinero',
-    'poda',
-    'paisajismo',
-    'plantas',
-    'areas verdes',
-    'áreas verdes',
-  ],
-  carpinteria: [
-    'carpinteria',
-    'carpintería',
-    'carpintero',
-    'ebanisteria',
-    'ebanistería',
-    'ebanista',
-    'madera',
-    'muebles',
-  ],
-  construccion: [
-    'construccion',
-    'construcción',
-    'albanil',
-    'albañil',
-    'albanileria',
-    'albañilería',
-    'obra',
-    'obras',
-    'mamposteria',
-    'mampostería',
-    'remodelacion',
-    'remodelación',
-    'maestro de obra',
-  ],
-  pintura: ['pintura', 'pintor', 'pintar', 'decorador', 'decoracion', 'decoración'],
-  mecanica: [
-    'mecanica',
-    'mecánica',
-    'mecanico',
-    'mecánico',
-    'automotriz',
-    'taller',
-    'motor',
-    'vehiculo',
-    'vehículo',
-  ],
-  catering: [
-    'cocina',
-    'catering',
-    'chef',
-    'cocinero',
-    'cocinera',
-    'repostero',
-    'repostera',
-    'reposteria',
-    'repostería',
-    'comida',
-    'banquetes',
-  ],
+  jardineria: ['jardineria', 'jardinería', 'jardin', 'jardinero', 'poda', 'paisajismo'],
+  carpinteria: ['carpinteria', 'carpintería', 'ebanisteria', 'madera', 'muebles'],
+  construccion: ['construccion', 'construcción', 'albanil', 'albañil', 'obra', 'obras'],
+  pintura: ['pintura', 'pintor', 'decorador'],
+  mecanica: ['mecanica', 'mecánica', 'mecanico', 'automotriz', 'taller'],
+  catering: ['cocina', 'catering', 'chef', 'cocinero', 'repostero', 'comida'],
   seguridad: ['seguridad', 'guardia', 'vigilante', 'vigilancia'],
 };
 
@@ -162,74 +82,112 @@ const normalize = (value = '') =>
     .replace(/\s+/g, '_')
     .replace(/_+/g, '_');
 
-const LABEL_TO_ID = SKILL_CATEGORY_META.reduce((acc, cat) => {
-  if (cat.id === SIN_CATEGORIA_ID) return acc;
-  acc[normalize(cat.label)] = cat.id;
-  acc[normalize(cat.id)] = cat.id;
-  return acc;
-}, {});
-
-const isSinCategoriaValue = (categoria) => {
+const isSocialCategoryValue = (categoria) => {
   if (categoria == null || !String(categoria).trim()) return true;
-  return SIN_CATEGORIA_ALIASES.has(normalize(categoria));
+  return SOCIAL_CATEGORY_ALIASES.has(normalize(categoria));
 };
 
-const matchKnownCategory = (text) => {
+const registerAlias = (aliasMap, text, categoryId) => {
+  const key = normalize(text);
+  if (key.length >= 3) aliasMap.set(key, categoryId);
+};
+
+const findEntryForSlug = (slug, entries, aliases = []) => {
+  const slugKey = normalize(slug.replace(/_/g, ' '));
+  const direct = entries.find((e) => e.key === slugKey || e.key === normalize(slug));
+  if (direct) return direct;
+
+  for (const entry of entries) {
+    if (entry.key.includes(slugKey) || slugKey.includes(entry.key)) return entry;
+    for (const alias of aliases) {
+      const a = normalize(alias);
+      if (a.length < 3) continue;
+      if (entry.key.includes(a) || a.includes(entry.key)) return entry;
+    }
+  }
+  return null;
+};
+
+/** Índice de categorías de servicio desde la API (`categorias_servicio`). */
+export const buildCategoryRegistry = (catalogCategories = []) => {
+  const entries = (catalogCategories || [])
+    .filter((c) => c && c.activo !== false && c.nombre)
+    .map((c) => ({
+      id: `db:${c.id}`,
+      dbId: String(c.id),
+      nombre: String(c.nombre).trim(),
+      key: normalize(c.nombre),
+    }));
+
+  const aliasMap = new Map();
+
+  for (const entry of entries) {
+    registerAlias(aliasMap, entry.nombre, entry.id);
+    registerAlias(aliasMap, entry.key, entry.id);
+  }
+
+  for (const [slug, aliases] of Object.entries(LEGACY_SLUG_ALIASES)) {
+    const entry = findEntryForSlug(slug, entries, aliases);
+    if (!entry) continue;
+    registerAlias(aliasMap, slug, entry.id);
+    for (const alias of aliases) registerAlias(aliasMap, alias, entry.id);
+  }
+
+  return { entries, aliasMap };
+};
+
+const resolveFromRegistry = (text, registry) => {
+  if (!registry?.entries?.length) return null;
+
   const key = normalize(text);
   if (!key) return null;
-  if (SIN_CATEGORIA_ALIASES.has(key)) return SIN_CATEGORIA_ID;
-  if (LABEL_TO_ID[key]) return LABEL_TO_ID[key];
-  if (SKILL_CATEGORY_META.some((c) => c.id === key && c.id !== SIN_CATEGORIA_ID)) return key;
+  if (SOCIAL_CATEGORY_ALIASES.has(key)) return SOCIAL_SKILLS_ID;
+
+  if (registry.aliasMap.has(key)) return registry.aliasMap.get(key);
 
   let bestId = null;
   let bestLen = 0;
 
-  for (const [catId, aliases] of Object.entries(CATEGORY_ALIASES)) {
-    for (const alias of aliases) {
-      const a = normalize(alias);
-      if (a.length < 3) continue;
-      const matches = key === a || key.includes(a) || a.includes(key);
-      if (matches && a.length > bestLen) {
-        bestLen = a.length;
-        bestId = catId;
-      }
+  for (const entry of registry.entries) {
+    const matches = key === entry.key || key.includes(entry.key) || entry.key.includes(key);
+    if (matches && entry.key.length > bestLen) {
+      bestLen = entry.key.length;
+      bestId = entry.id;
     }
   }
 
   return bestId;
 };
 
-/** Resuelve la clave de categoría a partir del campo `categoria` del catálogo. */
-export const resolveSkillCategoryId = (categoria) => {
-  if (isSinCategoriaValue(categoria)) return SIN_CATEGORIA_ID;
-  const known = matchKnownCategory(categoria);
-  if (known && known !== SIN_CATEGORIA_ID) return known;
-  const key = normalize(categoria);
-  return `custom:${key}`;
-};
-
-/** Resuelve categoría usando `categoria` y, si hace falta, el nombre de la habilidad. */
-export const resolveSkillCategoryFromSkill = (skill) => {
+/** Resuelve categoría usando `categoria`, el nombre de la habilidad y el catálogo de BD. */
+export const resolveSkillCategoryFromSkill = (skill, catalogCategories = []) => {
+  const registry = buildCategoryRegistry(catalogCategories);
   const categoria = skill?.categoria;
   const nombre = skill?.nombre;
 
-  if (!isSinCategoriaValue(categoria)) {
-    const fromField = matchKnownCategory(categoria);
-    if (fromField && fromField !== SIN_CATEGORIA_ID) return fromField;
+  if (!isSocialCategoryValue(categoria)) {
+    const fromField = resolveFromRegistry(categoria, registry);
+    if (fromField && fromField !== SOCIAL_SKILLS_ID) return fromField;
   }
 
-  const fromName = matchKnownCategory(nombre);
-  if (fromName && fromName !== SIN_CATEGORIA_ID) return fromName;
+  const fromName = resolveFromRegistry(nombre, registry);
+  if (fromName && fromName !== SOCIAL_SKILLS_ID) return fromName;
 
-  if (isSinCategoriaValue(categoria)) return SIN_CATEGORIA_ID;
+  if (isSocialCategoryValue(categoria)) return SOCIAL_SKILLS_ID;
 
   const key = normalize(categoria);
-  return key ? `custom:${key}` : SIN_CATEGORIA_ID;
+  return key ? `custom:${key}` : SOCIAL_SKILLS_ID;
 };
 
-export const getSkillCategoryLabel = (categoryId, sampleSkill) => {
-  const known = SKILL_CATEGORY_META.find((c) => c.id === categoryId);
-  if (known) return known.label;
+export const getSkillCategoryLabel = (categoryId, catalogCategories = [], sampleSkill = null) => {
+  if (categoryId === SOCIAL_SKILLS_ID) return SOCIAL_SKILLS_LABEL;
+
+  if (categoryId?.startsWith('db:')) {
+    const dbId = categoryId.slice(3);
+    const fromCatalog = (catalogCategories || []).find((c) => String(c.id) === dbId);
+    if (fromCatalog?.nombre) return fromCatalog.nombre.trim();
+  }
+
   if (categoryId?.startsWith('custom:')) {
     const fromSkill = sampleSkill?.categoria?.trim();
     if (fromSkill) return fromSkill;
@@ -238,14 +196,15 @@ export const getSkillCategoryLabel = (categoryId, sampleSkill) => {
       .replace(/_/g, ' ')
       .replace(/\b\w/g, (ch) => ch.toUpperCase());
   }
-  return 'Sin categoría';
+
+  return SOCIAL_SKILLS_LABEL;
 };
 
 /** Agrupa habilidades por categoría (orden alfabético dentro de cada grupo). */
-export const groupSkillsByCategory = (skills = []) => {
+export const groupSkillsByCategory = (skills = [], catalogCategories = []) => {
   const groups = new Map();
   for (const skill of skills) {
-    const catId = resolveSkillCategoryFromSkill(skill);
+    const catId = resolveSkillCategoryFromSkill(skill, catalogCategories);
     if (!groups.has(catId)) groups.set(catId, []);
     groups.get(catId).push(skill);
   }
@@ -255,31 +214,64 @@ export const groupSkillsByCategory = (skills = []) => {
   return groups;
 };
 
-const KNOWN_TRADE_IDS = SKILL_CATEGORY_META.map((c) => c.id).filter((id) => id !== SIN_CATEGORIA_ID);
+/**
+ * Píldoras para onboarding: todas las categorías activas de la BD (aunque estén vacías)
+ * + grupos custom de skills sin match + habilidades sociales al final.
+ */
+export const getCategoriesWithSkills = (skills = [], catalogCategories = []) => {
+  const registry = buildCategoryRegistry(catalogCategories);
+  const groups = groupSkillsByCategory(skills, catalogCategories);
+  const result = [];
 
-/** Categorías que tienen al menos una habilidad activa en el catálogo. */
-export const getCategoriesWithSkills = (skills = []) => {
-  const groups = groupSkillsByCategory(skills);
+  for (const entry of registry.entries) {
+    const list = groups.get(entry.id) ?? [];
+    result.push({
+      id: entry.id,
+      label: entry.nombre,
+      count: list.length,
+      dbId: entry.dbId,
+    });
+  }
 
-  const known = KNOWN_TRADE_IDS.filter((id) => groups.has(id) && groups.get(id).length > 0);
-
-  const custom = [...groups.keys()]
-    .filter((id) => id.startsWith('custom:') && groups.get(id).length > 0)
+  const customIds = [...groups.keys()]
+    .filter((id) => id.startsWith('custom:'))
     .sort((a, b) =>
-      getSkillCategoryLabel(a, groups.get(a)[0]).localeCompare(
-        getSkillCategoryLabel(b, groups.get(b)[0]),
+      getSkillCategoryLabel(a, catalogCategories, groups.get(a)[0]).localeCompare(
+        getSkillCategoryLabel(b, catalogCategories, groups.get(b)[0]),
         'es',
       ),
     );
 
-  const sinCat =
-    groups.has(SIN_CATEGORIA_ID) && groups.get(SIN_CATEGORIA_ID).length > 0
-      ? [SIN_CATEGORIA_ID]
-      : [];
+  for (const id of customIds) {
+    const list = groups.get(id) ?? [];
+    result.push({
+      id,
+      label: getSkillCategoryLabel(id, catalogCategories, list[0]),
+      count: list.length,
+    });
+  }
 
-  return [...known, ...custom, ...sinCat].map((id) => ({
+  if (groups.has(SOCIAL_SKILLS_ID)) {
+    const list = groups.get(SOCIAL_SKILLS_ID) ?? [];
+    if (list.length > 0) {
+      result.push({
+        id: SOCIAL_SKILLS_ID,
+        label: SOCIAL_SKILLS_LABEL,
+        count: list.length,
+      });
+    }
+  }
+
+  if (result.length > 0) return result;
+
+  // Sin catálogo de BD: solo lo que salga de los skills
+  return [...groups.keys()].map((id) => ({
     id,
-    label: getSkillCategoryLabel(id, groups.get(id)[0]),
+    label: getSkillCategoryLabel(id, catalogCategories, groups.get(id)[0]),
     count: groups.get(id).length,
   }));
 };
+
+/** @deprecated usar resolveSkillCategoryFromSkill */
+export const resolveSkillCategoryId = (categoria, catalogCategories = []) =>
+  resolveSkillCategoryFromSkill({ categoria }, catalogCategories);

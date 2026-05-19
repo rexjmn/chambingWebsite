@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useLoaderData } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,83 +15,50 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import SecurityIcon from '@mui/icons-material/Security';
 import WorkerCard from '../components/WorkerCard';
 import { workerService } from '../services/workerService';
+import { serviceService } from '../services/serviceService';
 import {
   getStoredClientLocation,
   requestClientLocation,
 } from '../utils/clientLocation';
+import {
+  buildServiceCategories,
+  findServiceCategory,
+  workerMatchesServiceCategory,
+} from '../utils/serviceCategoryFilters';
 import { logger } from '../utils/logger';
 import '../styles/services.scss';
 
-const CATEGORIES = [
-  { id: 'limpieza_domestica', label: 'Limpieza', icon: CleaningServicesIcon },
-  { id: 'plomeria',           label: 'Plomería', icon: PlumbingIcon },
-  { id: 'electricidad',       label: 'Electricidad', icon: ElectricBoltIcon },
-  { id: 'jardineria',         label: 'Jardinería', icon: GrassIcon },
-  { id: 'carpinteria',        label: 'Carpintería', icon: HandymanIcon },
-  { id: 'construccion',       label: 'Construcción', icon: ConstructionIcon },
-  { id: 'pintura',            label: 'Pintura', icon: FormatPaintIcon },
-  { id: 'mecanica',           label: 'Mecánica', icon: DirectionsCarIcon },
-  { id: 'catering',           label: 'Cocina', icon: RestaurantIcon },
-  { id: 'seguridad',          label: 'Seguridad', icon: SecurityIcon },
-];
-
-const CATEGORY_ALIASES = {
-  limpieza_domestica: ['limpieza domestica', 'limpieza', 'lavanderia', 'limpieza de oficinas'],
-  plomeria: ['plomeria', 'instalacion sanitarios', 'destapes', 'fontaneria'],
-  electricidad: ['electricidad', 'instalacion electrica', 'electrico', 'reparacion electrodomesticos'],
-  jardineria: ['jardineria', 'jardin', 'paisajismo', 'poda'],
-  carpinteria: ['carpinteria', 'muebles', 'ebanisteria'],
-  construccion: ['construccion', 'albanileria', 'albanilería', 'obra', 'obras'],
-  pintura: ['pintura', 'pintor', 'pintar'],
-  mecanica: ['mecanica', 'mecanica automotriz', 'mecánico', 'mecanico'],
-  catering: ['cocina', 'catering', 'chef', 'comida'],
-  seguridad: ['seguridad', 'vigilancia', 'guardia'],
+const CATEGORY_ICON_BY_SLUG = {
+  limpieza_domestica: CleaningServicesIcon,
+  plomeria: PlumbingIcon,
+  electricidad: ElectricBoltIcon,
+  jardineria: GrassIcon,
+  carpinteria: HandymanIcon,
+  construccion: ConstructionIcon,
+  pintura: FormatPaintIcon,
+  mecanica: DirectionsCarIcon,
+  catering: RestaurantIcon,
+  seguridad: SecurityIcon,
 };
 
-const normalizeText = (value = '') =>
-  String(value)
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-
-const getWorkerSkillNames = (worker) => {
-  const source = worker?.skills || worker?.habilidades || [];
-  if (!Array.isArray(source)) return [];
-  return source
-    .map((skill) => {
-      if (typeof skill === 'string') return skill;
-      return skill?.nombre || skill?.name || '';
-    })
-    .filter(Boolean)
-    .map(normalizeText);
-};
-
-const workerMatchesCategory = (worker, categoryId) => {
-  if (!categoryId) return true;
-  const aliases = CATEGORY_ALIASES[categoryId] || [];
-  if (aliases.length === 0) return true;
-  const normalizedAliases = aliases.map(normalizeText);
-  const skills = getWorkerSkillNames(worker);
-  return skills.some((skill) => normalizedAliases.some((alias) => skill.includes(alias) || alias.includes(skill)));
-};
+const DefaultCategoryIcon = HandymanIcon;
 
 const DEPARTMENTS = [
-  { id: '', name: 'Cualquier lugar' },
-  { id: 'ahuachapan',   name: 'Ahuachapán' },
-  { id: 'cabanas',      name: 'Cabañas' },
-  { id: 'chalatenango', name: 'Chalatenango' },
-  { id: 'cuscatlan',    name: 'Cuscatlán' },
-  { id: 'la_libertad',  name: 'La Libertad' },
-  { id: 'la_paz',       name: 'La Paz' },
-  { id: 'la_union',     name: 'La Unión' },
-  { id: 'morazan',      name: 'Morazán' },
-  { id: 'san_miguel',   name: 'San Miguel' },
-  { id: 'san_salvador', name: 'San Salvador' },
-  { id: 'san_vicente',  name: 'San Vicente' },
-  { id: 'santa_ana',    name: 'Santa Ana' },
-  { id: 'sonsonate',    name: 'Sonsonate' },
-  { id: 'usulutan',     name: 'Usulután' },
+  { id: '', name: 'Cualquier lugar', apiValue: '' },
+  { id: 'ahuachapan', name: 'Ahuachapán', apiValue: 'Ahuachapán' },
+  { id: 'cabanas', name: 'Cabañas', apiValue: 'Cabañas' },
+  { id: 'chalatenango', name: 'Chalatenango', apiValue: 'Chalatenango' },
+  { id: 'cuscatlan', name: 'Cuscatlán', apiValue: 'Cuscatlán' },
+  { id: 'la_libertad', name: 'La Libertad', apiValue: 'La Libertad' },
+  { id: 'la_paz', name: 'La Paz', apiValue: 'La Paz' },
+  { id: 'la_union', name: 'La Unión', apiValue: 'La Unión' },
+  { id: 'morazan', name: 'Morazán', apiValue: 'Morazán' },
+  { id: 'san_miguel', name: 'San Miguel', apiValue: 'San Miguel' },
+  { id: 'san_salvador', name: 'San Salvador', apiValue: 'San Salvador' },
+  { id: 'san_vicente', name: 'San Vicente', apiValue: 'San Vicente' },
+  { id: 'santa_ana', name: 'Santa Ana', apiValue: 'Santa Ana' },
+  { id: 'sonsonate', name: 'Sonsonate', apiValue: 'Sonsonate' },
+  { id: 'usulutan', name: 'Usulután', apiValue: 'Usulután' },
 ];
 
 const MODALITIES = [
@@ -106,9 +73,10 @@ const MODALITIES = [
 const Service = () => {
   const { t } = useTranslation();
   const loaderData = useLoaderData();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
   const initialCategory = searchParams.get('categoria') || '';
+  const [serviceCategories, setServiceCategories] = useState([]);
   const [workers, setWorkers] = useState(loaderData?.initialWorkers || []);
   const [loading, setLoading] = useState(!loaderData?.initialWorkers?.length);
   const [error, setError] = useState(null);
@@ -135,17 +103,42 @@ const Service = () => {
     return () => clearTimeout(searchDebounce.current);
   }, [searchText]);
 
+  useEffect(() => {
+    serviceService
+      .getCategorias()
+      .then((data) => setServiceCategories(buildServiceCategories(Array.isArray(data) ? data : [])))
+      .catch((err) => {
+        logger.error('Error cargando categorías de servicio:', err);
+        setServiceCategories([]);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!initialCategory || serviceCategories.length === 0) return;
+    const match = findServiceCategory(initialCategory, serviceCategories);
+    if (match) {
+      setFilters((prev) => (prev.categoria === match.id ? prev : { ...prev, categoria: match.id }));
+    }
+  }, [initialCategory, serviceCategories]);
+
+  const selectedCategory = useMemo(
+    () => findServiceCategory(filters.categoria, serviceCategories),
+    [filters.categoria, serviceCategories],
+  );
+
   const fetchWorkers = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
+      const dept = DEPARTMENTS.find((d) => d.id === filters.departamento);
+
       const apiFilters = {
         verificado: true,
         sort: 'relevance',
-        departamento: filters.departamento || undefined,
+        departamento: dept?.apiValue || undefined,
         search: committedSearch.trim() || undefined,
-        categoria: filters.categoria || undefined,
+        categoria: selectedCategory?.filterParam || undefined,
         modalidad: filters.modalidad || undefined,
         fecha_inicio: filters.fechaInicio || undefined,
         fecha_fin: filters.fechaFin || undefined,
@@ -162,8 +155,8 @@ const Service = () => {
         : Array.isArray(data) ? data
         : data?.data || [];
 
-      const filteredByCategory = filters.categoria
-        ? arr.filter((worker) => workerMatchesCategory(worker, filters.categoria))
+      const filteredByCategory = selectedCategory
+        ? arr.filter((worker) => workerMatchesServiceCategory(worker, selectedCategory))
         : arr;
 
       setWorkers(filteredByCategory);
@@ -173,7 +166,7 @@ const Service = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters, committedSearch, clientLocation]);
+  }, [filters, committedSearch, clientLocation, selectedCategory]);
 
   useEffect(() => {
     fetchWorkers();
@@ -192,8 +185,16 @@ const Service = () => {
     }
   };
 
-  const toggleCategory = (catId) =>
-    setFilters(prev => ({ ...prev, categoria: prev.categoria === catId ? '' : catId }));
+  const toggleCategory = (catId) => {
+    const next = filters.categoria === catId ? '' : catId;
+    setFilters((prev) => ({ ...prev, categoria: next }));
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      if (next) params.set('categoria', next);
+      else params.delete('categoria');
+      return params;
+    }, { replace: true });
+  };
 
   const setFilter = (key, value) =>
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -211,10 +212,15 @@ const Service = () => {
     setSearchText('');
     setCommittedSearch('');
     setFilters({ categoria: '', departamento: '', modalidad: '', fechaInicio: '', fechaFin: '' });
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.delete('categoria');
+      return params;
+    }, { replace: true });
   };
 
   const chips = [
-    filters.categoria    && { key: 'categoria',    label: CATEGORIES.find(c => c.id === filters.categoria)?.label },
+    selectedCategory     && { key: 'categoria',    label: selectedCategory.label },
     filters.departamento && { key: 'departamento', label: DEPARTMENTS.find(d => d.id === filters.departamento)?.name },
     filters.modalidad    && { key: 'modalidad',    label: MODALITIES.find(m => m.id === filters.modalidad)?.name },
     filters.fechaInicio  && { key: 'fechaInicio',  label: `Desde ${new Date(filters.fechaInicio).toLocaleDateString('es-SV', { month: 'short', day: 'numeric' })}` },
@@ -270,24 +276,24 @@ const Service = () => {
           {/* Category pills */}
           <nav className="svc-categories" aria-label="Categorías de servicio">
             <div className="svc-cat-scroll">
-              {CATEGORIES.map(cat => (
-                (() => {
-                  const CategoryIcon = cat.icon;
-                  return (
-                <button
-                  key={cat.id}
-                  className={`svc-cat-pill${filters.categoria === cat.id ? ' active' : ''}`}
-                  onClick={() => toggleCategory(cat.id)}
-                  aria-pressed={filters.categoria === cat.id}
-                >
-                  <span className="svc-cat-icon" aria-hidden="true">
-                    <CategoryIcon fontSize="inherit" />
-                  </span>
-                  <span>{cat.label}</span>
-                </button>
-                  );
-                })()
-              ))}
+              {serviceCategories.map((cat) => {
+                const CategoryIcon =
+                  CATEGORY_ICON_BY_SLUG[cat.filterParam] || DefaultCategoryIcon;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    className={`svc-cat-pill${filters.categoria === cat.id ? ' active' : ''}`}
+                    onClick={() => toggleCategory(cat.id)}
+                    aria-pressed={filters.categoria === cat.id}
+                  >
+                    <span className="svc-cat-icon" aria-hidden="true">
+                      <CategoryIcon fontSize="inherit" />
+                    </span>
+                    <span>{cat.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </nav>
 
