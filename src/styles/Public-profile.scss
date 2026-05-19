@@ -976,15 +976,101 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
 
   .info-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .section-card {
+    padding: 1.125rem 1rem;
+
+    .section-header {
+      margin-bottom: 0.875rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: 1.125rem;
+    }
+
+    .section-icon {
+      width: 20px;
+      height: 20px;
+    }
   }
 
   .rating-stats {
-    flex-direction: column;
-    gap: 1rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     justify-content: center;
+    margin: 0;
 
     .separator {
       display: none;
+    }
+
+    .rating-container,
+    .jobs-completed {
+      padding: 0.375rem 0.625rem;
+      border-radius: 8px;
+      gap: 0.375rem;
+    }
+
+    .rating-container {
+      .stars {
+        gap: 0.125rem;
+      }
+
+      .star {
+        font-size: 0.875rem !important;
+        width: 0.875rem !important;
+        height: 0.875rem !important;
+      }
+
+      .rating-number {
+        font-size: 1.0625rem;
+        line-height: 1;
+      }
+
+      .review-count {
+        font-size: 0.75rem;
+        line-height: 1.2;
+      }
+    }
+
+    .jobs-completed {
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .count {
+        font-size: 0.8125rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .about-section {
+    .bio {
+      font-size: 1.0625rem;
+      line-height: 1.75;
+      padding: 1rem 0.875rem 1rem 0.75rem;
+      margin-bottom: 1rem;
+
+      &::before,
+      &::after {
+        font-size: 1.75rem;
+      }
+
+      &::before {
+        top: -0.25rem;
+        left: 0.5rem;
+      }
+
+      &::after {
+        bottom: -0.5rem;
+        right: 0.5rem;
+      }
     }
   }
 
@@ -1013,6 +1099,43 @@ $shadow-primary-sm: 0 4px 12px rgba(37, 64, 255, 0.2);
 
   .basic-info .name {
     font-size: 1.75rem;
+  }
+
+  .rating-stats {
+    .rating-container,
+    .jobs-completed {
+      padding: 0.3125rem 0.5rem;
+    }
+
+    .rating-container {
+      .rating-number {
+        font-size: 1rem;
+      }
+
+      .review-count {
+        font-size: 0.6875rem;
+      }
+
+      .star {
+        font-size: 0.8125rem !important;
+        width: 0.8125rem !important;
+        height: 0.8125rem !important;
+      }
+    }
+
+    .jobs-completed .count {
+      font-size: 0.75rem;
+    }
+  }
+
+  .section-card {
+    padding: 1rem 0.875rem;
+  }
+
+  .about-section .bio {
+    font-size: 1.0625rem;
+    padding: 0.875rem 0.75rem 0.875rem 0.625rem;
+    margin-bottom: 0.75rem;
   }
 
   .contact-button {
