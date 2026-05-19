@@ -5,7 +5,7 @@ import {
 } from '../i18n/config';
 
 /**
- * Hook personalizado para manejar traducciones en ChambingApp
+ * Hook personalizado para manejar traducciones en Chambing
  * Proporciona funciones adicionales y shortcuts para operaciones comunes
  */
 export const useTranslations = () => {

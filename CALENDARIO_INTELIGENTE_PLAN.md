@@ -492,7 +492,7 @@ async function crearContrato(dto: CreateContratoDto): Promise<Contrato> {
    - Hora: 10:00 AM
    - Duración: 4 horas
 
-3. ChambingApp filtra:
+3. Chambing filtra:
    ✅ Ana - Disponible 8am-5pm (PERFECTO)
    ⚠️ Clara - Disponible 2pm-6pm (solo 2 horas de las 4)
    ❌ Lucía - Ocupada (otro contrato 9am-2pm)
@@ -535,7 +535,7 @@ async function crearContrato(dto: CreateContratoDto): Promise<Contrato> {
 Cliente busca: Viernes 17 Enero, 10am-2pm
 Trabajador: Ocupado 9am-3pm ese día
 
-ChambingApp sugiere:
+Chambing sugiere:
 ✅ Jueves 16 Enero, 10am-2pm (día anterior, mismo horario)
 ✅ Viernes 17 Enero, 3pm-7pm (mismo día, horario posterior)
 ✅ Sábado 18 Enero, 9am-1pm (día siguiente, horario matutino)
@@ -590,7 +590,7 @@ ChambingApp sugiere:
 
 ## 💡 VENTAJAS COMPETITIVAS
 
-### Para ChambingApp:
+### Para Chambing:
 
 1. **Diferenciador Único**: Ninguna plataforma en El Salvador tiene esto
 2. **Reduce Fricciones**: Menos contratos rechazados
@@ -657,7 +657,7 @@ ChambingApp sugiere:
 
 **¿Empezamos con la Fase 1 (MVP)?** 🚀
 
-Este calendario inteligente podría ser el **killer feature** que haga a ChambingApp la plataforma #1 en El Salvador. 🇸🇻
+Este calendario inteligente podría ser el **killer feature** que haga a Chambing la plataforma #1 en El Salvador. 🇸🇻
 
 ---
 

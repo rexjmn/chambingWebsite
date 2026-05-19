@@ -1,4 +1,4 @@
-# 🇸🇻 GUÍA COMPLETA - ChambingApp Para El Salvador
+# 🇸🇻 GUÍA COMPLETA - Chambing Para El Salvador
 
 **Versión:** 2.0.0 con Modalidades
 **Fecha:** 14 de Enero 2026
@@ -6,9 +6,9 @@
 
 ---
 
-## 🎯 ¿QUÉ ES CHAMBINGAPP?
+## 🎯 ¿QUÉ ES CHAMBING?
 
-ChambingApp es la forma más **fácil, rápida y segura** de encontrar y contratar trabajadores en El Salvador. Ya sea que necesites:
+Chambing es la forma más **fácil, rápida y segura** de encontrar y contratar trabajadores en El Salvador. Ya sea que necesites:
 
 - 🧹 Limpieza de tu casa
 - 🔧 Plomería o electricidad
@@ -25,7 +25,7 @@ Todo en **3 pasos simples**:
 
 ---
 
-## 📱 FLUJO COMPLETO: CÓMO CONTRATAR EN CHAMBINGAPP
+## 📱 FLUJO COMPLETO: CÓMO CONTRATAR EN CHAMBING
 
 ### PASO 1: BUSCAR TRABAJADORES ⏱️ 30 segundos
 
@@ -53,7 +53,7 @@ Todo en **3 pasos simples**:
 
 ### PASO 2: CREAR CONTRATO ⏱️ 1-2 minutos
 
-¡Este es el corazón de ChambingApp! Lo hicimos **SUPER FÁCIL** para que cualquier salvadoreño lo pueda usar sin complicaciones.
+¡Este es el corazón de Chambing! Lo hicimos **SUPER FÁCIL** para que cualquier salvadoreño lo pueda usar sin complicaciones.
 
 #### **2.1 INFORMACIÓN BÁSICA** (Obligatorio)
 
@@ -93,7 +93,7 @@ Todo en **3 pasos simples**:
 
 #### **2.2 MODALIDAD DE PAGO** (Obligatorio)
 
-Esta es la **GRAN MEJORA** de ChambingApp. Ahora puedes contratar de 5 formas diferentes:
+Esta es la **GRAN MEJORA** de Chambing. Ahora puedes contratar de 5 formas diferentes:
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
@@ -256,7 +256,7 @@ TOTAL: $450.00
 No tienes que hacer cuentas. Solo pon:
 1. El precio por unidad (hora/día/semana/mes)
 2. La cantidad que necesitas
-3. ✨ ChambingApp calcula el total por ti
+3. ✨ Chambing calcula el total por ti
 
 ---
 
@@ -336,7 +336,7 @@ No tienes que hacer cuentas. Solo pon:
 
 **Cuando das click en "Crear Contrato":**
 
-1. ✅ ChambingApp valida todo
+1. ✅ Chambing valida todo
 2. ✅ Calcula el total correcto
 3. ✅ Genera un código único (ej: CON-2026-12345)
 4. ✅ Crea un PIN de 6 dígitos
@@ -424,7 +424,7 @@ Carlos quiere pintar 3 habitaciones. El pintor cobra por trabajo completo.
 **Flujo:**
 1. Carlos busca "pintura" → Encuentra a Roberto (✅ Verificado)
 2. Hablan por WhatsApp → Roberto dice "$350 por todo"
-3. Carlos crea el contrato en ChambingApp:
+3. Carlos crea el contrato en Chambing:
    - Categoría: Pintura
    - Descripción: "Pintar 3 habitaciones completas, incluye pintura"
    - Dirección: "Residencial Los Robles #45"
@@ -500,7 +500,7 @@ José quiere construir un cuarto nuevo en su casa.
 
 ---
 
-## ✅ VENTAJAS DE CHAMBINGAPP PARA SALVADOREÑOS
+## ✅ VENTAJAS DE CHAMBING PARA SALVADOREÑOS
 
 ### Para Empleadores (Los que contratan):
 
@@ -600,7 +600,7 @@ y elige una opción (Limpieza, Plomería, etc.)
 
 ## 📞 ¿NECESITAS AYUDA?
 
-### Soporte ChambingApp
+### Soporte Chambing
 
 - 📧 Email: soporte@chambingapp.com
 - 📱 WhatsApp: +503 7234-5678
@@ -608,17 +608,17 @@ y elige una opción (Limpieza, Plomería, etc.)
 
 ### Preguntas Frecuentes
 
-**P: ¿Es seguro ChambingApp?**
+**P: ¿Es seguro Chambing?**
 R: Sí. Todos los trabajadores son verificados y el pago está protegido hasta que completes el trabajo.
 
-**P: ¿Cuánto cobra ChambingApp?**
-R: ChambingApp cobra el 10% de comisión al trabajador. Para ti (empleador) es gratis crear contratos.
+**P: ¿Cuánto cobra Chambing?**
+R: Chambing cobra el 10% de comisión al trabajador. Para ti (empleador) es gratis crear contratos.
 
 **P: ¿Puedo cancelar un contrato?**
 R: Sí, puedes cancelar un contrato antes o durante el trabajo. Si ya pagaste, se te reembolsa según los términos.
 
 **P: ¿Qué pasa si no estoy contento con el trabajo?**
-R: Puedes reportar el problema y ChambingApp mediará para resolver la situación.
+R: Puedes reportar el problema y Chambing mediará para resolver la situación.
 
 **P: ¿Debo poner fechas siempre?**
 R: No. Las fechas son opcionales. Solo ponlas si ya tienes fechas definidas.
@@ -636,7 +636,7 @@ R: No en el mismo contrato, pero puedes crear un nuevo contrato con la modalidad
 
 ---
 
-**¡Bienvenido a ChambingApp!** 🇸🇻
+**¡Bienvenido a Chambing!** 🇸🇻
 La forma más fácil, rápida y segura de encontrar chambas en El Salvador.
 
 **Versión:** 2.0.0

@@ -12,7 +12,7 @@ const Footer = () => {
 
           {/* Brand */}
           <div className="site-footer__col">
-            <h3 className="site-footer__brand">ChambingApp</h3>
+            <h3 className="site-footer__brand">Chambing</h3>
             <p className="site-footer__desc">{t('footer.description')}</p>
             <div className="site-footer__social">
               <a href="#" className="site-footer__social-btn" aria-label="Facebook">

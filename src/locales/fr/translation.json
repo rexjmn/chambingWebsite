@@ -302,7 +302,7 @@
   "auth": {
     "login": {
       "title": "Se Connecter",
-      "subtitle": "Accédez à votre compte ChambingApp",
+      "subtitle": "Accédez à votre compte Chambing",
       "email": "Email",
       "password": "Mot de passe",
       "loginButton": "Se Connecter",
@@ -316,7 +316,7 @@
     },
     "register": {
       "title": "Créer un Compte",
-      "subtitle": "Rejoignez la communauté ChambingApp",
+      "subtitle": "Rejoignez la communauté Chambing",
       "name": "Prénom",
       "lastName": "Nom",
       "email": "Email",
@@ -539,8 +539,8 @@
   "services": {
     "pageTitle": "Trouvez des Professionnels Vérifiés",
     "pageSubtitle": "Connectez-vous avec des travailleurs qualifiés et fiables au Salvador",
-    "metaTitle": "Services Professionnels au Salvador | ChambingApp",
-    "metaDescription": "Trouvez des professionnels vérifiés au Salvador pour le ménage, la plomberie, l'électricité, le jardinage et plus. Embauchez en toute confiance sur ChambingApp.",
+    "metaTitle": "Services Professionnels au Salvador | Chambing",
+    "metaDescription": "Trouvez des professionnels vérifiés au Salvador pour le ménage, la plomberie, l'électricité, le jardinage et plus. Embauchez en toute confiance sur Chambing.",
     "loading": "Chargement des professionnels...",
     "loadingProfessionals": "Recherche des meilleurs professionnels pour vous...",
     "error": "Erreur lors du chargement des données",
@@ -607,7 +607,7 @@
     "email": "info@chambing.com",
     "phone": "+503 2234-5678",
     "address": "San Salvador, Salvador",
-    "rights": "© 2024 ChambingApp. Tous droits réservés."
+    "rights": "© 2024 Chambing. Tous droits réservés."
   },
   "profile": {
     "photoModal": {

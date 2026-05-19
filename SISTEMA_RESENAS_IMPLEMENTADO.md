@@ -1,14 +1,14 @@
 # 📝 SISTEMA DE RESEÑAS - IMPLEMENTACIÓN COMPLETA
 
 **Fecha:** 31 de Diciembre 2025
-**Proyecto:** ChambingApp
+**Proyecto:** Chambing
 **Estado:** ✅ Frontend Completo | ⏳ Backend Pendiente
 
 ---
 
 ## 📊 RESUMEN EJECUTIVO
 
-Se ha implementado completamente el **frontend del sistema de reseñas** para ChambingApp. Este sistema permite a los clientes calificar y dejar comentarios sobre los trabajadores después de completar un contrato.
+Se ha implementado completamente el **frontend del sistema de reseñas** para Chambing. Este sistema permite a los clientes calificar y dejar comentarios sobre los trabajadores después de completar un contrato.
 
 ### Estado del Proyecto
 

@@ -1,7 +1,7 @@
 # ESPECIFICACIÓN DEL BACKEND - SISTEMA DE RESEÑAS
 
 **Fecha:** 31 de Diciembre 2025
-**Proyecto:** ChambingApp - Sistema de Reviews
+**Proyecto:** Chambing - Sistema de Reviews
 **Framework:** NestJS + TypeORM + PostgreSQL
 
 ---

@@ -4,7 +4,7 @@ import { buildMeta, SITE_URL, SITE_NAME } from '../seo';
 export function meta() {
   return [
     ...buildMeta({
-      title: 'ChambingApp - Encuentra Profesionales de Confianza en El Salvador',
+      title: 'Chambing - Encuentra Profesionales de Confianza en El Salvador',
       description:
         'Contrata plomeros, electricistas, pintores, técnicos y más profesionales verificados en El Salvador. Rápido, seguro y con garantía de calidad.',
       url: SITE_URL,

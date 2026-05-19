@@ -1,4 +1,4 @@
-# 🧪 Testing Guide - ChambingApp
+# 🧪 Testing Guide - Chambing
 
 ## Configuración Completada
 

@@ -202,14 +202,14 @@ const Service = () => {
 
   return (
     <>
-      <title>Profesionales | ChambingApp</title>
+      <title>Profesionales | Chambing</title>
       <meta name="description" content="Encuentra trabajadores verificados en El Salvador" />
       <script type="application/ld+json">{JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Service',
-        name: 'ChambingApp',
+        name: 'Chambing',
         description: 'Encuentra trabajadores verificados en El Salvador',
-        provider: { '@type': 'Organization', name: 'ChambingApp', url: 'https://chambing.com' },
+        provider: { '@type': 'Organization', name: 'Chambing', url: 'https://chambing.com' },
         areaServed: { '@type': 'Country', name: 'El Salvador' },
       })}</script>
 

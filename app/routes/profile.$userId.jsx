@@ -37,7 +37,7 @@ export async function loader({ params }) {
         '@type': 'Person',
         name,
         jobTitle: role,
-        description: profile.bio || `Profesional verificado en ChambingApp El Salvador.`,
+        description: profile.bio || `Profesional verificado en Chambing El Salvador.`,
         image: profile.foto_perfil || DEFAULT_OG_IMAGE,
         url,
         worksFor: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
@@ -74,7 +74,7 @@ export function meta({ data, params }) {
     return [
       ...buildMeta({
         title: `Perfil de Profesional | ${SITE_NAME}`,
-        description: 'Consulta el perfil de este profesional verificado en ChambingApp El Salvador.',
+        description: 'Consulta el perfil de este profesional verificado en Chambing El Salvador.',
         url,
       }),
       { tagName: 'link', rel: 'canonical', href: url },
@@ -89,7 +89,7 @@ export function meta({ data, params }) {
       title: `${name} - ${role} | ${SITE_NAME}`,
       description:
         profile.bio?.slice(0, 155) ||
-        `Contrata a ${name}, ${role} verificado en ChambingApp El Salvador.`,
+        `Contrata a ${name}, ${role} verificado en Chambing El Salvador.`,
       image: profile.foto_perfil || DEFAULT_OG_IMAGE,
       url,
       type: 'profile',

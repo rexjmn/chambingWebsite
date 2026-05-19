@@ -423,7 +423,7 @@ const handleChange = (e) => {
               .join(' | '),
           }),
         },
-        terminosCondiciones: 'Términos y condiciones estándar de ChambingApp',
+        terminosCondiciones: 'Términos y condiciones estándar de Chambing',
         monto: parseFloat(formData.monto),
         metodoPago: 'efectivo',
       };

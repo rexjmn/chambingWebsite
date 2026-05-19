@@ -18,7 +18,7 @@ export async function loader() {
 export function meta() {
   return [
     ...buildMeta({
-      title: 'Servicios Disponibles | ChambingApp',
+      title: 'Servicios Disponibles | Chambing',
       description:
         'Explora cientos de profesionales disponibles en El Salvador. Plomeros, electricistas, pintores, técnicos, limpieza y más. Contrata con confianza.',
       url: PAGE_URL,

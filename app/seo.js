@@ -1,10 +1,10 @@
 // Central SEO constants — update SITE_URL when the production domain is confirmed
 export const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://chambing.com';
-export const SITE_NAME = 'ChambingApp';
+export const SITE_NAME = 'Chambing';
 export const SITE_LOCALE = 'es_SV';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
-export const DEFAULT_TITLE = 'ChambingApp - Servicios Freelance en El Salvador';
+export const DEFAULT_TITLE = 'Chambing - Servicios Freelance en El Salvador';
 export const DEFAULT_DESCRIPTION =
   'Conecta con profesionales verificados para servicios de plomería, electricidad, limpieza y más en El Salvador. Rápido, seguro y con garantía.';
 
