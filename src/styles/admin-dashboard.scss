@@ -1352,9 +1352,101 @@ $sidebar-collapsed-width: 68px;
 
   &__description {
     display: block;
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     color: #94a3b8;
-    margin-top: 0.2rem;
+    margin-top: 0.125rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__skill-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid rgba($admin-border, 0.9);
+    border-radius: 10px;
+    overflow: hidden;
+    background: $admin-white;
+  }
+
+  &__skill-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 0.375rem 0.625rem;
+    padding: 0.5rem 0.625rem;
+    border-bottom: 1px solid rgba($admin-border, 0.75);
+    min-height: 44px;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: rgba($admin-primary, 0.02);
+    }
+  }
+
+  &__skill-main {
+    min-width: 0;
+  }
+
+  &__skill-name {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: $admin-text;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__status {
+    flex-shrink: 0;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.6875rem;
+    white-space: nowrap;
+  }
+
+  &__skill-actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  @media (max-width: 640px) {
+    &__category-block {
+      padding: 0.65rem;
+    }
+
+    &__skill-item {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'name status'
+        'actions actions';
+      padding: 0.45rem 0.5rem;
+      row-gap: 0.35rem;
+    }
+
+    &__skill-main {
+      grid-area: name;
+    }
+
+    &__status {
+      grid-area: status;
+    }
+
+    &__skill-actions {
+      grid-area: actions;
+      justify-content: flex-end;
+    }
+
+    &__description {
+      display: none;
+    }
   }
 }
 
@@ -1519,6 +1611,14 @@ $sidebar-collapsed-width: 68px;
       background: rgba($admin-warning, 0.1);
       border-color: $admin-warning;
       color: $admin-warning;
+    }
+  }
+
+  &--success {
+    &:hover {
+      background: rgba($admin-success, 0.1);
+      border-color: $admin-success;
+      color: $admin-success;
     }
   }
 }

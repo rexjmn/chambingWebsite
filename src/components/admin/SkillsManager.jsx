@@ -235,64 +235,58 @@ const SkillsManager = () => {
             <h3 className="admin-services__category-title">
               {category}
             </h3>
-            <div className="admin-table-container">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Nombre</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((skill) => (
-                    <tr key={skill.id} className={!skill.activo ? 'admin-services__row--inactive' : ''}>
-                      <td>
-                        <strong>{skill.nombre}</strong>
+            <ul className="admin-services__skill-list" role="list">
+              {items.map((skill) => (
+                <li
+                      key={skill.id}
+                      className={`admin-services__skill-item${!skill.activo ? ' admin-services__row--inactive' : ''}`}
+                    >
+                      <div className="admin-services__skill-main">
+                        <strong className="admin-services__skill-name">{skill.nombre}</strong>
                         {skill.descripcion && (
                           <span className="admin-services__description">
                             {skill.descripcion}
                           </span>
                         )}
-                      </td>
-                      <td>
-                        <span className={`admin-badge ${skill.activo ? 'admin-badge--success' : 'admin-badge--muted'}`}>
+                      </div>
+                      <span className={`admin-badge admin-services__status ${skill.activo ? 'admin-badge--success' : 'admin-badge--muted'}`}>
                           {skill.activo ? 'Activo' : 'Inactivo'}
                         </span>
-                      </td>
-                      <td>
-                        <div className="admin-table__actions">
+                        <div className="admin-services__skill-actions">
                           <button
+                            type="button"
                             className="admin-icon-btn admin-icon-btn--edit"
                             onClick={() => openEdit(skill)}
                             title="Editar"
+                            aria-label={`Editar ${skill.nombre}`}
                           >
-                            Editar
+                            ✏️
                           </button>
                           {skill.activo ? (
                             <button
-                              className="admin-icon-btn admin-icon-btn--delete"
+                              type="button"
+                              className="admin-icon-btn admin-icon-btn--warning"
                               onClick={() => handleDeactivate(skill)}
                               title="Desactivar"
+                              aria-label={`Desactivar ${skill.nombre}`}
                             >
-                              Desactivar
+                              ⏸️
                             </button>
                           ) : (
                             <button
-                              className="admin-icon-btn admin-icon-btn--edit"
+                              type="button"
+                              className="admin-icon-btn admin-icon-btn--success"
                               onClick={() => handleReactivate(skill)}
                               title="Reactivar"
+                              aria-label={`Reactivar ${skill.nombre}`}
                             >
-                              Reactivar
+                              ↩️
                             </button>
                           )}
                         </div>
-                      </td>
-                    </tr>
+                    </li>
                   ))}
-                </tbody>
-              </table>
-            </div>
+            </ul>
           </div>
         ))}
         </div>
