@@ -84,7 +84,7 @@ const getCroppedBlob = async (imageSrc, pixelCrop, rotation = 0) => {
 //  ONBOARDING
 // ════════════════════════════════════════════════════════════════════════════
 const Onboarding = () => {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, updateUser } = useAuth();
   const navigate = useNavigate();
 
   // Whether this session was started via Google / OAuth (no password set)
@@ -315,9 +315,10 @@ const Onboarding = () => {
     if (currentStep === 'userType') {
       const ok = await saveUserType();
       if (!ok) return;
-      const newSteps = buildOnboardingSteps(selectedUserType, true);
+      const newSteps = buildOnboardingSteps(selectedUserType, isOAuth);
+      const photoIdx = newSteps.indexOf('photo');
       setSteps(newSteps);
-      setCurrentIdx((i) => i + 1);
+      setCurrentIdx((i) => (photoIdx >= 0 ? photoIdx : i + 1));
       return;
     }
 
@@ -400,8 +401,14 @@ const Onboarding = () => {
   const saveUserType = async () => {
     setSaving(true);
     try {
-      await profileService.changeUserType(selectedUserType);
-      await refreshUser().catch(() => {});
+      const res = await profileService.changeUserType(selectedUserType);
+      const updated = res?.data ?? res;
+      if (updated && typeof updated === 'object') {
+        updateUser({ tipo_usuario: selectedUserType, ...updated });
+      } else {
+        updateUser({ tipo_usuario: selectedUserType });
+      }
+      await refreshUser({ background: true }).catch(() => {});
       return true;
     } catch (err) {
       logger.error('Error saving user type:', err);
@@ -427,7 +434,7 @@ const Onboarding = () => {
         apellido: user?.apellido || '',
         telefono: fullDigits,
       });
-      await refreshUser().catch(() => {});
+      await refreshUser({ background: true }).catch(() => {});
       return true;
     } catch (err) {
       logger.error('Error saving phone:', err);
@@ -498,7 +505,7 @@ const Onboarding = () => {
         }
       }
       await profileService.updateProfile(payload);
-      await refreshUser().catch(() => {});
+      await refreshUser({ background: true }).catch(() => {});
       return true;
     } catch (err) {
       logger.error('Error saving profile:', err);

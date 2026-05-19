@@ -163,8 +163,11 @@ const initialState = {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  const refreshUser = async () => {
-    dispatch({ type: 'REFRESH_USER_START' });
+  const refreshUser = async (options = {}) => {
+    const background = options.background === true;
+    if (!background) {
+      dispatch({ type: 'REFRESH_USER_START' });
+    }
 
     try {
       const response = await api.get('/users/me');

@@ -11,8 +11,8 @@ const ProtectedRoute = ({ children, requiredRoles = [] }) => {
     ...(user?.tipo_usuario ? [String(user.tipo_usuario)] : []),
   ].map((role) => role.toLowerCase());
 
-  // Mostrar loading mientras verifica autenticación
-  if (loading) {
+  // Solo bloquear la UI si aún no hay usuario (evita desmontar /onboarding en refreshUser)
+  if (loading && !user) {
     return (
       <div style={{
         display: 'flex',
