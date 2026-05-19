@@ -88,6 +88,7 @@ const Service = () => {
   const [searchText, setSearchText] = useState(initialSearch);
   const [committedSearch, setCommittedSearch] = useState(initialSearch);
   const searchDebounce = useRef(null);
+  const catScrollRef = useRef(null);
 
   const [filters, setFilters] = useState({
     categoria: initialCategory,
@@ -112,6 +113,24 @@ const Service = () => {
         setServiceCategories([]);
       });
   }, []);
+
+  // En escritorio la rueda del ratón suele ser vertical; desplazamos el carrusel en horizontal.
+  useEffect(() => {
+    const el = catScrollRef.current;
+    if (!el) return undefined;
+
+    const onWheel = (e) => {
+      const canScroll = el.scrollWidth > el.clientWidth + 2;
+      if (!canScroll) return;
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [serviceCategories.length]);
 
   useEffect(() => {
     if (!initialCategory || serviceCategories.length === 0) return;
@@ -275,7 +294,7 @@ const Service = () => {
 
           {/* Category pills */}
           <nav className="svc-categories" aria-label="Categorías de servicio">
-            <div className="svc-cat-scroll">
+            <div className="svc-cat-scroll" ref={catScrollRef}>
               {serviceCategories.map((cat) => {
                 const CategoryIcon =
                   CATEGORY_ICON_BY_SLUG[cat.filterParam] || DefaultCategoryIcon;
